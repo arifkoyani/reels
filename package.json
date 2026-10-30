@@ -18,13 +18,25 @@
   "dependencies": {
     "@elevenlabs/elevenlabs-js": "^2.75.0",
     "@remotion/cli": "^4.0.539",
+    "@remotion/google-fonts": "4.0.539",
+    "@remotion/layout-utils": "4.0.539",
     "@remotion/media-utils": "^4.0.539",
+    "@remotion/motion-blur": "4.0.539",
+    "@remotion/noise": "4.0.539",
+    "@remotion/paths": "^4.0.539",
     "@remotion/renderer": "^4.0.539",
+    "@remotion/rough-notation": "4.0.539",
+    "@remotion/shapes": "^4.0.539",
+    "@remotion/transitions": "4.0.539",
     "dotenv": "^18.0.9",
+    "framer-motion": "^14.9.0",
     "groq-sdk": "^1.6.0",
+    "lucide-react": "^1.65.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "recharts": "^3.10.1",
     "remotion": "^4.0.539",
+    "roughjs": "^4.6.6",
     "sharp": "^0.35.5"
   }
 }

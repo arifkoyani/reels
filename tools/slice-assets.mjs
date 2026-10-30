@@ -114,8 +114,9 @@ const findParts = (img, isBackground) => {
   return parts;
 };
 
-// Crop a box out, keying the grey to transparent with a soft edge.
-const cut = (img, box, canvas) => {
+// Crop a box out. Alpha comes from the flood-fill mask, never from colour distance —
+// the man's skin sits close to the sheet's grey and would otherwise go see-through.
+const cut = (img, mask, box, canvas) => {
   const { width: sw, rgba: src } = img;
   const outW = canvas?.width ?? box.width;
   const outH = canvas?.height ?? box.height;
@@ -123,28 +124,47 @@ const cut = (img, box, canvas) => {
   const offsetY = canvas ? canvas.offsetY ?? 0 : 0;
 
   const out = Buffer.alloc(outW * outH * 4);
-  const bg = canvas?.bg ?? box.bg;
+  const solid = new Uint8Array(outW * outH);
 
   for (let y = 0; y < box.height; y++) {
     for (let x = 0; x < box.width; x++) {
       const dx = x + offsetX;
       const dy = y + offsetY;
       if (dx < 0 || dy < 0 || dx >= outW || dy >= outH) continue;
+      const sx = box.minX + x;
+      const sy = box.minY + y;
+      if (sx < 0 || sy < 0 || sx >= sw) continue;
 
-      const s = ((box.minY + y) * sw + (box.minX + x)) * 4;
+      const s = (sy * sw + sx) * 4;
       const d = (dy * outW + dx) * 4;
-      const d0 = diff(src, s, bg);
-
-      // Hard inside, feathered across the edge band, gone outside
-      let alpha = 255;
-      if (d0 <= BG_TOLERANCE) alpha = 0;
-      else if (d0 < BG_TOLERANCE + FEATHER)
-        alpha = Math.round(((d0 - BG_TOLERANCE) / FEATHER) * 255);
-
       out[d] = src[s];
       out[d + 1] = src[s + 1];
       out[d + 2] = src[s + 2];
-      out[d + 3] = alpha;
+      if (!mask[sy * sw + sx]) solid[dy * outW + dx] = 1;
+    }
+  }
+
+  // Feather INWARD only: a foreground pixel fades by how many neighbours are also
+  // foreground. Background pixels stay fully clear, so no grey halo is possible.
+  for (let y = 0; y < outH; y++) {
+    for (let x = 0; x < outW; x++) {
+      const p = y * outW + x;
+      if (!solid[p]) {
+        out[p * 4 + 3] = 0;
+        continue;
+      }
+      let count = 0;
+      let total = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= outW || ny >= outH) continue;
+          total++;
+          if (solid[ny * outW + nx]) count++;
+        }
+      }
+      out[p * 4 + 3] = count === total ? 255 : Math.round((count / total) * 255);
     }
   }
 
@@ -156,7 +176,7 @@ const load = (name) => {
   const { bg, isBackground } = buildMasks(img);
   const parts = findParts(img, isBackground);
   const bgPixels = isBackground.reduce((n, v) => n + v, 0);
-  return { img, bg, parts, bgShare: bgPixels / (img.width * img.height) };
+  return { img, bg, parts, isBackground, bgShare: bgPixels / (img.width * img.height) };
 };
 
 const report = (name) => {

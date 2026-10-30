@@ -16,7 +16,7 @@ const write = (name, image) => {
 };
 
 // Put a set of parts on one shared canvas so swapping frames causes no jitter.
-const writeSet = (img, bg, parts, names, { lockY = false } = {}) => {
+const writeSet = (img, mask, bg, parts, names, { lockY = false } = {}) => {
   const canvasWidth = Math.max(...parts.map((p) => p.width)) + 8;
   const minY = Math.min(...parts.map((p) => p.minY));
   const maxY = Math.max(...parts.map((p) => p.maxY));
@@ -27,24 +27,24 @@ const writeSet = (img, bg, parts, names, { lockY = false } = {}) => {
     const box = lockY
       ? { minX: part.minX, minY, width: part.width, height: maxY - minY + 1, bg }
       : { minX: part.minX, minY: part.minY, width: part.width, height: part.height, bg };
-    write(names[i], cut(img, box, { width: canvasWidth, height: canvasHeight, bg }));
+    write(names[i], cut(img, mask, box, { width: canvasWidth, height: canvasHeight, bg }));
   });
 };
 
 // ---- man.png -------------------------------------------------------------
 {
-  const { img, bg, parts } = load("man.png");
+  const { img, bg, parts, isBackground: mask } = load("man.png");
   const bodies = parts.filter((p) => p.minY < 300).sort(byX);
   const heads = parts.filter((p) => p.minY >= 300).sort(byX);
 
   bodies.forEach((p, i) =>
     write(
       ["man-body-front", "man-body-side", "man-body-back", "man-body-3q"][i],
-      cut(img, { ...p, bg }, null),
+      cut(img, mask, { ...p, bg }, null),
     ),
   );
 
-  writeSet(img, bg, heads, [
+  writeSet(img, mask, bg, heads, [
     "man-head-1",
     "man-head-2",
     "man-head-3",
@@ -56,7 +56,7 @@ const writeSet = (img, bg, parts, names, { lockY = false } = {}) => {
 
 // ---- bot.png -------------------------------------------------------------
 {
-  const { img, bg, parts } = load("bot.png");
+  const { img, bg, parts, isBackground: mask } = load("bot.png");
   const views = parts.filter((p) => p.minY < 320).sort(byX);
   const hero = parts.find((p) => p.minY >= 320 && p.width > 400);
   const faces = parts
@@ -66,14 +66,15 @@ const writeSet = (img, bg, parts, names, { lockY = false } = {}) => {
   views.forEach((p, i) =>
     write(
       ["bot-view-front", "bot-view-3q", "bot-view-side", "bot-view-back"][i],
-      cut(img, { ...p, bg }, null),
+      cut(img, mask, { ...p, bg }, null),
     ),
   );
 
-  write("bot-hero", cut(img, { ...hero, bg }, null));
+  write("bot-hero", cut(img, mask, { ...hero, bg }, null));
 
   writeSet(
     img,
+    mask,
     bg,
     faces,
     faces.map((_, i) => `bot-face-${i + 1}`),

@@ -1,0 +1,142 @@
+{
+  "task": "transcribe",
+  "language": "English",
+  "duration": 11.12,
+  "text": " What if you could keep any web page forever? KhanPDF turns any link into a clean PDF. Save it offline, email it to anyone. Free forever.",
+  "words": [
+    {
+      "word": "What",
+      "start": 0.02,
+      "end": 0.2
+    },
+    {
+      "word": "if",
+      "start": 0.2,
+      "end": 0.4
+    },
+    {
+      "word": "you",
+      "start": 0.4,
+      "end": 0.52
+    },
+    {
+      "word": "could",
+      "start": 0.52,
+      "end": 0.68
+    },
+    {
+      "word": "keep",
+      "start": 0.68,
+      "end": 0.94
+    },
+    {
+      "word": "any",
+      "start": 0.94,
+      "end": 1.32
+    },
+    {
+      "word": "web",
+      "start": 1.32,
+      "end": 1.62
+    },
+    {
+      "word": "page",
+      "start": 1.62,
+      "end": 1.94
+    },
+    {
+      "word": "forever?",
+      "start": 1.94,
+      "end": 3.28
+    },
+    {
+      "word": "KhanPDF",
+      "start": 3.2,
+      "end": 4.04
+    },
+    {
+      "word": "turns",
+      "start": 4.04,
+      "end": 4.42
+    },
+    {
+      "word": "any",
+      "start": 4.42,
+      "end": 4.8
+    },
+    {
+      "word": "link",
+      "start": 4.8,
+      "end": 5.06
+    },
+    {
+      "word": "into",
+      "start": 5.06,
+      "end": 5.3
+    },
+    {
+      "word": "a",
+      "start": 5.3,
+      "end": 5.58
+    },
+    {
+      "word": "clean",
+      "start": 5.58,
+      "end": 5.84
+    },
+    {
+      "word": "PDF.",
+      "start": 5.84,
+      "end": 6.98
+    },
+    {
+      "word": "Save",
+      "start": 6.98,
+      "end": 7.28
+    },
+    {
+      "word": "it",
+      "start": 7.28,
+      "end": 7.46
+    },
+    {
+      "word": "offline,",
+      "start": 7.46,
+      "end": 8.22
+    },
+    {
+      "word": "email",
+      "start": 8.22,
+      "end": 8.46
+    },
+    {
+      "word": "it",
+      "start": 8.46,
+      "end": 8.7
+    },
+    {
+      "word": "to",
+      "start": 8.7,
+      "end": 8.88
+    },
+    {
+      "word": "anyone.",
+      "start": 8.88,
+      "end": 9.48
+    },
+    {
+      "word": "Free",
+      "start": 9.82,
+      "end": 10.2
+    },
+    {
+      "word": "forever.",
+      "start": 10.2,
+      "end": 11.34
+    }
+  ],
+  "segments": null,
+  "x_groq": {
+    "id": "req_01m66xh69vefwrsad4n4561pn7"
+  }
+}

@@ -1,11 +1,17 @@
 import {
   AbsoluteFill,
+  Audio,
   Sequence,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+
+// The recorded read is 15.64s. Nudging playback by 5% fits it inside the 15.00s
+// composition instead of cutting the last word — inaudible at this ratio.
+const VO_RATE = 1.05;
 
 // Pulled from the live site
 const ACCENT = "#FF550D";
@@ -83,9 +89,10 @@ const Intro = ({ length }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const opacity = useSceneOpacity(length);
-  const logo = ease(frame, fps, 0, 24);
-  const line = ease(frame, fps, 12, 24);
-  const pill = ease(frame, fps, 24, 22);
+  // Tight stagger — this scene only runs while "Need any web page as a PDF?" plays
+  const logo = ease(frame, fps, 0, 20);
+  const line = ease(frame, fps, 8, 20);
+  const pill = ease(frame, fps, 16, 18);
 
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity }}>
@@ -140,12 +147,13 @@ const Typing = ({ length }) => {
   const bar = ease(frame, fps, 0, 22);
 
   // Reveal one character at a time, then hold
+  // Typing runs under "paste the link"; the button depresses on "convert"
   const typed = Math.max(
     0,
     Math.min(
       URL_TEXT.length,
       Math.round(
-        interpolate(frame, [14, 74], [0, URL_TEXT.length], {
+        interpolate(frame, [20, 50], [0, URL_TEXT.length], {
           extrapolateLeft: "clamp",
           extrapolateRight: "clamp",
         }),
@@ -154,7 +162,7 @@ const Typing = ({ length }) => {
   );
   const caretOn = frame % 16 < 9 && typed < URL_TEXT.length;
 
-  const press = ease(frame, fps, 86, 14);
+  const press = ease(frame, fps, 51, 14);
   const buttonScale = interpolate(press, [0, 0.5, 1], [1, 0.94, 1]);
 
   return (
@@ -218,12 +226,13 @@ const Result = ({ length }) => {
   const { fps } = useVideoConfig();
   const opacity = useSceneOpacity(length);
 
-  const progress = interpolate(frame, [4, 46], [0, 1], {
+  // Bar fills across "turns it into a clean, downloadable PDF", card lands on "seconds"
+  const progress = interpolate(frame, [5, 92], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const card = ease(frame, fps, 44, 26);
-  const trackOpacity = interpolate(frame, [46, 60], [1, 0], {
+  const card = ease(frame, fps, 92, 24);
+  const trackOpacity = interpolate(frame, [92, 106], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -303,14 +312,16 @@ const Outro = ({ length }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const opacity = useSceneOpacity(length);
-  const cta = ease(frame, fps, 54, 24);
+  // CTA lands on "Try it at khanpdf.com"
+  const cta = ease(frame, fps, 110, 24);
 
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity, padding: 80 }}>
+      {/* Each chip appears on the phrase that names it */}
       <div style={{ display: "flex", flexDirection: "column", gap: 28, alignItems: "stretch" }}>
-        <Chip label="100% Free" delay={0} />
-        <Chip label="No Sign-up" delay={10} />
-        <Chip label="Secure &amp; Private" delay={20} />
+        <Chip label="No Sign-up" delay={3} />
+        <Chip label="No Watermark" delay={45} />
+        <Chip label="100% Free" delay={85} />
       </div>
 
       <div
@@ -331,7 +342,7 @@ const Outro = ({ length }) => {
 };
 
 // ---------------------------------------------------------------- 450 frames = 15s
-export const Explainer = () => {
+export const Explainer = ({ audioFile }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#FFFFFF", fontFamily: SANS }}>
       {/* Barely-there warm tint so pure white doesn't read as flat */}
@@ -342,17 +353,20 @@ export const Explainer = () => {
         }}
       />
 
-      <Sequence from={0} durationInFrames={115}>
-        <Intro length={115} />
+      {audioFile ? <Audio src={staticFile(audioFile)} playbackRate={VO_RATE} /> : null}
+
+      {/* Cuts are placed on the voiceover's own phrase boundaries */}
+      <Sequence from={0} durationInFrames={58}>
+        <Intro length={58} />
       </Sequence>
-      <Sequence from={110} durationInFrames={120}>
-        <Typing length={120} />
+      <Sequence from={52} durationInFrames={86}>
+        <Typing length={86} />
       </Sequence>
-      <Sequence from={225} durationInFrames={115}>
-        <Result length={115} />
+      <Sequence from={132} durationInFrames={126}>
+        <Result length={126} />
       </Sequence>
-      <Sequence from={335} durationInFrames={115}>
-        <Outro length={115} />
+      <Sequence from={252} durationInFrames={198}>
+        <Outro length={198} />
       </Sequence>
     </AbsoluteFill>
   );

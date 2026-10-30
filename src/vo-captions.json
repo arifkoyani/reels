@@ -1,0 +1,415 @@
+[
+  {
+    "text": "Web",
+    "startMs": 0,
+    "endMs": 320,
+    "timestampMs": 160,
+    "confidence": null
+  },
+  {
+    "text": " pages",
+    "startMs": 320,
+    "endMs": 600,
+    "timestampMs": 460,
+    "confidence": null
+  },
+  {
+    "text": " change,",
+    "startMs": 600,
+    "endMs": 1620,
+    "timestampMs": 1110,
+    "confidence": null
+  },
+  {
+    "text": " links",
+    "startMs": 1620,
+    "endMs": 1960,
+    "timestampMs": 1790,
+    "confidence": null
+  },
+  {
+    "text": " break,",
+    "startMs": 1960,
+    "endMs": 2960,
+    "timestampMs": 2460,
+    "confidence": null
+  },
+  {
+    "text": " articles",
+    "startMs": 2960,
+    "endMs": 3360,
+    "timestampMs": 3160,
+    "confidence": null
+  },
+  {
+    "text": " vanish",
+    "startMs": 3360,
+    "endMs": 3920,
+    "timestampMs": 3640,
+    "confidence": null
+  },
+  {
+    "text": " behind",
+    "startMs": 3920,
+    "endMs": 4340,
+    "timestampMs": 4130,
+    "confidence": null
+  },
+  {
+    "text": " paywalls.",
+    "startMs": 4340,
+    "endMs": 5600,
+    "timestampMs": 4970,
+    "confidence": null
+  },
+  {
+    "text": " KhanPDF",
+    "startMs": 5600,
+    "endMs": 6380,
+    "timestampMs": 5990,
+    "confidence": null
+  },
+  {
+    "text": " freezes",
+    "startMs": 6380,
+    "endMs": 6940,
+    "timestampMs": 6660,
+    "confidence": null
+  },
+  {
+    "text": " any",
+    "startMs": 6940,
+    "endMs": 7320,
+    "timestampMs": 7130,
+    "confidence": null
+  },
+  {
+    "text": " page",
+    "startMs": 7320,
+    "endMs": 7720,
+    "timestampMs": 7520,
+    "confidence": null
+  },
+  {
+    "text": " exactly",
+    "startMs": 7720,
+    "endMs": 8340,
+    "timestampMs": 8030,
+    "confidence": null
+  },
+  {
+    "text": " as",
+    "startMs": 8340,
+    "endMs": 8560,
+    "timestampMs": 8450,
+    "confidence": null
+  },
+  {
+    "text": " it",
+    "startMs": 8560,
+    "endMs": 8680,
+    "timestampMs": 8620,
+    "confidence": null
+  },
+  {
+    "text": " looks",
+    "startMs": 8680,
+    "endMs": 8900,
+    "timestampMs": 8790,
+    "confidence": null
+  },
+  {
+    "text": " today.",
+    "startMs": 8900,
+    "endMs": 9820,
+    "timestampMs": 9360,
+    "confidence": null
+  },
+  {
+    "text": " Copy",
+    "startMs": 9340,
+    "endMs": 10100,
+    "timestampMs": 9720,
+    "confidence": null
+  },
+  {
+    "text": " the",
+    "startMs": 10100,
+    "endMs": 10280,
+    "timestampMs": 10190,
+    "confidence": null
+  },
+  {
+    "text": " link,",
+    "startMs": 10280,
+    "endMs": 10860,
+    "timestampMs": 10570,
+    "confidence": null
+  },
+  {
+    "text": " paste",
+    "startMs": 10860,
+    "endMs": 11100,
+    "timestampMs": 10980,
+    "confidence": null
+  },
+  {
+    "text": " it,",
+    "startMs": 11100,
+    "endMs": 11620,
+    "timestampMs": 11360,
+    "confidence": null
+  },
+  {
+    "text": " hit",
+    "startMs": 11620,
+    "endMs": 11820,
+    "timestampMs": 11720,
+    "confidence": null
+  },
+  {
+    "text": " convert.",
+    "startMs": 11820,
+    "endMs": 12800,
+    "timestampMs": 12310,
+    "confidence": null
+  },
+  {
+    "text": " Our",
+    "startMs": 12340,
+    "endMs": 13100,
+    "timestampMs": 12720,
+    "confidence": null
+  },
+  {
+    "text": " server",
+    "startMs": 13100,
+    "endMs": 13480,
+    "timestampMs": 13290,
+    "confidence": null
+  },
+  {
+    "text": " renders",
+    "startMs": 13480,
+    "endMs": 13880,
+    "timestampMs": 13680,
+    "confidence": null
+  },
+  {
+    "text": " it",
+    "startMs": 13880,
+    "endMs": 14080,
+    "timestampMs": 13980,
+    "confidence": null
+  },
+  {
+    "text": " like",
+    "startMs": 14080,
+    "endMs": 14220,
+    "timestampMs": 14150,
+    "confidence": null
+  },
+  {
+    "text": " a",
+    "startMs": 14220,
+    "endMs": 14460,
+    "timestampMs": 14340,
+    "confidence": null
+  },
+  {
+    "text": " real",
+    "startMs": 14460,
+    "endMs": 14680,
+    "timestampMs": 14570,
+    "confidence": null
+  },
+  {
+    "text": " browser,",
+    "startMs": 14680,
+    "endMs": 15520,
+    "timestampMs": 15100,
+    "confidence": null
+  },
+  {
+    "text": " then",
+    "startMs": 15520,
+    "endMs": 15680,
+    "timestampMs": 15600,
+    "confidence": null
+  },
+  {
+    "text": " hands",
+    "startMs": 15680,
+    "endMs": 16000,
+    "timestampMs": 15840,
+    "confidence": null
+  },
+  {
+    "text": " you",
+    "startMs": 16000,
+    "endMs": 16140,
+    "timestampMs": 16070,
+    "confidence": null
+  },
+  {
+    "text": " a",
+    "startMs": 16140,
+    "endMs": 16260,
+    "timestampMs": 16200,
+    "confidence": null
+  },
+  {
+    "text": " clean",
+    "startMs": 16260,
+    "endMs": 16620,
+    "timestampMs": 16440,
+    "confidence": null
+  },
+  {
+    "text": " PDF.",
+    "startMs": 16620,
+    "endMs": 17440,
+    "timestampMs": 17030,
+    "confidence": null
+  },
+  {
+    "text": " No",
+    "startMs": 17140,
+    "endMs": 17940,
+    "timestampMs": 17540,
+    "confidence": null
+  },
+  {
+    "text": " ads,",
+    "startMs": 17940,
+    "endMs": 18600,
+    "timestampMs": 18270,
+    "confidence": null
+  },
+  {
+    "text": " no",
+    "startMs": 18600,
+    "endMs": 18780,
+    "timestampMs": 18690,
+    "confidence": null
+  },
+  {
+    "text": " sidebars.",
+    "startMs": 18780,
+    "endMs": 19800,
+    "timestampMs": 19290,
+    "confidence": null
+  },
+  {
+    "text": " Pick",
+    "startMs": 19340,
+    "endMs": 20060,
+    "timestampMs": 19700,
+    "confidence": null
+  },
+  {
+    "text": " any",
+    "startMs": 20060,
+    "endMs": 20380,
+    "timestampMs": 20220,
+    "confidence": null
+  },
+  {
+    "text": " paper",
+    "startMs": 20380,
+    "endMs": 20700,
+    "timestampMs": 20540,
+    "confidence": null
+  },
+  {
+    "text": " size",
+    "startMs": 20700,
+    "endMs": 21100,
+    "timestampMs": 20900,
+    "confidence": null
+  },
+  {
+    "text": " or",
+    "startMs": 21100,
+    "endMs": 21380,
+    "timestampMs": 21240,
+    "confidence": null
+  },
+  {
+    "text": " keep",
+    "startMs": 21380,
+    "endMs": 21620,
+    "timestampMs": 21500,
+    "confidence": null
+  },
+  {
+    "text": " the",
+    "startMs": 21620,
+    "endMs": 21740,
+    "timestampMs": 21680,
+    "confidence": null
+  },
+  {
+    "text": " defaults.",
+    "startMs": 21740,
+    "endMs": 22640,
+    "timestampMs": 22190,
+    "confidence": null
+  },
+  {
+    "text": " No",
+    "startMs": 22180,
+    "endMs": 23000,
+    "timestampMs": 22590,
+    "confidence": null
+  },
+  {
+    "text": " sign",
+    "startMs": 23000,
+    "endMs": 23300,
+    "timestampMs": 23150,
+    "confidence": null
+  },
+  {
+    "text": " up,",
+    "startMs": 23300,
+    "endMs": 23700,
+    "timestampMs": 23500,
+    "confidence": null
+  },
+  {
+    "text": " no",
+    "startMs": 23700,
+    "endMs": 23900,
+    "timestampMs": 23800,
+    "confidence": null
+  },
+  {
+    "text": " watermark,",
+    "startMs": 23900,
+    "endMs": 24620,
+    "timestampMs": 24260,
+    "confidence": null
+  },
+  {
+    "text": " completely",
+    "startMs": 24620,
+    "endMs": 25200,
+    "timestampMs": 24910,
+    "confidence": null
+  },
+  {
+    "text": " free.",
+    "startMs": 25200,
+    "endMs": 26160,
+    "timestampMs": 25680,
+    "confidence": null
+  },
+  {
+    "text": " khanpdf.com",
+    "startMs": 26160,
+    "endMs": 27680,
+    "timestampMs": 26920,
+    "confidence": null
+  }
+]

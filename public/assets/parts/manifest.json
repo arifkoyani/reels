@@ -1,0 +1,42 @@
+{
+  "note": "Sliced from the turnaround sheets in ../. Transparent RGBA. Heads and faces each share one canvas so frames can be swapped without jitter.",
+  "man": {
+    "canvas": { "width": 174, "height": 230 },
+    "bodies": ["man-body-front", "man-body-side", "man-body-back", "man-body-3q"],
+    "heads": {
+      "rest": "man-head-rest",
+      "frown": "man-head-frown",
+      "openMid": "man-head-open-mid",
+      "openWide": "man-head-open-wide",
+      "smileClosed": "man-head-smile-closed",
+      "smileOpen": "man-head-smile-open"
+    },
+    "visemes": {
+      "silent": "rest",
+      "quiet": "openMid",
+      "mid": "smileOpen",
+      "loud": "openWide"
+    }
+  },
+  "bot": {
+    "canvas": { "width": 237, "height": 163 },
+    "hero": "bot-hero",
+    "views": ["bot-view-front", "bot-view-3q", "bot-view-side", "bot-view-back"],
+    "faces": {
+      "neutral": "bot-face-neutral",
+      "smug": "bot-face-smug",
+      "surprised": "bot-face-surprised",
+      "idle": "bot-face-idle",
+      "blink": "bot-face-blink",
+      "happy": "bot-face-happy",
+      "shock": "bot-face-shock"
+    },
+    "visemes": {
+      "silent": "idle",
+      "quiet": "neutral",
+      "mid": "happy",
+      "loud": "surprised"
+    }
+  },
+  "background": "../background.png"
+}

@@ -2,6 +2,8 @@ import { Composition } from "remotion";
 import { Reel } from "./Reel.jsx";
 import { Scene } from "./Scene.jsx";
 import { Explainer } from "./Explainer.jsx";
+import { Infographic } from "./Infographic.jsx";
+import reelTranscription from "./reel-transcription.json";
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -31,6 +33,17 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
+      {/* KhanPDF infographic: 30s, voiceover + captions + sound effects */}
+      <Composition
+        id="Infographic"
+        component={Infographic}
+        durationInFrames={900}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{ audioFile: "audio/khanpdf-vo-30s.mp3" }}
+      />
+
       {/* KhanPDF explainer: white, no characters, fixed 15s */}
       <Composition
         id="Explainer"
@@ -39,6 +52,7 @@ export const RemotionRoot = () => {
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
+        defaultProps={{ audioFile: "audio/khanpdf-vo.mp3" }}
       />
 
       {/* Full layered scene: room, man, bot, info card, captions */}
@@ -62,16 +76,18 @@ export const RemotionRoot = () => {
         calculateMetadata={metadata}
       />
 
-      {/* Captions-only version, kept as a fallback */}
+      {/* Main AI reel: characters, four acts, fixed 15s (450 frames) */}
       <Composition
         id="Reel"
         component={Reel}
-        durationInFrames={90}
+        durationInFrames={450}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
-        defaultProps={{ ...baseProps, title: "" }}
-        calculateMetadata={metadata}
+        defaultProps={{
+          audioFile: "audio/reel-vo.mp3",
+          transcription: reelTranscription,
+        }}
       />
     </>
   );

@@ -76,6 +76,15 @@ async function run() {
     path.join(SPRITES_DIR, "man_body_front.png")
   );
 
+  // 2b. Man 3/4 body WITHOUT the head, cut at the neck (measured: the neck
+  // narrows to 43px at row 120 of the body crop, shoulders widen from row 130).
+  // Overlaying a head sprite on the full body gave the character two heads.
+  await removeBackgroundAndSave(
+    "public/assets/man.png",
+    { left: 945, top: 148, width: 195, height: 442 },
+    path.join(SPRITES_DIR, "man_body_34_headless.png")
+  );
+
   // 3. Man Head: Neutral Closed
   await removeBackgroundAndSave(
     "public/assets/man.png",
@@ -120,16 +129,18 @@ async function run() {
   );
 
   // 9. Bot Face screen: wavy idle
+  // Coordinates corrected: the previous crop (535,405) fell in the empty gap
+  // between the hero render and the face-tile grid, so it produced garbage.
   await removeBackgroundAndSave(
     "public/assets/bot.png",
-    { left: 535, top: 405, width: 200, height: 175 },
+    { left: 645, top: 358, width: 229, height: 155 },
     path.join(SPRITES_DIR, "bot_face_idle.png")
   );
 
-  // 10. Bot Face screen: talking zigzag
+  // 10. Bot Face screen: talking (open "O" mouth tile)
   await removeBackgroundAndSave(
     "public/assets/bot.png",
-    { left: 755, top: 405, width: 200, height: 175 },
+    { left: 645, top: 531, width: 229, height: 155 },
     path.join(SPRITES_DIR, "bot_face_talking.png")
   );
 

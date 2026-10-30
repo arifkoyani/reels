@@ -104,11 +104,33 @@ const Bot = ({ speaking, frame }) => {
   const { fps } = useVideoConfig();
   const enter = spring({ frame, fps, config: { damping: 16, stiffness: 110 }, durationInFrames: 22 });
 
-  // Vibrates on its own pivot rather than travelling: 1.5px idle breath,
-  // 3px speaking shake, so total movement stays inside 2-4px.
-  const hover = Math.sin(frame / 15) * 1.5;
-  const shake = speaking ? Math.sin(frame / 1.4) * 3 : 0;
-  const squash = speaking ? 1 + Math.sin(frame / 1.4) * 0.008 : 1;
+  // ── Nod animation ──────────────────────────────────────────────────────────
+  // Starts still for 1 s, nods for 3 s (~2 nods/s, ±5 °), settles still.
+  // Implemented as a pitch rotation (rotateX) in perspective so the face
+  // screen tilts with the head while position stays fixed.
+  const NOD_START  = fps * 1;          // frame 30  (1 s)
+  const NOD_END    = fps * 4;          // frame 120 (4 s)
+  const NOD_HZ     = 2;                // cycles per second
+  const NOD_DEG    = 5;                // peak degrees each way
+
+  let nodAngle = 0;
+  if (frame >= NOD_START && frame <= NOD_END) {
+    const t          = (frame - NOD_START) / fps;          // seconds into nod phase
+    const duration   = (NOD_END - NOD_START) / fps;        // 3 s total
+    const progress   = t / duration;                        // 0 → 1
+
+    // Smooth amplitude envelope: ease-in first 20 %, ease-out last 20 %
+    const envelope =
+      progress < 0.2  ? progress / 0.2 :
+      progress > 0.8  ? (1 - progress) / 0.2 :
+      1;
+
+    nodAngle = NOD_DEG * envelope * Math.sin(t * NOD_HZ * Math.PI * 2);
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
+  const enterScale = interpolate(enter, [0, 1], [0.86, 1]);
+  const enterY     = interpolate(enter, [0, 1], [50, 0]);
 
   return (
     <div
@@ -118,17 +140,28 @@ const Bot = ({ speaking, frame }) => {
         left: LAYOUT.botLeft,
         width: LAYOUT.botWidth,
         zIndex: 20,
-        transformOrigin: "50% 50%",
-        transform: `translateY(${hover + shake + interpolate(enter, [0, 1], [50, 0])}px) scale(${interpolate(enter, [0, 1], [0.86, 1])}) scaleY(${squash})`,
+        // perspective gives the rotateX depth; transformOrigin at the
+        // horizontal mid-line of the side pods (~55 % down the sprite)
+        perspective: "900px",
+        perspectiveOrigin: "50% 55%",
         opacity: enter,
         filter: "drop-shadow(0 22px 40px rgba(0,0,0,0.6))",
+        transform: `translateY(${enterY}px) scale(${enterScale})`,
       }}
     >
-      <Img
-        src={staticFile("assets/sprites/bot_large.png")}
-        style={{ width: "100%", height: "auto", display: "block" }}
-      />
-      <BotMouth speaking={speaking} frame={frame} />
+      {/* Head + face — rotates on the pitch axis */}
+      <div
+        style={{
+          transformOrigin: "50% 55%",
+          transform: `rotateX(${nodAngle}deg)`,
+        }}
+      >
+        <Img
+          src={staticFile("assets/sprites/bot_large.png")}
+          style={{ width: "100%", height: "auto", display: "block" }}
+        />
+        <BotMouth speaking={speaking} frame={frame} />
+      </div>
     </div>
   );
 };

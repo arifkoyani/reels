@@ -3,157 +3,164 @@
   "transcription": {
     "task": "transcribe",
     "language": "English",
-    "duration": 9.28,
-    "text": " Need a page saved forever? KhanPDF turns any link into a clean PDF. Download it. Email it. Free. No sign-up.",
+    "duration": 11.28,
+    "text": " Links go dead. Pages disappear. KhanPDF saves any URL as a clean PDF instantly. Free. No sign up. Just paste and download.",
     "words": [
       {
-        "word": "Need",
-        "start": 0.04,
-        "end": 0.22
+        "word": "Links",
+        "start": 0.02,
+        "end": 0.36
       },
       {
-        "word": "a",
-        "start": 0.22,
-        "end": 0.4
+        "word": "go",
+        "start": 0.36,
+        "end": 0.62
       },
       {
-        "word": "page",
-        "start": 0.4,
-        "end": 0.74
+        "word": "dead.",
+        "start": 0.62,
+        "end": 1.4
       },
       {
-        "word": "saved",
-        "start": 0.74,
-        "end": 1.1
+        "word": "Pages",
+        "start": 1.4,
+        "end": 1.84
       },
       {
-        "word": "forever?",
-        "start": 1.1,
-        "end": 1.98
+        "word": "disappear.",
+        "start": 1.84,
+        "end": 3.3
       },
       {
-        "word": "Khan",
-        "start": 2.22,
-        "end": 2.44
+        "word": "KhanPDF",
+        "start": 3.24,
+        "end": 3.92
       },
       {
-        "word": "PDF",
-        "start": 2.44,
-        "end": 2.74
-      },
-      {
-        "word": "turns",
-        "start": 2.74,
-        "end": 3.28
+        "word": "saves",
+        "start": 3.92,
+        "end": 4.34
       },
       {
         "word": "any",
-        "start": 3.28,
-        "end": 3.66
+        "start": 4.34,
+        "end": 4.72
       },
       {
-        "word": "link",
-        "start": 3.66,
-        "end": 3.96
+        "word": "URL",
+        "start": 4.72,
+        "end": 5.26
       },
       {
-        "word": "into",
-        "start": 3.96,
-        "end": 4.2
+        "word": "as",
+        "start": 5.26,
+        "end": 5.56
       },
       {
         "word": "a",
-        "start": 4.2,
-        "end": 4.38
+        "start": 5.56,
+        "end": 5.82
       },
       {
         "word": "clean",
-        "start": 4.38,
-        "end": 4.74
+        "start": 5.82,
+        "end": 6.08
       },
       {
-        "word": "PDF.",
-        "start": 4.74,
-        "end": 5.7
+        "word": "PDF",
+        "start": 6.08,
+        "end": 6.62
       },
       {
-        "word": "Download",
-        "start": 5.98,
-        "end": 6.28
-      },
-      {
-        "word": "it.",
-        "start": 6.28,
-        "end": 6.54
-      },
-      {
-        "word": "Email",
-        "start": 6.9,
-        "end": 7.08
-      },
-      {
-        "word": "it.",
-        "start": 7.08,
-        "end": 7.88
+        "word": "instantly.",
+        "start": 6.62,
+        "end": 7.82
       },
       {
         "word": "Free.",
-        "start": 7.8,
-        "end": 8.46
+        "start": 7.88,
+        "end": 8.34
       },
       {
         "word": "No",
-        "start": 8.44,
-        "end": 8.62
+        "start": 8.34,
+        "end": 8.8
       },
       {
-        "word": "sign-up.",
-        "start": 8.62,
-        "end": 9.6
+        "word": "sign",
+        "start": 8.8,
+        "end": 9.16
+      },
+      {
+        "word": "up.",
+        "start": 9.16,
+        "end": 9.52
+      },
+      {
+        "word": "Just",
+        "start": 9.52,
+        "end": 9.82
+      },
+      {
+        "word": "paste",
+        "start": 9.82,
+        "end": 10.2
+      },
+      {
+        "word": "and",
+        "start": 10.2,
+        "end": 10.44
+      },
+      {
+        "word": "download.",
+        "start": 10.44,
+        "end": 11.22
       }
     ],
     "segments": null,
     "x_groq": {
-      "id": "req_01m6726k10edwbarqkdc9j08fe"
+      "id": "req_01m677x9gwex79qvdmtcffp4e6"
     }
   },
   "beats": [
     {
       "fromSeconds": 0,
-      "toSeconds": 2.17,
-      "title": "Pages change.\nLinks {break.}",
-      "sub": "Save it before it's gone",
-      "titleSize": 92,
+      "toSeconds": 3.2,
+      "title": "Links {go dead.}\nPages {vanish.}",
+      "sub": "Save them before they're gone",
+      "titleSize": 82,
       "from": 0,
-      "to": 65
+      "to": 96
     },
     {
-      "fromSeconds": 2.17,
-      "toSeconds": 4,
+      "fromSeconds": 3.2,
+      "toSeconds": 5.3,
       "step": 1,
       "icon": "link",
-      "title": "Paste any link",
+      "title": "Paste any {URL}",
+      "sub": "Any article, report, or doc",
       "widget": "url",
-      "url": "https://example.com/article",
-      "from": 65,
-      "to": 120
+      "url": "https://en.wikipedia.org/wiki/PDF",
+      "from": 96,
+      "to": 159
     },
     {
-      "fromSeconds": 4,
-      "toSeconds": 5.83,
+      "fromSeconds": 5.3,
+      "toSeconds": 7.8,
       "step": 2,
       "icon": "file-text",
-      "title": "Get a clean PDF",
-      "sub": "No ads, no sidebars",
+      "title": "Get a {clean} PDF",
+      "sub": "No ads · No sidebars · Instant",
       "widget": "progress",
-      "from": 120,
-      "to": 175
+      "from": 159,
+      "to": 234
     },
     {
-      "fromSeconds": 5.83,
-      "toSeconds": 8.33,
+      "fromSeconds": 7.8,
+      "toSeconds": 9.5,
       "step": 3,
-      "title": "Keep it or send it",
+      "title": "Download or {share}",
+      "sub": "Mobile & desktop · Any browser",
       "widget": "tiles",
       "tiles": [
         {
@@ -163,27 +170,32 @@
         {
           "icon": "mail",
           "label": "Email"
+        },
+        {
+          "icon": "share-2",
+          "label": "Share"
         }
       ],
-      "from": 175,
-      "to": 250
+      "from": 234,
+      "to": 285
     },
     {
-      "fromSeconds": 8.33,
-      "toSeconds": 10,
-      "title": "Free. {Forever.}",
-      "sub": "No signup · No watermark",
-      "titleSize": 92,
+      "fromSeconds": 9.5,
+      "toSeconds": 12,
+      "title": "{Free.} Forever.",
+      "sub": "No signup · No watermark · Secure",
+      "titleSize": 98,
       "widget": "brand",
       "brand": {
         "name": "KhanPDF",
         "accent": "PDF",
         "url": "khanpdf.com"
       },
-      "from": 250,
-      "to": 300
+      "from": 285,
+      "to": 360
     }
   ],
   "speed": 1,
-  "durationInFrames": 300
+  "durationInFrames": 360,
+  "captionStyle": "blast"
 }

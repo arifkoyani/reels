@@ -1,7 +1,7 @@
 {
   "id": "khanpdf-10s",
   "composition": "BotReel",
-  "durationSeconds": 10,
+  "durationSeconds": 12,
   "speed": 1,
   "captionStyle": "blast",
   "voice": {
@@ -9,18 +9,18 @@
     "modelId": "eleven_v4",
     "filterPreset": "low_quality_phone"
   },
-  "script": "Links go dead. Pages disappear. KhanPDF saves any URL as a clean PDF — instantly. Free. No sign-up. Just paste and download.",
+  "script": "Links go dead. Pages disappear. KhanPDF saves any URL as a clean PDF instantly. Free. No sign-up. Just paste and download.",
   "beats": [
     {
       "fromSeconds": 0,
-      "toSeconds": 2.2,
-      "title": "Links {die.}\nPages {vanish.}",
+      "toSeconds": 3.2,
+      "title": "Links {go dead.}\nPages {vanish.}",
       "sub": "Save them before they're gone",
-      "titleSize": 86
+      "titleSize": 82
     },
     {
-      "fromSeconds": 2.2,
-      "toSeconds": 4.2,
+      "fromSeconds": 3.2,
+      "toSeconds": 5.3,
       "step": 1,
       "icon": "link",
       "title": "Paste any {URL}",
@@ -29,20 +29,20 @@
       "url": "https://en.wikipedia.org/wiki/PDF"
     },
     {
-      "fromSeconds": 4.2,
-      "toSeconds": 6.3,
+      "fromSeconds": 5.3,
+      "toSeconds": 7.8,
       "step": 2,
       "icon": "file-text",
       "title": "Get a {clean} PDF",
-      "sub": "No ads · No sidebars · No clutter",
+      "sub": "No ads · No sidebars · Instant",
       "widget": "progress"
     },
     {
-      "fromSeconds": 6.3,
-      "toSeconds": 8.2,
+      "fromSeconds": 7.8,
+      "toSeconds": 9.5,
       "step": 3,
       "title": "Download or {share}",
-      "sub": "Works on mobile & desktop",
+      "sub": "Mobile & desktop · Any browser",
       "widget": "tiles",
       "tiles": [
         { "icon": "download", "label": "Download" },
@@ -51,8 +51,8 @@
       ]
     },
     {
-      "fromSeconds": 8.2,
-      "toSeconds": 10.0,
+      "fromSeconds": 9.5,
+      "toSeconds": 12.0,
       "title": "{Free.} Forever.",
       "sub": "No signup · No watermark · Secure",
       "titleSize": 98,

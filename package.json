@@ -1,0 +1,29 @@
+{
+  "name": "reels",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tts": "node --env-file=.env.local tts-test.mjs",
+    "tts:list": "node --env-file=.env.local tts-test.mjs --list",
+    "transcribe": "node groq-transcription.js",
+    "studio": "node reel.mjs studio",
+    "render": "node reel.mjs render",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.75.0",
+    "@remotion/cli": "^4.0.539",
+    "@remotion/renderer": "^4.0.539",
+    "dotenv": "^18.0.9",
+    "groq-sdk": "^1.6.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.539",
+    "sharp": "^0.35.5"
+  }
+}

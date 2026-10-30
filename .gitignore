@@ -1,0 +1,20 @@
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.next/
+
+# Generated audio (stored in mp3/, matched at any depth)
+*.mp3
+*.wav
+
+# OS
+Thumbs.db
+desktop.ini

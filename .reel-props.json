@@ -1,0 +1,46 @@
+{
+  "audioFile": "output.mp3",
+  "transcription": {
+    "task": "transcribe",
+    "language": "English",
+    "duration": 2.88,
+    "text": " Confirming the stream fix works correctly.",
+    "words": [
+      {
+        "word": "Confirming",
+        "start": 0.18,
+        "end": 0.6
+      },
+      {
+        "word": "the",
+        "start": 0.6,
+        "end": 0.9
+      },
+      {
+        "word": "stream",
+        "start": 0.9,
+        "end": 1.14
+      },
+      {
+        "word": "fix",
+        "start": 1.14,
+        "end": 1.5
+      },
+      {
+        "word": "works",
+        "start": 1.5,
+        "end": 1.88
+      },
+      {
+        "word": "correctly.",
+        "start": 1.88,
+        "end": 3.12
+      }
+    ],
+    "segments": null,
+    "x_groq": {
+      "id": "req_01m66hxn37eaa9517t6kkmaj6v"
+    }
+  },
+  "title": ""
+}

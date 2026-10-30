@@ -44,7 +44,7 @@ export const RemotionRoot = () => {
         width={WIDTH}
         height={HEIGHT}
         defaultProps={{
-          audioFile: "audio/bot10-vo.mp3",
+          audioFile: "audio/bot10-vo-phone.mp3",
           transcription: bot10Transcription,
         }}
       />

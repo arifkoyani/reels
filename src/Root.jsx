@@ -1,6 +1,7 @@
 import { Composition } from "remotion";
 import { Reel } from "./Reel.jsx";
 import { Scene } from "./Scene.jsx";
+import { Explainer } from "./Explainer.jsx";
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -30,6 +31,16 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
+      {/* KhanPDF explainer: white, no characters, fixed 15s */}
+      <Composition
+        id="Explainer"
+        component={Explainer}
+        durationInFrames={450}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+
       {/* Full layered scene: room, man, bot, info card, captions */}
       <Composition
         id="Scene"

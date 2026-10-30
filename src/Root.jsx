@@ -3,7 +3,9 @@ import { Reel } from "./Reel.jsx";
 import { Scene } from "./Scene.jsx";
 import { Explainer } from "./Explainer.jsx";
 import { Infographic } from "./Infographic.jsx";
+import { BotReel } from "./BotReel.jsx";
 import reelTranscription from "./reel-transcription.json";
+import botTestTranscription from "./bot-test-transcription.json";
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -33,6 +35,20 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
+      {/* 5s layout test: bot only, infographics above it, no human character */}
+      <Composition
+        id="BotReel"
+        component={BotReel}
+        durationInFrames={150}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          audioFile: "audio/bot-test-vo.mp3",
+          transcription: botTestTranscription,
+        }}
+      />
+
       {/* KhanPDF infographic: 30s, voiceover + captions + sound effects */}
       <Composition
         id="Infographic"

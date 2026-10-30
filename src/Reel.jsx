@@ -12,26 +12,45 @@ import {
 import { IsoDocTray } from "./IsoDocTray.jsx";
 
 const GOLD_ACCENT = "#FAD06C";
+const ACCENT = "#FF550D";
+const INK = "#121417";
+const MUTED = "#6B7280";
+const LINE = "#E6E8EC";
 const TEXT_LIGHT = "#FFFFFF";
 const TEXT_DIM = "rgba(255, 255, 255, 0.45)";
 
 const SERIF_FONT = 'Georgia, Cambria, "Times New Roman", Times, serif';
 const UI_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
-// Act boundaries, placed on the voiceover's own word timestamps.
-//   HOOK    0-90    "What if you could keep any web page forever?"
-//   EXPLAIN 90-205  "KhanPDF turns any link into a clean PDF."
-//   DEMO    205-330 "Save it offline, email it to anyone."
-//   PAYOFF  330-450 "Free forever." then the end card
-const ACT = {
-  hook: { from: 0, duration: 90 },
-  explain: { from: 90, duration: 125 },
-  demo: { from: 205, duration: 135 },
-  payoff: { from: 330, duration: 120 },
+// Shot list. The presenter opens and closes; the middle is cut away to
+// full-screen explainer panels, with no character on them.
+//   PRESENTER 0-90    "What if you could keep any web page forever?"
+//   SCREEN A  90-200  "KhanPDF turns any link into a clean PDF."
+//   SCREEN B  200-290 "Save it offline, email it to anyone."
+//   PRESENTER 290-360 "Free forever."
+//   END CARD  360-450
+const SHOT = {
+  openA: { from: 0, duration: 90 },
+  screenA: { from: 90, duration: 110 },
+  screenB: { from: 200, duration: 90 },
+  openB: { from: 290, duration: 70 },
+  end: { from: 360, duration: 90 },
 };
 
-// Break words into caption pages of up to 3 words so a page never overflows
-// the 920px safe width at this type size.
+const CUTS = [90, 200, 290, 360];
+
+// Presenter geometry, measured from the sprite sheet:
+// the headless front body is 275x442 native and renders 700px wide (2.545x);
+// the head closeup is ~0.75 of that scale, so 1.909x => 298px wide, chin at 72.7%.
+// Framed waist-to-mid-thigh with the head in the upper third, so the presenter
+// fills the frame the way a piece-to-camera does. Body renders 3.6x native.
+const BODY_W = 990;
+const BODY_LEFT = 45;
+const BODY_TOP = 852;
+const HEAD_W = 421;
+const HEAD_LEFT = 330;
+const HEAD_TOP = 440;
+
 const buildPages = (words, { maxWords = 3, maxGap = 0.45, maxDuration = 2.2 } = {}) => {
   const pages = [];
   let current = [];
@@ -63,379 +82,269 @@ const buildPages = (words, { maxWords = 3, maxGap = 0.45, maxDuration = 2.2 } = 
   return pages;
 };
 
-export const Reel = ({ audioFile, transcription }) => {
-  const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const time = frame / fps;
+// ---------------------------------------------------------------- presenter
+const Presenter = ({ speaking, frame }) => {
+  const { fps } = useVideoConfig();
 
-  const words = transcription?.words ?? [];
-  const pages = buildPages(words);
-
-  // Word timestamps give word boundaries, not phonemes — so this drives a
-  // three-pose mouth cycle while a word is sounding, not true lip-sync.
-  const isAudioSpeaking = words.some((w) => time >= w.start && time <= w.end);
-
-  let activePageIndex = pages.findIndex((p) => time >= p.start && time <= p.end);
-  if (activePageIndex === -1) {
-    const passed = pages.filter((p) => p.end < time);
-    activePageIndex = passed.length > 0 ? pages.indexOf(passed[passed.length - 1]) : 0;
+  // Word timestamps mark word boundaries, not phonemes, so this cycles three
+  // mouth poses while a word sounds rather than claiming true lip-sync.
+  const cycle = Math.floor(frame / 5) % 3;
+  let head = "assets/sprites/man_head_closed.png";
+  if (speaking) {
+    if (cycle === 1) head = "assets/sprites/man_head_talk.png";
+    else if (cycle === 2) head = "assets/sprites/man_head_wide.png";
   }
-  const activePage = pages[activePageIndex];
 
-  // --- 1. IDLE & FLOATING MOTIONS ---
-  const manBreathing = Math.sin(frame / 16) * 5;
-  const botFloatY = Math.sin(frame / 12) * 16;
-  const botFloatX = Math.cos(frame / 24) * 5;
-  const botTilt = Math.sin(frame / 18) * 3;
-
-  // --- 2. MOUTH / HEAD POSE CYCLING ---
-  const mouthFrameCycle = Math.floor(frame / 5) % 3;
-  let manHeadSprite = "assets/sprites/man_head_closed.png";
-  if (isAudioSpeaking) {
-    if (mouthFrameCycle === 1) manHeadSprite = "assets/sprites/man_head_talk.png";
-    else if (mouthFrameCycle === 2) manHeadSprite = "assets/sprites/man_head_wide.png";
-  }
-  // The face tiles on the sheet carry their own bezel, which reads as a bezel
-  // inside a bezel over the hero's round head — so the screen mouth is drawn
-  // live over the one painted into bot_large.png instead.
-
-  // --- 3. ENTRANCES ---
-  const manEnter = spring({ frame, fps, config: { damping: 16, stiffness: 110 }, durationInFrames: 26 });
-  const botEnter = spring({
-    frame: frame - ACT.demo.from,
-    fps,
-    config: { damping: 15, stiffness: 95 },
-    durationInFrames: 32,
-  });
-
-  // --- 4. SUBTLE CAMERA ---
-  // Slow push on the room only, so the characters don't drift with it.
-  const camScale = interpolate(frame, [0, durationInFrames], [1.04, 1.12]);
-  const camDrift = interpolate(frame, [0, durationInFrames], [0, -26]);
-
-  // Payoff scrim and end card
-  const scrim = interpolate(frame, [ACT.payoff.from + 12, ACT.payoff.from + 40], [0, 0.88], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const endCard = spring({
-    frame: frame - (ACT.payoff.from + 18),
-    fps,
-    config: { damping: 18, stiffness: 100 },
-    durationInFrames: 30,
-  });
+  const breathe = Math.sin(frame / 18) * 6;
+  const sway = Math.sin(frame / 34) * 7;
+  const headBob = Math.sin(frame / 15) * 4;
+  const enter = spring({ frame, fps, config: { damping: 18, stiffness: 110 }, durationInFrames: 20 });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0C0E14", overflow: "hidden" }}>
-      {audioFile ? <Audio src={staticFile(audioFile)} /> : null}
-
-      {/* Sound design — only where it marks a real beat */}
-      <Sequence from={ACT.explain.from} durationInFrames={20}>
-        <Audio src={staticFile("sfx/pop.mp3")} volume={0.3} />
-      </Sequence>
-      <Sequence from={ACT.demo.from} durationInFrames={30}>
-        <Audio src={staticFile("sfx/whoosh.mp3")} volume={0.32} />
-      </Sequence>
-      <Sequence from={224} durationInFrames={18}>
-        <Audio src={staticFile("sfx/pop.mp3")} volume={0.28} />
-      </Sequence>
-      <Sequence from={247} durationInFrames={18}>
-        <Audio src={staticFile("sfx/pop.mp3")} volume={0.28} />
-      </Sequence>
-      <Sequence from={ACT.payoff.from + 14} durationInFrames={40}>
-        <Audio src={staticFile("sfx/success.mp3")} volume={0.42} />
-      </Sequence>
-
-      {/* ======================================================== */}
-      {/* LAYER 1: ROOM BACKGROUND (slow push)                     */}
-      {/* ======================================================== */}
-      <AbsoluteFill>
-        <Img
-          src={staticFile("assets/background.png")}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transform: `scale(${camScale}) translateY(${camDrift}px)`,
-            filter: "brightness(0.96) contrast(1.05)",
-          }}
-        />
-        <AbsoluteFill
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.48) 100%)",
-            pointerEvents: "none",
-          }}
-        />
-      </AbsoluteFill>
-
-      {/* ======================================================== */}
-      {/* LAYER 2: MAN CHARACTER (SEATED AT DESK)                  */}
-      {/* ======================================================== */}
-      <div
+    <AbsoluteFill>
+      {/* Room, pushed back with a soft blur so the presenter reads first */}
+      <Img
+        src={staticFile("assets/background.png")}
         style={{
-          position: "absolute",
-          left: 140,
-          bottom: 340,
-          width: 380,
-          height: 680,
-          transform: `translateY(${manBreathing + interpolate(manEnter, [0, 1], [90, 0])}px)`,
-          opacity: manEnter,
-          zIndex: 5,
-        }}
-      >
-        {/* Headless body: the full 3/4 sprite already has a head, so overlaying
-            the lip-sync head on it produced two heads. This one is cut at the neck. */}
-        <Img
-          src={staticFile("assets/sprites/man_body_34_headless.png")}
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 50,
-            width: 290,
-            height: "auto",
-            filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.65))",
-          }}
-        />
-        {/* Head scaled so its chin meets the neck: body renders at 1.487x its
-            native size, the head closeup is ~0.78 of that, so 1.161x => 181px wide. */}
-        <Img
-          src={staticFile(manHeadSprite)}
-          style={{
-            position: "absolute",
-            top: -152,
-            left: 100,
-            width: 181,
-            height: "auto",
-            zIndex: 6,
-          }}
-        />
-      </div>
-
-      {/* ======================================================== */}
-      {/* LAYER 3: FLOATING AVATAR BOT — enters on the demo act    */}
-      {/* ======================================================== */}
-      <Sequence from={ACT.demo.from} durationInFrames={durationInFrames - ACT.demo.from}>
-        <div
-          style={{
-            position: "absolute",
-            right: 90,
-            bottom: 500,
-            width: 440,
-            height: 440,
-            transform: `translate(${botFloatX + interpolate(botEnter, [0, 1], [240, 0])}px, ${botFloatY}px) rotate(${botTilt}deg) scale(${interpolate(botEnter, [0, 1], [0.8, 1])})`,
-            opacity: botEnter,
-            zIndex: 8,
-            filter: "drop-shadow(0 25px 35px rgba(0,0,0,0.55))",
-          }}
-        >
-          <Img
-            src={staticFile("assets/sprites/bot_large.png")}
-            style={{ width: "100%", height: "100%", objectFit: "contain" }}
-          />
-          <BotMouth speaking={isAudioSpeaking} frame={frame} />
-        </div>
-      </Sequence>
-
-      {/* ======================================================== */}
-      {/* ACT 1 — HOOK: bold headline                              */}
-      {/* ======================================================== */}
-      <Sequence from={ACT.hook.from} durationInFrames={ACT.hook.duration}>
-        <Hook />
-      </Sequence>
-
-      {/* ======================================================== */}
-      {/* ACT 2 — EXPLANATION: URL to PDF card                     */}
-      {/* ======================================================== */}
-      <Sequence from={ACT.explain.from} durationInFrames={ACT.explain.duration}>
-        <ConvertCard />
-      </Sequence>
-
-      {/* ======================================================== */}
-      {/* ACT 3 — DEMONSTRATION: isometric tray + benefit badges   */}
-      {/* ======================================================== */}
-      <Sequence from={ACT.demo.from} durationInFrames={ACT.demo.duration}>
-        <Demo />
-      </Sequence>
-
-      {/* ======================================================== */}
-      {/* ACT 4 — PAYOFF: scrim + end card                         */}
-      {/* ======================================================== */}
-      <AbsoluteFill
-        style={{
-          backgroundColor: "#0C0E14",
-          opacity: scrim,
-          zIndex: 18,
-          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: `scale(${1.1 + Math.sin(frame / 90) * 0.01})`,
+          filter: "blur(6px) brightness(0.82) saturate(1.05)",
         }}
       />
+      <AbsoluteFill
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 62%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+
       <div
         style={{
           position: "absolute",
           inset: 0,
-          zIndex: 19,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          opacity: endCard,
-          transform: `scale(${interpolate(endCard, [0, 1], [0.88, 1])})`,
-          pointerEvents: "none",
+          transform: `translateY(${breathe + interpolate(enter, [0, 1], [70, 0])}px) translateX(${sway}px)`,
+          opacity: enter,
         }}
       >
-        <div style={{ fontFamily: UI_FONT, fontSize: 128, fontWeight: 800, color: TEXT_LIGHT, letterSpacing: -3 }}>
-          Khan<span style={{ color: GOLD_ACCENT }}>PDF</span>
-        </div>
-        <div
+        <Img
+          src={staticFile("assets/sprites/man_body_front_headless.png")}
           style={{
-            marginTop: 24,
-            fontFamily: SERIF_FONT,
-            fontSize: 64,
-            fontWeight: 700,
-            color: GOLD_ACCENT,
+            position: "absolute",
+            top: BODY_TOP,
+            left: BODY_LEFT,
+            width: BODY_W,
+            height: "auto",
+            filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.6))",
           }}
-        >
-          khanpdf.com
-        </div>
-        <div
+        />
+        <Img
+          src={staticFile(head)}
           style={{
-            marginTop: 40,
-            fontFamily: UI_FONT,
-            fontSize: 44,
-            fontWeight: 600,
-            color: "rgba(255,255,255,0.72)",
+            position: "absolute",
+            top: HEAD_TOP + headBob,
+            left: HEAD_LEFT,
+            width: HEAD_W,
+            height: "auto",
           }}
-        >
-          Free · No signup · No watermark
-        </div>
-      </div>
-
-      {/* ======================================================== */}
-      {/* LAYER 5: CAPTIONS (word-by-word golden subtitles)        */}
-      {/* ======================================================== */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 220,
-          left: 0,
-          right: 0,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "0 80px",
-          zIndex: 20,
-          opacity: 1 - scrim / 0.88,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "14px 22px",
-            fontFamily: SERIF_FONT,
-            textAlign: "center",
-          }}
-        >
-          {activePage?.words.map((word, index) => {
-            const isSpoken = time >= word.start;
-            const isActive = time >= word.start && time <= word.end;
-            const enter = spring({
-              frame: frame - Math.round(word.start * fps),
-              fps,
-              config: { damping: 14, stiffness: 220 },
-              durationInFrames: 8,
-            });
-            const scale = isActive ? interpolate(enter, [0, 1], [0.88, 1.1]) : 1;
-
-            return (
-              <span
-                key={`${word.word}-${index}`}
-                style={{
-                  fontSize: 88,
-                  fontWeight: 900,
-                  letterSpacing: "0.5px",
-                  color: isActive ? GOLD_ACCENT : isSpoken ? TEXT_LIGHT : TEXT_DIM,
-                  transform: `scale(${scale})`,
-                  textShadow: "0 6px 18px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.9)",
-                }}
-              >
-                {word.word}
-              </span>
-            );
-          })}
-        </div>
+        />
       </div>
     </AbsoluteFill>
   );
 };
 
-// ---------------------------------------------------------------- bot screen
-// bot_large.png has a mouth painted on, so that band is masked with the screen's
-// own colour (sampled from the asset) before the live bars are drawn over it.
-const SCREEN = "rgb(22, 26, 36)";
+// ---------------------------------------------------------------- screen A
+const ScreenA = ({ length }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const url = "https://example.com/article";
 
-const BotMouth = ({ speaking, frame }) => {
-  const bars = 9;
+  const e = spring({ frame, fps, config: { damping: 18 }, durationInFrames: 18 });
+  const typed = interpolate(frame, [16, 58], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const done = interpolate(frame, [64, 78], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const arrow = interpolate(frame, [58, 72], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <ExplainerFrame length={length}>
+      <div style={{ fontSize: 96, fontWeight: 800, color: INK, letterSpacing: -2, textAlign: "center" }}>
+        Any link
+      </div>
+
+      {/* URL bar */}
+      <div
+        style={{
+          marginTop: 46,
+          width: 880,
+          padding: "30px 34px",
+          borderRadius: 24,
+          border: `3px solid ${LINE}`,
+          backgroundColor: "#fff",
+          boxShadow: "0 18px 46px rgba(16,19,23,0.10)",
+          fontFamily: "monospace",
+          fontSize: 36,
+          color: "#334155",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          transform: `translateY(${interpolate(e, [0, 1], [40, 0])}px)`,
+          opacity: e,
+        }}
+      >
+        {url.slice(0, Math.round(typed * url.length))}
+        <span style={{ color: ACCENT }}>{typed < 1 ? "|" : ""}</span>
+      </div>
+
+      {/* arrow down */}
+      <div style={{ marginTop: 30, fontSize: 72, color: ACCENT, opacity: arrow }}>&#8595;</div>
+
+      {/* PDF result */}
+      <div
+        style={{
+          marginTop: 24,
+          width: 460,
+          padding: 40,
+          borderRadius: 30,
+          backgroundColor: "#fff",
+          border: `3px solid ${LINE}`,
+          boxShadow: "0 28px 60px rgba(16,19,23,0.14)",
+          opacity: done,
+          transform: `scale(${interpolate(done, [0, 1], [0.88, 1])})`,
+        }}
+      >
+        <div
+          style={{
+            display: "inline-block",
+            padding: "12px 26px",
+            borderRadius: 14,
+            backgroundColor: ACCENT,
+            color: "#fff",
+            fontSize: 34,
+            fontWeight: 900,
+            letterSpacing: 1,
+          }}
+        >
+          PDF
+        </div>
+        {[1, 0.9, 0.96, 0.55].map((w, i) => (
+          <div
+            key={i}
+            style={{
+              marginTop: i === 0 ? 28 : 16,
+              height: 16,
+              width: `${w * 100}%`,
+              borderRadius: 999,
+              backgroundColor: LINE,
+            }}
+          />
+        ))}
+      </div>
+
+      <div style={{ marginTop: 34, fontSize: 56, fontWeight: 800, color: INK, opacity: done }}>
+        Clean PDF, in seconds
+      </div>
+    </ExplainerFrame>
+  );
+};
+
+// ---------------------------------------------------------------- screen B
+const ScreenB = ({ length }) => {
+  const frame = useCurrentFrame();
+  const lift = interpolate(frame, [6, 44], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <ExplainerFrame length={length}>
+      <div style={{ fontSize: 96, fontWeight: 800, color: INK, letterSpacing: -2, textAlign: "center" }}>
+        Keep it. Send it.
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <IsoDocTray lift={lift} size={520} />
+      </div>
+
+      <div style={{ marginTop: 20, display: "flex", gap: 26 }}>
+        <Chip label="Save offline" delay={18} />
+        <Chip label="Email it" delay={42} />
+      </div>
+    </ExplainerFrame>
+  );
+};
+
+// A white explainer panel: the character is cut away entirely for these.
+const ExplainerFrame = ({ length, children }) => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 5, length - 8, length], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <AbsoluteFill style={{ opacity, backgroundColor: "#FFFFFF", fontFamily: UI_FONT }}>
+      <AbsoluteFill
+        style={{
+          background:
+            "radial-gradient(circle at 50% 30%, rgba(255,85,13,0.09) 0%, rgba(255,255,255,0) 62%)",
+        }}
+      />
+      <AbsoluteFill
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 80px",
+          paddingBottom: 360,
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+const Chip = ({ label, delay }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const e = spring({ frame: frame - delay, fps, config: { damping: 13, stiffness: 180 }, durationInFrames: 16 });
   return (
     <div
       style={{
-        position: "absolute",
-        left: "39%",
-        top: "63%",
-        width: "31%",
-        height: "13%",
-        pointerEvents: "none",
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        padding: "20px 34px",
+        borderRadius: 999,
+        border: `3px solid ${ACCENT}`,
+        backgroundColor: "#FFF4EE",
+        fontSize: 44,
+        fontWeight: 700,
+        color: INK,
+        whiteSpace: "nowrap",
+        transform: `translateY(${interpolate(e, [0, 1], [34, 0])}px) scale(${interpolate(e, [0, 1], [0.88, 1])})`,
+        opacity: e,
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundColor: SCREEN,
-          borderRadius: "50%",
-          boxShadow: `0 0 18px 14px ${SCREEN}`,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        {new Array(bars).fill(0).map((_, i) => {
-          // Taper the ends so it reads as a mouth, not an equaliser
-          const taper = Math.sin((Math.PI * (i + 0.5)) / bars);
-          const wobble = 0.55 + 0.45 * Math.sin(frame / 2.1 + i * 1.4);
-          const height = speaking ? Math.max(9, taper * wobble * 95) : 9;
-          return (
-            <div
-              key={i}
-              style={{
-                width: `${100 / (bars * 2.1)}%`,
-                height: `${height}%`,
-                borderRadius: 999,
-                backgroundColor: GOLD_ACCENT,
-                boxShadow: `0 0 10px ${GOLD_ACCENT}`,
-              }}
-            />
-          );
-        })}
-      </div>
+      <span style={{ color: ACCENT }}>&#10003;</span>
+      {label}
     </div>
   );
 };
 
-// ---------------------------------------------------------------- act 1
-const Hook = () => {
+// ---------------------------------------------------------------- hook text
+const HookText = ({ length }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const e = spring({ frame: frame - 4, fps, config: { damping: 15, stiffness: 120 }, durationInFrames: 24 });
-  const out = interpolate(frame, [72, 88], [1, 0], {
+  const e = spring({ frame: frame - 4, fps, config: { damping: 15, stiffness: 120 }, durationInFrames: 22 });
+  const out = interpolate(frame, [length - 18, length - 2], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -444,23 +353,22 @@ const Hook = () => {
     <div
       style={{
         position: "absolute",
-        top: 190,
+        top: 170,
         left: 80,
         right: 80,
-        zIndex: 16,
         textAlign: "center",
         opacity: e * out,
-        transform: `translateY(${interpolate(e, [0, 1], [-60, 0])}px)`,
+        transform: `translateY(${interpolate(e, [0, 1], [-50, 0])}px)`,
       }}
     >
       <div
         style={{
           fontFamily: UI_FONT,
-          fontSize: 104,
+          fontSize: 100,
           fontWeight: 800,
           lineHeight: 1.08,
           letterSpacing: -2,
-          color: "#FFFFFF",
+          color: TEXT_LIGHT,
           textShadow: "0 8px 30px rgba(0,0,0,0.9)",
         }}
       >
@@ -468,9 +376,9 @@ const Hook = () => {
       </div>
       <div
         style={{
-          marginTop: 10,
+          marginTop: 8,
           fontFamily: SERIF_FONT,
-          fontSize: 104,
+          fontSize: 100,
           fontWeight: 900,
           color: GOLD_ACCENT,
           textShadow: "0 8px 30px rgba(0,0,0,0.9)",
@@ -482,173 +390,192 @@ const Hook = () => {
   );
 };
 
-// ---------------------------------------------------------------- act 2
-const ConvertCard = () => {
+// ---------------------------------------------------------------- end card
+const EndCard = ({ length }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const e = spring({ frame: frame - 2, fps, config: { damping: 14, stiffness: 120 }, durationInFrames: 26 });
-  const out = interpolate(frame, [108, 124], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  // The link fills in, then the badge flips to PDF
-  const typed = interpolate(frame, [18, 54], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const url = "https://example.com/article";
-  const done = interpolate(frame, [60, 74], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const e = spring({ frame, fps, config: { damping: 18, stiffness: 100 }, durationInFrames: 26 });
+  const fade = interpolate(frame, [0, 14], [0, 1], { extrapolateRight: "clamp" });
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 150,
-        left: 70,
-        width: 600,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 26,
-        padding: "26px 30px",
-        boxShadow: "0 20px 45px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.15)",
-        transform: `translateX(${interpolate(e, [0, 1], [-640, 0])}px)`,
-        opacity: e * out,
-        zIndex: 15,
-        fontFamily: UI_FONT,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div
-          style={{
-            backgroundColor: "#E8503A",
-            color: "#FFFFFF",
-            fontWeight: 800,
-            fontSize: 20,
-            padding: "7px 15px",
-            borderRadius: 9,
-            letterSpacing: 1,
-          }}
-        >
-          URL
-        </div>
-        <div style={{ fontSize: 30, fontWeight: 800, color: "#1E293B" }}>
-          Khan<span style={{ color: "#E8503A" }}>PDF</span>
-        </div>
-      </div>
-
-      <div
+    <AbsoluteFill style={{ backgroundColor: "#0C0E14", opacity: fade }}>
+      <AbsoluteFill
         style={{
-          marginTop: 16,
-          padding: "16px 18px",
-          borderRadius: 14,
-          border: "3px solid #E2E8F0",
-          fontSize: 24,
-          fontFamily: "monospace",
-          color: "#334155",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-        }}
-      >
-        {url.slice(0, Math.round(typed * url.length))}
-        <span style={{ color: "#E8503A" }}>{typed < 1 ? "|" : ""}</span>
-      </div>
-
-      <div
-        style={{
-          marginTop: 16,
-          display: "flex",
           alignItems: "center",
-          gap: 14,
-          opacity: done,
+          justifyContent: "center",
+          opacity: e,
+          transform: `scale(${interpolate(e, [0, 1], [0.9, 1])})`,
         }}
       >
+        <div style={{ fontFamily: UI_FONT, fontSize: 132, fontWeight: 800, color: TEXT_LIGHT, letterSpacing: -3 }}>
+          Khan<span style={{ color: GOLD_ACCENT }}>PDF</span>
+        </div>
+        <div style={{ marginTop: 22, fontFamily: SERIF_FONT, fontSize: 66, fontWeight: 700, color: GOLD_ACCENT }}>
+          khanpdf.com
+        </div>
         <div
           style={{
-            backgroundColor: "#16A34A",
-            color: "#fff",
-            width: 36,
-            height: 36,
-            borderRadius: 999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 22,
-            fontWeight: 900,
+            marginTop: 44,
+            fontFamily: UI_FONT,
+            fontSize: 44,
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.72)",
           }}
         >
-          &#10003;
+          Free &middot; No signup &middot; No watermark
         </div>
-        <div style={{ fontSize: 26, fontWeight: 700, color: "#15803D" }}>
-          Clean PDF ready
-        </div>
-      </div>
-    </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };
 
-// ---------------------------------------------------------------- act 3
-const Badge = ({ label, delay }) => {
+// ---------------------------------------------------------------- 450 frames
+export const Reel = ({ audioFile, transcription }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const e = spring({ frame: frame - delay, fps, config: { damping: 13, stiffness: 180 }, durationInFrames: 18 });
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        padding: "18px 30px",
-        borderRadius: 999,
-        backgroundColor: "rgba(12,14,20,0.82)",
-        border: `3px solid ${GOLD_ACCENT}`,
-        fontFamily: UI_FONT,
-        fontSize: 40,
-        fontWeight: 700,
-        color: "#FFFFFF",
-        whiteSpace: "nowrap",
-        transform: `translateY(${interpolate(e, [0, 1], [40, 0])}px) scale(${interpolate(e, [0, 1], [0.86, 1])})`,
-        opacity: e,
-      }}
-    >
-      <span style={{ color: GOLD_ACCENT, fontSize: 34 }}>&#10003;</span>
-      {label}
-    </div>
-  );
-};
+  const time = frame / fps;
 
-const Demo = () => {
-  const frame = useCurrentFrame();
-  const out = interpolate(frame, [118, 134], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  // Sheet rises out of the tray while "save it offline" is spoken
-  const lift = interpolate(frame, [8, 46], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const words = transcription?.words ?? [];
+  const pages = buildPages(words);
+  const speaking = words.some((w) => time >= w.start && time <= w.end);
+
+  let activePageIndex = pages.findIndex((p) => time >= p.start && time <= p.end);
+  if (activePageIndex === -1) {
+    const passed = pages.filter((p) => p.end < time);
+    activePageIndex = passed.length > 0 ? pages.indexOf(passed[passed.length - 1]) : 0;
+  }
+  const activePage = pages[activePageIndex];
+
+  // A short white flash on each cut makes the edit feel deliberate
+  const flash = CUTS.reduce((acc, cut) => {
+    const f = interpolate(frame, [cut - 2, cut, cut + 5], [0, 0.5, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+    return Math.max(acc, f);
+  }, 0);
+
+  const captionsVisible = frame < SHOT.end.from + 10;
+
+  // The explainer panels are white, so gold-on-white captions would vanish.
+  // Flip the caption palette for the duration of those two shots.
+  const onWhite = frame >= SHOT.screenA.from && frame < SHOT.openB.from;
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 14, opacity: out, pointerEvents: "none" }}>
-      <div style={{ position: "absolute", top: 330, left: 300 }}>
-        <IsoDocTray lift={lift} size={420} />
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          top: 760,
-          left: 0,
-          right: 0,
-          display: "flex",
-          justifyContent: "center",
-          gap: 26,
-        }}
-      >
-        <Badge label="Save offline" delay={19} />
-        <Badge label="Email it" delay={42} />
-      </div>
-    </div>
+    <AbsoluteFill style={{ backgroundColor: "#0C0E14", overflow: "hidden" }}>
+      {audioFile ? <Audio src={staticFile(audioFile)} /> : null}
+
+      {/* a soft whoosh on every cut */}
+      {CUTS.map((cut) => (
+        <Sequence key={cut} from={cut - 3} durationInFrames={26}>
+          <Audio src={staticFile("sfx/whoosh.mp3")} volume={0.26} />
+        </Sequence>
+      ))}
+      <Sequence from={218} durationInFrames={16}>
+        <Audio src={staticFile("sfx/pop.mp3")} volume={0.26} />
+      </Sequence>
+      <Sequence from={242} durationInFrames={16}>
+        <Audio src={staticFile("sfx/pop.mp3")} volume={0.26} />
+      </Sequence>
+      <Sequence from={SHOT.end.from} durationInFrames={44}>
+        <Audio src={staticFile("sfx/success.mp3")} volume={0.42} />
+      </Sequence>
+
+      {/* ---- SHOT 1: presenter, hook ---- */}
+      <Sequence from={SHOT.openA.from} durationInFrames={SHOT.openA.duration}>
+        <Presenter speaking={speaking} frame={frame} />
+        <HookText length={SHOT.openA.duration} />
+      </Sequence>
+
+      {/* ---- SHOT 2: explainer screen, no character ---- */}
+      <Sequence from={SHOT.screenA.from} durationInFrames={SHOT.screenA.duration}>
+        <ScreenA length={SHOT.screenA.duration} />
+      </Sequence>
+
+      {/* ---- SHOT 3: explainer screen, no character ---- */}
+      <Sequence from={SHOT.screenB.from} durationInFrames={SHOT.screenB.duration}>
+        <ScreenB length={SHOT.screenB.duration} />
+      </Sequence>
+
+      {/* ---- SHOT 4: back to the presenter for the payoff ---- */}
+      <Sequence from={SHOT.openB.from} durationInFrames={SHOT.openB.duration}>
+        <Presenter speaking={speaking} frame={frame} />
+      </Sequence>
+
+      {/* ---- SHOT 5: end card ---- */}
+      <Sequence from={SHOT.end.from} durationInFrames={SHOT.end.duration}>
+        <EndCard length={SHOT.end.duration} />
+      </Sequence>
+
+      {/* cut flash */}
+      <AbsoluteFill style={{ backgroundColor: "#FFFFFF", opacity: flash, pointerEvents: "none" }} />
+
+      {/* ---- captions, over every shot ---- */}
+      {captionsVisible ? (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 200,
+            left: 0,
+            right: 0,
+            display: "flex",
+            justifyContent: "center",
+            padding: "0 80px",
+            zIndex: 30,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "12px 20px",
+              fontFamily: SERIF_FONT,
+              textAlign: "center",
+            }}
+          >
+            {activePage?.words.map((word, index) => {
+              const isSpoken = time >= word.start;
+              const isActive = time >= word.start && time <= word.end;
+              const enter = spring({
+                frame: frame - Math.round(word.start * fps),
+                fps,
+                config: { damping: 14, stiffness: 220 },
+                durationInFrames: 8,
+              });
+              const scale = isActive ? interpolate(enter, [0, 1], [0.88, 1.08]) : 1;
+
+              return (
+                <span
+                  key={`${word.word}-${index}`}
+                  style={{
+                    fontSize: 84,
+                    fontWeight: 900,
+                    color: onWhite
+                      ? isActive
+                        ? ACCENT
+                        : isSpoken
+                          ? INK
+                          : MUTED
+                      : isActive
+                        ? GOLD_ACCENT
+                        : isSpoken
+                          ? TEXT_LIGHT
+                          : TEXT_DIM,
+                    transform: `scale(${scale})`,
+                    textShadow: onWhite
+                      ? "0 2px 10px rgba(255,255,255,0.9)"
+                      : "0 6px 18px rgba(0,0,0,0.95), 0 2px 4px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)",
+                  }}
+                >
+                  {word.word}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+    </AbsoluteFill>
   );
 };

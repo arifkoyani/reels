@@ -76,6 +76,14 @@ async function run() {
     path.join(SPRITES_DIR, "man_body_front.png")
   );
 
+  // 2a. Man FRONT body without the head, for the presenter framing.
+  // Measured the same way: neck narrows to 44px at row 120, shoulders from 130.
+  await removeBackgroundAndSave(
+    "public/assets/man.png",
+    { left: 59, top: 148, width: 275, height: 442 },
+    path.join(SPRITES_DIR, "man_body_front_headless.png")
+  );
+
   // 2b. Man 3/4 body WITHOUT the head, cut at the neck (measured: the neck
   // narrows to 43px at row 120 of the body crop, shoulders widen from row 130).
   // Overlaying a head sprite on the full body gave the character two heads.

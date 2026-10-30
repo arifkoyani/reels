@@ -8,7 +8,7 @@ import { decodePNG, encodePNG } from "./png.mjs";
 const ASSETS = path.join("public", "assets");
 const OUT = path.join("public", "assets", "parts");
 
-const BG_TOLERANCE = 26; // how far from the sheet's grey still counts as background
+const BG_TOLERANCE = 45; // how far from the sheet's grey still counts as background
 const FEATHER = 40; // extra softness band for anti-aliased edges
 const MIN_AREA = 3000; // ignore specks
 
@@ -144,8 +144,27 @@ const cut = (img, mask, box, canvas) => {
     }
   }
 
-  // Feather INWARD only: a foreground pixel fades by how many neighbours are also
-  // foreground. Background pixels stay fully clear, so no grey halo is possible.
+  // The sheet's anti-aliased rim is a grey/subject blend. Keeping it opaque leaves
+  // a halo, so erode one pixel and derive the edge alpha from the ERODED mask:
+  // interior stays solid, the rim fades out carrying less of the grey.
+  const eroded = new Uint8Array(outW * outH);
+  for (let y = 0; y < outH; y++) {
+    for (let x = 0; x < outW; x++) {
+      const p = y * outW + x;
+      if (!solid[p]) continue;
+      let all = true;
+      for (let dy = -1; dy <= 1 && all; dy++) {
+        for (let dx = -1; dx <= 1 && all; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= outW || ny >= outH) continue;
+          if (!solid[ny * outW + nx]) all = false;
+        }
+      }
+      eroded[p] = all ? 1 : 0;
+    }
+  }
+
   for (let y = 0; y < outH; y++) {
     for (let x = 0; x < outW; x++) {
       const p = y * outW + x;
@@ -161,10 +180,10 @@ const cut = (img, mask, box, canvas) => {
           const ny = y + dy;
           if (nx < 0 || ny < 0 || nx >= outW || ny >= outH) continue;
           total++;
-          if (solid[ny * outW + nx]) count++;
+          if (eroded[ny * outW + nx]) count++;
         }
       }
-      out[p * 4 + 3] = count === total ? 255 : Math.round((count / total) * 255);
+      out[p * 4 + 3] = Math.round((count / total) * 255);
     }
   }
 

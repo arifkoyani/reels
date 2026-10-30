@@ -9,9 +9,11 @@ import path from "path";
 const AUDIO_DIR = "mp3";
 const TRANSCRIPT_DIR = "transcriptionasJSON";
 const OUTPUT_DIR = "finalVideos";
+const STAGED_AUDIO_DIR = path.join("public", "audio");
 const PROPS_FILE = ".reel-props.json";
 const ENTRY = "src/index.jsx";
-const COMPOSITION = "Reel";
+const COMPOSITION =
+  process.argv.find((a) => a.startsWith("--comp="))?.split("=")[1] ?? "Scene";
 
 const mode = process.argv[2];
 if (mode !== "studio" && mode !== "render") {
@@ -21,7 +23,7 @@ if (mode !== "studio" && mode !== "render") {
 
 // Pick the requested clip, or the newest one — same rule groq-transcription.js uses.
 function resolveBaseName() {
-  const requested = process.argv[3];
+  const requested = process.argv.slice(3).find((a) => !a.startsWith("--"));
   if (requested) return path.parse(requested).name;
 
   if (!fs.existsSync(AUDIO_DIR)) {
@@ -58,13 +60,19 @@ if (wordCount === 0) {
   console.warn(`Warning: ${transcriptPath} has no word timestamps; captions will be empty.`);
 }
 
-fs.mkdirSync("public", { recursive: true });
-fs.copyFileSync(audioPath, path.join("public", `${baseName}.mp3`));
+// Remotion only serves public/, so stage a copy of the chosen clip there.
+// mp3/ stays the source of truth for the ElevenLabs and Groq scripts.
+fs.mkdirSync(STAGED_AUDIO_DIR, { recursive: true });
+fs.copyFileSync(audioPath, path.join(STAGED_AUDIO_DIR, `${baseName}.mp3`));
 
-// staticFile() resolves against public/, so pass the bare filename.
+// staticFile() resolves against public/, so include the subfolder.
 fs.writeFileSync(
   PROPS_FILE,
-  JSON.stringify({ audioFile: `${baseName}.mp3`, transcription, title: "" }, null, 2),
+  JSON.stringify(
+    { audioFile: `audio/${baseName}.mp3`, transcription, title: "" },
+    null,
+    2,
+  ),
   "utf8",
 );
 

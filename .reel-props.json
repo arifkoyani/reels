@@ -1,5 +1,5 @@
 {
-  "audioFile": "output.mp3",
+  "audioFile": "",
   "transcription": {
     "task": "transcribe",
     "language": "English",
@@ -42,5 +42,11 @@
       "id": "req_01m66hxn37eaa9517t6kkmaj6v"
     }
   },
-  "title": ""
+  "card": {
+    "badge": "TOMORROW",
+    "time": "10:00",
+    "title": "Google · Interview",
+    "subtitle": "Tomorrow 10:00 AM · Data Analyst",
+    "footer": "Prep plan:"
+  }
 }

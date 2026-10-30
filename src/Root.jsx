@@ -1,5 +1,6 @@
 import { Composition } from "remotion";
 import { Reel } from "./Reel.jsx";
+import { Scene } from "./Scene.jsx";
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -13,30 +14,54 @@ const resolveDuration = (transcription) => {
   return Math.max(transcription?.duration ?? 0, lastWordEnd);
 };
 
+const metadata = ({ props }) => ({
+  // +0.4s tail so the last word doesn't vanish on the final frame
+  durationInFrames: Math.max(1, Math.ceil((resolveDuration(props.transcription) + 0.4) * FPS)),
+  fps: FPS,
+  width: WIDTH,
+  height: HEIGHT,
+});
+
+const baseProps = {
+  audioFile: "audio/output.mp3",
+  transcription: { duration: 3, text: "", words: [] },
+};
+
 export const RemotionRoot = () => {
   return (
-    <Composition
-      id="Reel"
-      component={Reel}
-      durationInFrames={90}
-      fps={FPS}
-      width={WIDTH}
-      height={HEIGHT}
-      defaultProps={{
-        audioFile: "output.mp3",
-        transcription: { duration: 3, text: "", words: [] },
-        title: "",
-      }}
-      calculateMetadata={({ props }) => {
-        const seconds = resolveDuration(props.transcription);
-        // +0.4s tail so the last word doesn't vanish on the final frame
-        return {
-          durationInFrames: Math.max(1, Math.ceil((seconds + 0.4) * FPS)),
-          fps: FPS,
-          width: WIDTH,
-          height: HEIGHT,
-        };
-      }}
-    />
+    <>
+      {/* Full layered scene: room, man, bot, info card, captions */}
+      <Composition
+        id="Scene"
+        component={Scene}
+        durationInFrames={90}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          ...baseProps,
+          card: {
+            badge: "TOMORROW",
+            time: "10:00",
+            title: "Google · Interview",
+            subtitle: "Tomorrow 10:00 AM · Data Analyst",
+            footer: "Prep plan:",
+          },
+        }}
+        calculateMetadata={metadata}
+      />
+
+      {/* Captions-only version, kept as a fallback */}
+      <Composition
+        id="Reel"
+        component={Reel}
+        durationInFrames={90}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{ ...baseProps, title: "" }}
+        calculateMetadata={metadata}
+      />
+    </>
   );
 };

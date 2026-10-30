@@ -45,12 +45,12 @@ const writeSet = (img, mask, bg, parts, names, { lockY = false } = {}) => {
   );
 
   writeSet(img, mask, bg, heads, [
-    "man-head-1",
-    "man-head-2",
-    "man-head-3",
-    "man-head-4",
-    "man-head-5",
-    "man-head-6",
+    "man-head-rest",
+    "man-head-frown",
+    "man-head-open-mid",
+    "man-head-open-wide",
+    "man-head-smile-closed",
+    "man-head-smile-open",
   ], { lockY: true });
 }
 
@@ -77,7 +77,15 @@ const writeSet = (img, mask, bg, parts, names, { lockY = false } = {}) => {
     mask,
     bg,
     faces,
-    faces.map((_, i) => `bot-face-${i + 1}`),
+    [
+      "bot-face-neutral",
+      "bot-face-smug",
+      "bot-face-surprised",
+      "bot-face-idle",
+      "bot-face-blink",
+      "bot-face-happy",
+      "bot-face-shock",
+    ],
   );
 }
 

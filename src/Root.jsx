@@ -6,6 +6,14 @@ import { Infographic } from "./Infographic.jsx";
 import { BotReel } from "./BotReel.jsx";
 import reelTranscription from "./reel-transcription.json";
 import bot10Transcription from "./bot10-transcription.json";
+import defaultSpec from "../video-specs/khanpdf-10s.json";
+
+// Studio preview needs beats in frames; the pipeline does this conversion too.
+const specBeats = (defaultSpec.beats ?? []).map((b) => ({
+  ...b,
+  from: Math.round(b.fromSeconds * 30),
+  to: Math.round(b.toSeconds * 30),
+}));
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -35,26 +43,8 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
-      {/* 2s cut in the same style, voice at 1.3x */}
-      <Composition
-        id="BotReel2s"
-        component={BotReel}
-        durationInFrames={60}
-        fps={FPS}
-        width={WIDTH}
-        height={HEIGHT}
-        defaultProps={{
-          audioFile: "audio/bot10-vo-phone.mp3",
-          transcription: bot10Transcription,
-          speed: 1.3,
-          variant: "short",
-          // "forever?" ends at 1.97s of source audio and "Khan" starts at 2.22s;
-          // at 1.3x frame 50 sits between them, so the voice stops on the phrase.
-          speechEnd: 50,
-        }}
-      />
-
-      {/* 10s bot reel: light explainer panel above, bot floating over captions */}
+      {/* Spec-driven reel. make-video.mjs supplies audio, captions, beats and
+          duration through --props; the defaults below are only for Studio. */}
       <Composition
         id="BotReel"
         component={BotReel}
@@ -65,7 +55,15 @@ export const RemotionRoot = () => {
         defaultProps={{
           audioFile: "audio/bot10-vo-phone.mp3",
           transcription: bot10Transcription,
+          beats: specBeats,
+          speed: 1,
         }}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: props.durationInFrames ?? 300,
+          fps: FPS,
+          width: WIDTH,
+          height: HEIGHT,
+        })}
       />
 
       {/* KhanPDF infographic: 30s, voiceover + captions + sound effects */}

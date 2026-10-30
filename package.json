@@ -9,7 +9,9 @@
     "transcribe": "node groq-transcription.js",
     "studio": "node reel.mjs studio",
     "render": "node reel.mjs render",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "video": "node make-video.mjs",
+    "video:force": "node make-video.mjs --force"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,7 @@
     "@remotion/paths": "^4.0.539",
     "@remotion/renderer": "^4.0.539",
     "@remotion/rough-notation": "4.0.539",
+    "@remotion/sfx": "4.0.539",
     "@remotion/shapes": "^4.0.539",
     "@remotion/transitions": "4.0.539",
     "dotenv": "^18.0.9",
@@ -39,5 +42,9 @@
     "remotion": "^4.0.539",
     "roughjs": "^4.6.6",
     "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
   }
 }

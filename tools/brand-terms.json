@@ -1,0 +1,10 @@
+{
+  "_comment": "Whisper mishears spoken brand names. Each rule rewrites the transcript used for captions; the audio itself is never touched. Patterns are case-insensitive regular expressions.",
+  "rules": [
+    { "pattern": "calm\\s*pdf", "replace": "KhanPDF" },
+    { "pattern": "khan\\s+p\\s*d\\s*f", "replace": "KhanPDF" },
+    { "pattern": "khan\\s+pdf", "replace": "KhanPDF" },
+    { "pattern": "con\\s*pdf", "replace": "KhanPDF" },
+    { "pattern": "kahn\\s*pdf", "replace": "KhanPDF" }
+  ]
+}

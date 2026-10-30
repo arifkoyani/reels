@@ -5,7 +5,7 @@ import { Explainer } from "./Explainer.jsx";
 import { Infographic } from "./Infographic.jsx";
 import { BotReel } from "./BotReel.jsx";
 import reelTranscription from "./reel-transcription.json";
-import botTestTranscription from "./bot-test-transcription.json";
+import bot10Transcription from "./bot10-transcription.json";
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -35,17 +35,17 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
-      {/* 5s layout test: bot only, infographics above it, no human character */}
+      {/* 10s bot reel: light explainer panel above, bot floating over captions */}
       <Composition
         id="BotReel"
         component={BotReel}
-        durationInFrames={150}
+        durationInFrames={300}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
         defaultProps={{
-          audioFile: "audio/bot-test-vo.mp3",
-          transcription: botTestTranscription,
+          audioFile: "audio/bot10-vo.mp3",
+          transcription: bot10Transcription,
         }}
       />
 

@@ -1,0 +1,117 @@
+{
+  "task": "transcribe",
+  "language": "English",
+  "duration": 9.28,
+  "text": " Need a page saved forever? CalmPDF turns any link into a clean PDF. Download it, email it. Free, no sign up.",
+  "words": [
+    {
+      "word": "Need",
+      "start": 0.02,
+      "end": 0.22
+    },
+    {
+      "word": "a",
+      "start": 0.22,
+      "end": 0.4
+    },
+    {
+      "word": "page",
+      "start": 0.4,
+      "end": 0.72
+    },
+    {
+      "word": "saved",
+      "start": 0.72,
+      "end": 1.12
+    },
+    {
+      "word": "forever?",
+      "start": 1.12,
+      "end": 2.3
+    },
+    {
+      "word": "CalmPDF",
+      "start": 2.22,
+      "end": 2.96
+    },
+    {
+      "word": "turns",
+      "start": 2.96,
+      "end": 3.34
+    },
+    {
+      "word": "any",
+      "start": 3.34,
+      "end": 3.7
+    },
+    {
+      "word": "link",
+      "start": 3.7,
+      "end": 4.02
+    },
+    {
+      "word": "into",
+      "start": 4.02,
+      "end": 4.26
+    },
+    {
+      "word": "a",
+      "start": 4.26,
+      "end": 4.54
+    },
+    {
+      "word": "clean",
+      "start": 4.54,
+      "end": 4.8
+    },
+    {
+      "word": "PDF.",
+      "start": 4.8,
+      "end": 5.86
+    },
+    {
+      "word": "Download",
+      "start": 5.86,
+      "end": 6.3
+    },
+    {
+      "word": "it,",
+      "start": 6.3,
+      "end": 6.82
+    },
+    {
+      "word": "email",
+      "start": 6.82,
+      "end": 7.06
+    },
+    {
+      "word": "it.",
+      "start": 7.06,
+      "end": 7.52
+    },
+    {
+      "word": "Free,",
+      "start": 7.68,
+      "end": 8.14
+    },
+    {
+      "word": "no",
+      "start": 8.14,
+      "end": 8.66
+    },
+    {
+      "word": "sign",
+      "start": 8.66,
+      "end": 8.96
+    },
+    {
+      "word": "up.",
+      "start": 8.96,
+      "end": 9.32
+    }
+  ],
+  "segments": null,
+  "x_groq": {
+    "id": "req_01m66zxjjeevxvx7zr924hd6q6"
+  }
+}

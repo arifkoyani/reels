@@ -123,9 +123,12 @@ async function run() {
 
   // --- BOT ASSETS ---
   // 7. Bot large front 3/4
+  // Measured bbox is left=38 top=337 543x509. The previous crop (30,375,535,510)
+  // cut 38px off the top (the antenna) and 16px off the right (the saturn ring),
+  // which is why the ring looked broken in the render. 4px margin added.
   await removeBackgroundAndSave(
     "public/assets/bot.png",
-    { left: 30, top: 375, width: 535, height: 510 },
+    { left: 34, top: 333, width: 551, height: 517 },
     path.join(SPRITES_DIR, "bot_large.png")
   );
 

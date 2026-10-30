@@ -11,30 +11,38 @@ import {
 } from "remotion";
 
 const BG = "#131C2D";
-const TEXT_LIGHT = "#FFFFFF";
-const TEXT_DIM = "rgba(255,255,255,0.42)";
-const GOLD = "#FAD06C";
+const PANEL_BG = "#FFFFFF";
+const PANEL_TEXT = "#131C2D"; // explainer copy sits on the light panel
+const PANEL_MUTED = "#5A6678";
+const PANEL_LINE = "#E3E7EE";
 const ACCENT = "#FF550D";
-const PANEL = "rgba(255,255,255,0.06)";
-const PANEL_LINE = "rgba(255,255,255,0.16)";
+const TEXT_LIGHT = "#FFFFFF";
+const TEXT_DIM = "rgba(255,255,255,0.40)";
+// The bot's own screen glow, matching the eyes painted into the sprite.
+const SCREEN_GLOW = "#FAD06C";
+const SCREEN = "rgb(22, 26, 36)";
 
 const SERIF_FONT = 'Georgia, Cambria, "Times New Roman", Times, serif';
 const UI_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
-// Vertical zones. The bot sits just above the captions; everything that
-// explains lives in the open space above the bot.
-const CAPTION_BOTTOM = 160;
-const BOT_TOP = 1170;
+// Zones: explainer panel on top, bot floating just above the captions.
+const PANEL_TOP = 150;
+const PANEL_HEIGHT = 880;
+const BOT_TOP = 1165;
 const BOT_W = 400;
-const INFO_TOP = 150;
-const INFO_HEIGHT = 1000;
+const CAPTION_BOTTOM = 150;
 
-// The audio's first sentence ends at frame 128; stop there so no word is clipped.
-const SPEECH_END = 132;
-
-// bot_large.png has a mouth painted on, so that band is masked with the screen's
-// own colour (sampled from the asset) before the live bars are drawn.
-const SCREEN = "rgb(22, 26, 36)";
+// Beats, taken from the voiceover's word timestamps.
+//   B1 0-67    "Need a page saved forever?"
+//   B2 67-176  "KhanPDF turns any link into a clean PDF."
+//   B3 176-230 "Download it, email it."
+//   B4 230-300 "Free, no sign up."
+const BEATS = [
+  { from: 0, to: 67 },
+  { from: 67, to: 176 },
+  { from: 176, to: 230 },
+  { from: 230, to: 300 },
+];
 
 const buildPages = (words, { maxWords = 3, maxGap = 0.45, maxDuration = 2.2 } = {}) => {
   const pages = [];
@@ -75,9 +83,9 @@ const BotMouth = ({ speaking, frame }) => {
       style={{
         position: "absolute",
         left: "39%",
-        top: "63%",
-        width: "31%",
-        height: "13%",
+        top: "62%",
+        width: "30%",
+        height: "12%",
         pointerEvents: "none",
       }}
     >
@@ -111,8 +119,8 @@ const BotMouth = ({ speaking, frame }) => {
                 width: `${100 / (bars * 2.1)}%`,
                 height: `${height}%`,
                 borderRadius: 999,
-                backgroundColor: GOLD,
-                boxShadow: `0 0 10px ${GOLD}`,
+                backgroundColor: SCREEN_GLOW,
+                boxShadow: `0 0 10px ${SCREEN_GLOW}`,
               }}
             />
           );
@@ -126,7 +134,7 @@ const Bot = ({ speaking, frame }) => {
   const { fps } = useVideoConfig();
   const enter = spring({ frame, fps, config: { damping: 16, stiffness: 110 }, durationInFrames: 22 });
   const floatY = Math.sin(frame / 13) * 14;
-  const tilt = Math.sin(frame / 19) * 2.4;
+  const tilt = Math.sin(frame / 19) * 2.2;
 
   return (
     <div
@@ -137,7 +145,7 @@ const Bot = ({ speaking, frame }) => {
         width: BOT_W,
         transform: `translateY(${floatY + interpolate(enter, [0, 1], [60, 0])}px) rotate(${tilt}deg) scale(${interpolate(enter, [0, 1], [0.86, 1])})`,
         opacity: enter,
-        filter: "drop-shadow(0 26px 40px rgba(0,0,0,0.55))",
+        filter: "drop-shadow(0 26px 44px rgba(0,0,0,0.6))",
       }}
     >
       <Img
@@ -149,123 +157,244 @@ const Bot = ({ speaking, frame }) => {
   );
 };
 
-// ---------------------------------------------------------------- infographic
-const Info = ({ frame }) => {
+// ---------------------------------------------------------------- panel
+const Panel = ({ children }) => (
+  <div
+    style={{
+      position: "absolute",
+      top: PANEL_TOP,
+      left: 70,
+      right: 70,
+      height: PANEL_HEIGHT,
+      borderRadius: 40,
+      backgroundColor: PANEL_BG,
+      boxShadow: "0 30px 70px rgba(0,0,0,0.45)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "0 70px",
+      fontFamily: UI_FONT,
+      color: PANEL_TEXT,
+      textAlign: "center",
+      overflow: "hidden",
+    }}
+  >
+    {children}
+  </div>
+);
+
+// Fade a beat's contents in and out inside the panel
+const Beat = ({ length, children }) => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 7, length - 9, length], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const rise = interpolate(frame, [0, 14], [26, 0], { extrapolateRight: "clamp" });
+  return (
+    <AbsoluteFill
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0 70px",
+        opacity,
+        transform: `translateY(${rise}px)`,
+      }}
+    >
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+const Headline = ({ children, size = 92 }) => (
+  <div style={{ fontSize: size, fontWeight: 800, letterSpacing: -2, lineHeight: 1.1, color: PANEL_TEXT }}>
+    {children}
+  </div>
+);
+
+const Chip = ({ label, delay }) => {
+  const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const url = "https://example.com/article";
-
-  const title = spring({ frame: frame - 6, fps, config: { damping: 18 }, durationInFrames: 20 });
-  const barIn = spring({ frame: frame - 22, fps, config: { damping: 18 }, durationInFrames: 20 });
-  const typed = interpolate(frame, [30, 64], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const arrow = interpolate(frame, [68, 82], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const card = spring({ frame: frame - 90, fps, config: { damping: 16, stiffness: 120 }, durationInFrames: 24 });
-
+  const e = spring({ frame: frame - delay, fps, config: { damping: 13, stiffness: 180 }, durationInFrames: 16 });
   return (
     <div
       style={{
-        position: "absolute",
-        top: INFO_TOP,
-        left: 80,
-        right: 80,
-        height: INFO_HEIGHT,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        fontFamily: UI_FONT,
+        gap: 14,
+        padding: "20px 34px",
+        borderRadius: 999,
+        border: `3px solid ${ACCENT}`,
+        backgroundColor: "#FFF4EE",
+        fontSize: 46,
+        fontWeight: 700,
+        color: PANEL_TEXT,
+        whiteSpace: "nowrap",
+        transform: `translateY(${interpolate(e, [0, 1], [30, 0])}px) scale(${interpolate(e, [0, 1], [0.9, 1])})`,
+        opacity: e,
       }}
     >
-      <div
-        style={{
-          fontSize: 88,
-          fontWeight: 800,
-          letterSpacing: -2,
-          color: TEXT_LIGHT,
-          textAlign: "center",
-          opacity: title,
-          transform: `translateY(${interpolate(title, [0, 1], [-30, 0])}px)`,
-        }}
-      >
-        Any webpage, <span style={{ color: GOLD }}>one PDF</span>
-      </div>
-
-      {/* URL bar */}
-      <div
-        style={{
-          marginTop: 56,
-          width: "100%",
-          padding: "28px 32px",
-          borderRadius: 22,
-          backgroundColor: PANEL,
-          border: `3px solid ${PANEL_LINE}`,
-          fontFamily: "monospace",
-          fontSize: 36,
-          color: TEXT_LIGHT,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          opacity: barIn,
-          transform: `translateY(${interpolate(barIn, [0, 1], [30, 0])}px)`,
-        }}
-      >
-        {url.slice(0, Math.round(typed * url.length))}
-        <span style={{ color: GOLD }}>{typed < 1 ? "|" : ""}</span>
-      </div>
-
-      <div style={{ marginTop: 26, fontSize: 64, color: GOLD, opacity: arrow, lineHeight: 1 }}>
-        &#8595;
-      </div>
-
-      {/* PDF result */}
-      <div
-        style={{
-          marginTop: 26,
-          width: 420,
-          padding: 34,
-          borderRadius: 26,
-          backgroundColor: PANEL,
-          border: `3px solid ${PANEL_LINE}`,
-          opacity: card,
-          transform: `translateY(${interpolate(card, [0, 1], [40, 0])}px) scale(${interpolate(card, [0, 1], [0.9, 1])})`,
-        }}
-      >
-        <div
-          style={{
-            display: "inline-block",
-            padding: "10px 22px",
-            borderRadius: 12,
-            backgroundColor: ACCENT,
-            color: "#fff",
-            fontSize: 30,
-            fontWeight: 900,
-            letterSpacing: 1,
-          }}
-        >
-          PDF
-        </div>
-        {[1, 0.88, 0.95, 0.5].map((w, i) => (
-          <div
-            key={i}
-            style={{
-              marginTop: i === 0 ? 24 : 14,
-              height: 14,
-              width: `${w * 100}%`,
-              borderRadius: 999,
-              backgroundColor: "rgba(255,255,255,0.22)",
-            }}
-          />
-        ))}
-      </div>
+      <span style={{ color: ACCENT }}>&#10003;</span>
+      {label}
     </div>
   );
 };
 
-// ---------------------------------------------------------------- 150 frames
+const PdfCard = ({ progress }) => (
+  <div
+    style={{
+      width: 420,
+      padding: 34,
+      borderRadius: 28,
+      border: `3px solid ${PANEL_LINE}`,
+      backgroundColor: "#FBFCFE",
+      opacity: progress,
+      transform: `translateY(${interpolate(progress, [0, 1], [40, 0])}px) scale(${interpolate(progress, [0, 1], [0.9, 1])})`,
+    }}
+  >
+    <div
+      style={{
+        display: "inline-block",
+        padding: "10px 24px",
+        borderRadius: 12,
+        backgroundColor: ACCENT,
+        color: "#fff",
+        fontSize: 32,
+        fontWeight: 900,
+        letterSpacing: 1,
+      }}
+    >
+      PDF
+    </div>
+    {[1, 0.88, 0.95, 0.5].map((w, i) => (
+      <div
+        key={i}
+        style={{
+          marginTop: i === 0 ? 24 : 14,
+          height: 14,
+          width: `${w * 100}%`,
+          borderRadius: 999,
+          backgroundColor: PANEL_LINE,
+        }}
+      />
+    ))}
+  </div>
+);
+
+// ---------------------------------------------------------------- beats
+const BeatHook = ({ length }) => (
+  <Beat length={length}>
+    <Headline size={98}>
+      Pages change.
+      <br />
+      Links <span style={{ color: ACCENT }}>break.</span>
+    </Headline>
+    <div style={{ marginTop: 34, fontSize: 48, color: PANEL_MUTED, fontWeight: 600 }}>
+      Save it before it&rsquo;s gone
+    </div>
+  </Beat>
+);
+
+const BeatConvert = ({ length }) => {
+  const frame = useCurrentFrame();
+  const url = "https://example.com/article";
+  const typed = interpolate(frame, [14, 56], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const arrow = interpolate(frame, [58, 72], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const card = interpolate(frame, [74, 92], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <Beat length={length}>
+      <Headline size={82}>
+        Any link, <span style={{ color: ACCENT }}>one PDF</span>
+      </Headline>
+
+      <div
+        style={{
+          marginTop: 40,
+          width: "100%",
+          padding: "26px 30px",
+          borderRadius: 20,
+          border: `3px solid ${PANEL_LINE}`,
+          backgroundColor: "#F7F9FC",
+          fontFamily: "monospace",
+          fontSize: 34,
+          color: PANEL_TEXT,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textAlign: "left",
+        }}
+      >
+        {url.slice(0, Math.round(typed * url.length))}
+        <span style={{ color: ACCENT }}>{typed < 1 ? "|" : ""}</span>
+      </div>
+
+      <div style={{ marginTop: 20, fontSize: 60, color: ACCENT, opacity: arrow, lineHeight: 1 }}>
+        &#8595;
+      </div>
+
+      <div style={{ marginTop: 20 }}>
+        <PdfCard progress={card} />
+      </div>
+    </Beat>
+  );
+};
+
+const BeatUse = ({ length }) => (
+  <Beat length={length}>
+    <Headline size={88}>
+      Keep it. <span style={{ color: ACCENT }}>Send it.</span>
+    </Headline>
+    <div style={{ marginTop: 46, display: "flex", flexDirection: "column", gap: 24 }}>
+      <Chip label="Download offline" delay={4} />
+      <Chip label="Email to anyone" delay={20} />
+    </div>
+  </Beat>
+);
+
+const BeatFree = ({ length }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const brand = spring({ frame: frame - 30, fps, config: { damping: 18 }, durationInFrames: 24 });
+
+  return (
+    <Beat length={length}>
+      <Headline size={98}>
+        Free. <span style={{ color: ACCENT }}>Forever.</span>
+      </Headline>
+      <div style={{ marginTop: 30, fontSize: 46, color: PANEL_MUTED, fontWeight: 600 }}>
+        No signup &middot; No watermark
+      </div>
+      <div
+        style={{
+          marginTop: 54,
+          fontSize: 84,
+          fontWeight: 800,
+          letterSpacing: -2,
+          color: PANEL_TEXT,
+          opacity: brand,
+          transform: `scale(${interpolate(brand, [0, 1], [0.9, 1])})`,
+        }}
+      >
+        Khan<span style={{ color: ACCENT }}>PDF</span>
+      </div>
+      <div style={{ marginTop: 10, fontSize: 44, fontWeight: 700, color: ACCENT, opacity: brand }}>
+        khanpdf.com
+      </div>
+    </Beat>
+  );
+};
+
+// ---------------------------------------------------------------- 300 frames
 export const BotReel = ({ audioFile, transcription }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -273,37 +402,46 @@ export const BotReel = ({ audioFile, transcription }) => {
 
   const words = transcription?.words ?? [];
   const pages = buildPages(words);
+  const speaking = words.some((w) => time >= w.start && time <= w.end);
 
-  // Only treat speech inside the trimmed range as "speaking"
-  const speaking =
-    frame < SPEECH_END && words.some((w) => time >= w.start && time <= w.end);
-
-  // Only pages that FINISH inside the trimmed audio — otherwise a caption shows
-  // words the viewer never hears.
-  const visiblePages = pages.filter((p) => p.end * fps <= SPEECH_END);
-  let activePageIndex = visiblePages.findIndex((p) => time >= p.start && time <= p.end);
+  let activePageIndex = pages.findIndex((p) => time >= p.start && time <= p.end);
   if (activePageIndex === -1) {
-    const passed = visiblePages.filter((p) => p.end < time);
-    activePageIndex = passed.length > 0 ? visiblePages.indexOf(passed[passed.length - 1]) : 0;
+    const passed = pages.filter((p) => p.end < time);
+    activePageIndex = passed.length > 0 ? pages.indexOf(passed[passed.length - 1]) : 0;
   }
-  const activePage = visiblePages[activePageIndex];
+  const activePage = pages[activePageIndex];
+
+  const beatComponents = [BeatHook, BeatConvert, BeatUse, BeatFree];
 
   return (
     <AbsoluteFill style={{ backgroundColor: BG, overflow: "hidden" }}>
-      {/* a little depth so the flat navy doesn't read as dead */}
       <AbsoluteFill
         style={{
           background:
-            "radial-gradient(ellipse at 50% 34%, rgba(250,208,108,0.10) 0%, rgba(19,28,45,0) 60%)",
+            "radial-gradient(ellipse at 50% 30%, rgba(255,85,13,0.10) 0%, rgba(19,28,45,0) 62%)",
         }}
       />
 
-      {/* Audio stops on the sentence boundary so no word is cut mid-way */}
-      <Sequence from={0} durationInFrames={SPEECH_END}>
-        {audioFile ? <Audio src={staticFile(audioFile)} /> : null}
-      </Sequence>
+      {audioFile ? <Audio src={staticFile(audioFile)} /> : null}
 
-      <Info frame={frame} />
+      {/* soft marker on each beat change */}
+      {BEATS.slice(1).map((b) => (
+        <Sequence key={b.from} from={b.from - 3} durationInFrames={24}>
+          <Audio src={staticFile("sfx/whoosh.mp3")} volume={0.22} />
+        </Sequence>
+      ))}
+
+      <Panel>
+        {BEATS.map((b, i) => {
+          const Component = beatComponents[i];
+          return (
+            <Sequence key={b.from} from={b.from} durationInFrames={b.to - b.from}>
+              <Component length={b.to - b.from} />
+            </Sequence>
+          );
+        })}
+      </Panel>
+
       <Bot speaking={speaking} frame={frame} />
 
       {/* captions */}
@@ -344,11 +482,11 @@ export const BotReel = ({ audioFile, transcription }) => {
               <span
                 key={`${word.word}-${index}`}
                 style={{
-                  fontSize: 84,
+                  fontSize: 82,
                   fontWeight: 900,
-                  color: isActive ? GOLD : isSpoken ? TEXT_LIGHT : TEXT_DIM,
+                  color: isActive ? ACCENT : isSpoken ? TEXT_LIGHT : TEXT_DIM,
                   transform: `scale(${scale})`,
-                  textShadow: "0 6px 18px rgba(0,0,0,0.75)",
+                  textShadow: "0 6px 18px rgba(0,0,0,0.8)",
                 }}
               >
                 {word.word}

@@ -2,11 +2,11 @@
   "task": "transcribe",
   "language": "English",
   "duration": 9.28,
-  "text": " Need a page saved forever? KhanPDF turns any link into a clean PDF. Download it, email it. Free, no sign up.",
+  "text": " Need a page saved forever? Khan PDF turns any link into a clean PDF. Download it. Email it. Free. No sign-up.",
   "words": [
     {
       "word": "Need",
-      "start": 0.02,
+      "start": 0.04,
       "end": 0.22
     },
     {
@@ -17,101 +17,101 @@
     {
       "word": "page",
       "start": 0.4,
-      "end": 0.72
+      "end": 0.74
     },
     {
       "word": "saved",
-      "start": 0.72,
-      "end": 1.12
+      "start": 0.74,
+      "end": 1.1
     },
     {
       "word": "forever?",
-      "start": 1.12,
-      "end": 2.3
+      "start": 1.1,
+      "end": 1.98
     },
     {
-      "word": "KhanPDF",
+      "word": "Khan",
       "start": 2.22,
-      "end": 2.96
+      "end": 2.44
+    },
+    {
+      "word": "PDF",
+      "start": 2.44,
+      "end": 2.74
     },
     {
       "word": "turns",
-      "start": 2.96,
-      "end": 3.34
+      "start": 2.74,
+      "end": 3.28
     },
     {
       "word": "any",
-      "start": 3.34,
-      "end": 3.7
+      "start": 3.28,
+      "end": 3.66
     },
     {
       "word": "link",
-      "start": 3.7,
-      "end": 4.02
+      "start": 3.66,
+      "end": 3.96
     },
     {
       "word": "into",
-      "start": 4.02,
-      "end": 4.26
+      "start": 3.96,
+      "end": 4.2
     },
     {
       "word": "a",
-      "start": 4.26,
-      "end": 4.54
+      "start": 4.2,
+      "end": 4.38
     },
     {
       "word": "clean",
-      "start": 4.54,
-      "end": 4.8
+      "start": 4.38,
+      "end": 4.74
     },
     {
       "word": "PDF.",
-      "start": 4.8,
-      "end": 5.86
+      "start": 4.74,
+      "end": 5.7
     },
     {
       "word": "Download",
-      "start": 5.86,
-      "end": 6.3
-    },
-    {
-      "word": "it,",
-      "start": 6.3,
-      "end": 6.82
-    },
-    {
-      "word": "email",
-      "start": 6.82,
-      "end": 7.06
+      "start": 5.98,
+      "end": 6.28
     },
     {
       "word": "it.",
-      "start": 7.06,
-      "end": 7.52
+      "start": 6.28,
+      "end": 6.54
     },
     {
-      "word": "Free,",
-      "start": 7.68,
-      "end": 8.14
+      "word": "Email",
+      "start": 6.9,
+      "end": 7.08
     },
     {
-      "word": "no",
-      "start": 8.14,
-      "end": 8.66
+      "word": "it.",
+      "start": 7.08,
+      "end": 7.88
     },
     {
-      "word": "sign",
-      "start": 8.66,
-      "end": 8.96
+      "word": "Free.",
+      "start": 7.8,
+      "end": 8.46
     },
     {
-      "word": "up.",
-      "start": 8.96,
-      "end": 9.32
+      "word": "No",
+      "start": 8.44,
+      "end": 8.62
+    },
+    {
+      "word": "sign-up.",
+      "start": 8.62,
+      "end": 9.6
     }
   ],
   "segments": null,
   "x_groq": {
-    "id": "req_01m66zxjjeevxvx7zr924hd6q6"
+    "id": "req_01m6726k10edwbarqkdc9j08fe"
   }
 }

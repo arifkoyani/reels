@@ -1,0 +1,117 @@
+{
+  "task": "transcribe",
+  "language": "English",
+  "duration": 9.28,
+  "text": " Need a page saved forever? Khan PDF turns any link into a clean PDF. Download it. Email it. Free. No sign-up.",
+  "words": [
+    {
+      "word": "Need",
+      "start": 0.04,
+      "end": 0.22
+    },
+    {
+      "word": "a",
+      "start": 0.22,
+      "end": 0.4
+    },
+    {
+      "word": "page",
+      "start": 0.4,
+      "end": 0.74
+    },
+    {
+      "word": "saved",
+      "start": 0.74,
+      "end": 1.1
+    },
+    {
+      "word": "forever?",
+      "start": 1.1,
+      "end": 1.98
+    },
+    {
+      "word": "Khan",
+      "start": 2.22,
+      "end": 2.44
+    },
+    {
+      "word": "PDF",
+      "start": 2.44,
+      "end": 2.74
+    },
+    {
+      "word": "turns",
+      "start": 2.74,
+      "end": 3.28
+    },
+    {
+      "word": "any",
+      "start": 3.28,
+      "end": 3.66
+    },
+    {
+      "word": "link",
+      "start": 3.66,
+      "end": 3.96
+    },
+    {
+      "word": "into",
+      "start": 3.96,
+      "end": 4.2
+    },
+    {
+      "word": "a",
+      "start": 4.2,
+      "end": 4.38
+    },
+    {
+      "word": "clean",
+      "start": 4.38,
+      "end": 4.74
+    },
+    {
+      "word": "PDF.",
+      "start": 4.74,
+      "end": 5.7
+    },
+    {
+      "word": "Download",
+      "start": 5.98,
+      "end": 6.28
+    },
+    {
+      "word": "it.",
+      "start": 6.28,
+      "end": 6.54
+    },
+    {
+      "word": "Email",
+      "start": 6.9,
+      "end": 7.08
+    },
+    {
+      "word": "it.",
+      "start": 7.08,
+      "end": 7.88
+    },
+    {
+      "word": "Free.",
+      "start": 7.8,
+      "end": 8.46
+    },
+    {
+      "word": "No",
+      "start": 8.44,
+      "end": 8.62
+    },
+    {
+      "word": "sign-up.",
+      "start": 8.62,
+      "end": 9.6
+    }
+  ],
+  "segments": null,
+  "x_groq": {
+    "id": "req_01m6726k10edwbarqkdc9j08fe"
+  }
+}

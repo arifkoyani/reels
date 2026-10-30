@@ -11,6 +11,7 @@ import {
 } from "remotion";
 import { COLORS, FONTS, LAYOUT, SUBTITLE_LINES } from "./theme.js";
 import { Beat } from "./Beat.jsx";
+import { Icon } from "./Icon.jsx";
 import { KineticCaption } from "./KineticCaption.jsx";
 
 // Pages hold up to 5 words so they split as 2 / 2 / 1 across stacked lines.
@@ -43,6 +44,31 @@ const buildPages = (words, { maxWords = 5, maxGap = 0.45, maxDuration = 2.6 } = 
   flush();
 
   return pages;
+};
+
+// Merge words into continuous speech spans, so the nod runs through a sentence
+// instead of restarting on every inter-word gap.
+const speechSpans = (words, mergeGap = 0.35) => {
+  const spans = [];
+  for (const w of words) {
+    const last = spans[spans.length - 1];
+    if (last && w.start - last.end <= mergeGap) last.end = w.end;
+    else spans.push({ start: w.start, end: w.end });
+  }
+  return spans;
+};
+
+// 0 outside speech, 1 during it, with a smooth ramp either side so the head
+// eases into the nod and settles still rather than snapping.
+const nodEnvelopeAt = (spans, t, ramp = 0.25) => {
+  for (const s of spans) {
+    if (t < s.start - ramp || t > s.end + ramp) continue;
+    const up = (t - (s.start - ramp)) / ramp;
+    const down = (s.end + ramp - t) / ramp;
+    const raw = Math.max(0, Math.min(1, up, down));
+    return raw * raw * (3 - 2 * raw); // smoothstep
+  }
+  return 0;
 };
 
 // ---------------------------------------------------------------- bot
@@ -100,37 +126,24 @@ const BotMouth = ({ speaking, frame }) => {
   );
 };
 
-const Bot = ({ speaking, frame }) => {
+const NOD_HZ = 2; // nods per second
+const NOD_DEG = 5; // peak degrees each way
+
+const Bot = ({ nodAmount, speaking, frame }) => {
   const { fps } = useVideoConfig();
-  const enter = spring({ frame, fps, config: { damping: 16, stiffness: 110 }, durationInFrames: 22 });
+  const t = frame / fps;
 
-  // ── Nod animation ──────────────────────────────────────────────────────────
-  // Starts still for 1 s, nods for 3 s (~2 nods/s, ±5 °), settles still.
-  // Implemented as a pitch rotation (rotateX) in perspective so the face
-  // screen tilts with the head while position stays fixed.
-  const NOD_START  = fps * 1;          // frame 30  (1 s)
-  const NOD_END    = fps * 4;          // frame 120 (4 s)
-  const NOD_HZ     = 2;                // cycles per second
-  const NOD_DEG    = 5;                // peak degrees each way
+  // Pitch rotation about the horizontal axis through the side pods. The sine is
+  // already ease-in/ease-out, and nodAmount ramps it in and out so it starts and
+  // settles still. Nothing translates or scales — the head only rotates in place.
+  const nodAngle = NOD_DEG * nodAmount * Math.sin(t * NOD_HZ * Math.PI * 2);
 
-  let nodAngle = 0;
-  if (frame >= NOD_START && frame <= NOD_END) {
-    const t          = (frame - NOD_START) / fps;          // seconds into nod phase
-    const duration   = (NOD_END - NOD_START) / fps;        // 3 s total
-    const progress   = t / duration;                        // 0 → 1
-
-    // Smooth amplitude envelope: ease-in first 20 %, ease-out last 20 %
-    const envelope =
-      progress < 0.2  ? progress / 0.2 :
-      progress > 0.8  ? (1 - progress) / 0.2 :
-      1;
-
-    nodAngle = NOD_DEG * envelope * Math.sin(t * NOD_HZ * Math.PI * 2);
-  }
-  // ──────────────────────────────────────────────────────────────────────────
-
-  const enterScale = interpolate(enter, [0, 1], [0.86, 1]);
-  const enterY     = interpolate(enter, [0, 1], [50, 0]);
+  // Fade only: no entrance slide or scale, which would read as the head
+  // sliding up and the camera zooming.
+  const enter = interpolate(frame, [0, 14], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <div
@@ -140,13 +153,11 @@ const Bot = ({ speaking, frame }) => {
         left: LAYOUT.botLeft,
         width: LAYOUT.botWidth,
         zIndex: 20,
-        // perspective gives the rotateX depth; transformOrigin at the
-        // horizontal mid-line of the side pods (~55 % down the sprite)
+        // perspective gives the rotateX depth; origin on the pod mid-line
         perspective: "900px",
         perspectiveOrigin: "50% 55%",
         opacity: enter,
         filter: "drop-shadow(0 22px 40px rgba(0,0,0,0.6))",
-        transform: `translateY(${enterY}px) scale(${enterScale})`,
       }}
     >
       {/* Head + face — rotates on the pitch axis */}
@@ -162,6 +173,90 @@ const Bot = ({ speaking, frame }) => {
         />
         <BotMouth speaking={speaking} frame={frame} />
       </div>
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------- word cues
+// A small icon chip fired on the word being spoken: "links" shows a link,
+// "go dead" shows a broken one. Lives in the open band beside the bot.
+const CUE_TONES = {
+  good: COLORS.accent,
+  danger: "#FF4D4D",
+  neutral: "#FFFFFF",
+};
+
+const CueChip = ({ cue, time, frame, fps }) => {
+  const enter = spring({
+    frame: frame - Math.round(cue.start * fps),
+    fps,
+    config: { damping: 13, stiffness: 190 },
+    durationInFrames: 12,
+  });
+  // fade out over the last 0.3s of its hold
+  const out = interpolate(time, [cue.until - 0.3, cue.until], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const tone = CUE_TONES[cue.tone] ?? CUE_TONES.neutral;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        padding: "16px 26px",
+        borderRadius: 999,
+        backgroundColor: "rgba(10,16,28,0.92)",
+        border: `3px solid ${tone}`,
+        boxShadow: `0 10px 30px rgba(0,0,0,0.5)`,
+        whiteSpace: "nowrap",
+        opacity: enter * out,
+        transform: `translateY(${interpolate(enter, [0, 1], [26, 0])}px) scale(${interpolate(enter, [0, 1], [0.8, 1])})`,
+      }}
+    >
+      <Icon name={cue.icon} size={52} color={tone} strokeWidth={2.2} />
+      <span
+        style={{
+          fontFamily: FONTS.ui,
+          fontSize: 36,
+          fontWeight: 800,
+          color: COLORS.textLight,
+          // a struck-through label reads as "this is the broken one"
+          textDecoration: cue.tone === "danger" ? "line-through" : "none",
+          textDecorationColor: tone,
+        }}
+      >
+        {cue.label}
+      </span>
+    </div>
+  );
+};
+
+const WordCues = ({ cues = [], time, frame, fps }) => {
+  const active = cues.filter((c) => time >= c.start && time <= c.until).slice(-2);
+  if (active.length === 0) return null;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: LAYOUT.botTop + 20,
+        left: LAYOUT.botLeft + LAYOUT.botWidth + 30,
+        right: 60,
+        height: 240,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        gap: 16,
+        zIndex: 25,
+      }}
+    >
+      {active.map((cue) => (
+        <CueChip key={`${cue.icon}-${cue.start}`} cue={cue} time={time} frame={frame} fps={fps} />
+      ))}
     </div>
   );
 };
@@ -244,6 +339,7 @@ export const BotReel = ({
   audioFile,
   transcription,
   beats = [],
+  cues = [],
   speed = 1,
   speechEnd,
   captionStyle = "pop",
@@ -314,7 +410,24 @@ export const BotReel = ({
         ))}
       </div>
 
-      <Bot speaking={speaking} frame={frame} />
+      <Bot
+        nodAmount={nodEnvelopeAt(speechSpans(words), time)}
+        speaking={speaking}
+        frame={frame}
+      />
+
+      {/* cues arrive in audio time, so they scale with playbackRate like the words do */}
+      <WordCues
+        cues={cues.map((c) => ({
+          ...c,
+          start: c.start / speed,
+          end: c.end / speed,
+          until: c.until / speed,
+        }))}
+        time={time}
+        frame={frame}
+        fps={fps}
+      />
 
       <KineticCaption
         words={transcription?.words ?? []}

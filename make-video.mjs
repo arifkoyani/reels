@@ -96,10 +96,14 @@ if (fs.existsSync(cachedAudio) && !force) {
       "-o",
       cachedAudio,
     ],
-    { input: JSON.stringify(body) },
+    // npx is a .cmd on Windows, which Node will not spawn without a shell.
+    // Safe here: the args carry no spec text — the JSON travels on stdin.
+    { input: JSON.stringify(body), shell: true },
   );
   if (res.status !== 0 || !fs.existsSync(cachedAudio)) {
-    fail(`ElevenLabs TTS failed\n${res.stderr || res.stdout}`);
+    fail(
+      `ElevenLabs TTS failed (status ${res.status})\n${res.stderr || res.stdout || res.error?.message || "no output"}`,
+    );
   }
   console.log(`    generated -> ${cachedAudio}`);
 }
@@ -151,6 +155,39 @@ if (speechSeconds > spec.durationSeconds) {
   );
 }
 
+// ------------------------------------------------------- 3b. word-level cues
+step("3b", "Word cues");
+const WORD_ICONS = path.join("tools", "word-icons.json");
+const dict = JSON.parse(fs.readFileSync(WORD_ICONS, "utf8"));
+const norm = (s) => s.toLowerCase().replace(/[^a-z0-9-]/g, "");
+
+const cues = [];
+for (let i = 0; i < transcript.words.length; i += 1) {
+  const w = transcript.words[i];
+  const next = transcript.words[i + 1];
+
+  // two-word phrases win over single words ("go dead" over "dead")
+  const pair = next ? `${norm(w.word)} ${norm(next.word)}` : null;
+  const phraseHit = pair ? dict.phrases[pair] : null;
+  const hit = phraseHit ?? dict.words[norm(w.word)];
+  if (!hit) continue;
+
+  const end = phraseHit ? next.end : w.end;
+  cues.push({
+    start: w.start,
+    end,
+    // hold briefly after the word so it is readable
+    until: end + 0.7,
+    ...hit,
+  });
+  if (phraseHit) i += 1; // the pair consumed the next word too
+}
+
+console.log(`    ${cues.length} cue(s) from ${transcript.words.length} words`);
+for (const c of cues) {
+  console.log(`      ${c.start.toFixed(2)}s  ${c.icon.padEnd(16)} ${c.tone.padEnd(7)} ${c.label}`);
+}
+
 // ---------------------------------------------------------------- 4. stage
 step(4, "Staging");
 const audioName = `${spec.id}.mp3`;
@@ -172,6 +209,7 @@ const props = {
   audioFile: `audio/${audioName}`,
   transcription: transcript,
   beats,
+  cues,
   speed: spec.speed ?? 1,
   durationInFrames,
   captionStyle: spec.captionStyle ?? "pop",

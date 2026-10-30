@@ -1,0 +1,61 @@
+{
+  "id": "khanpdf-ref",
+  "composition": "StyleReel",
+  "durationSeconds": 12,
+  "speed": 1,
+  "voice": {
+    "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+    "modelId": "eleven_v4",
+    "filterPreset": "low_quality_phone"
+  },
+  "script": "Links go dead. Pages disappear. KhanPDF saves any URL as a clean PDF instantly. Free. No sign-up. Just paste and download.",
+  "beats": [
+    {
+      "fromSeconds": 0,
+      "toSeconds": 3.2,
+      "kicker": "the problem",
+      "stamp": "LINKS {GO DEAD}",
+      "widget": "cards",
+      "cards": [
+        { "icon": "unlink", "title": "Broken link", "note": "404 not found" },
+        { "icon": "ghost", "title": "Page removed", "note": "gone for good" }
+      ]
+    },
+    {
+      "fromSeconds": 3.2,
+      "toSeconds": 5.3,
+      "kicker": "step one",
+      "step": 1,
+      "stamp": "PASTE THE {URL}",
+      "widget": "url",
+      "url": "https://en.wikipedia.org/wiki/PDF"
+    },
+    {
+      "fromSeconds": 5.3,
+      "toSeconds": 7.8,
+      "kicker": "step two",
+      "step": 2,
+      "stamp": "GET A {CLEAN} PDF",
+      "widget": "progress"
+    },
+    {
+      "fromSeconds": 7.8,
+      "toSeconds": 9.5,
+      "kicker": "step three",
+      "step": 3,
+      "stamp": "KEEP OR {SHARE}",
+      "widget": "cards",
+      "cards": [
+        { "icon": "download", "title": "Download", "note": "saved offline" },
+        { "icon": "mail", "title": "Email it", "note": "send anywhere" }
+      ]
+    },
+    {
+      "fromSeconds": 9.5,
+      "toSeconds": 12.0,
+      "kicker": "free forever",
+      "stamp": "{FREE.} NO SIGN-UP",
+      "widget": "brand"
+    }
+  ]
+}

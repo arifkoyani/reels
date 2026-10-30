@@ -4,6 +4,7 @@ import { Scene } from "./Scene.jsx";
 import { Explainer } from "./Explainer.jsx";
 import { Infographic } from "./Infographic.jsx";
 import { BotReel } from "./BotReel.jsx";
+import { StyleReel } from "./StyleReel.jsx";
 import reelTranscription from "./reel-transcription.json";
 import bot10Transcription from "./bot10-transcription.json";
 import defaultSpec from "../video-specs/khanpdf-10s.json";
@@ -43,6 +44,29 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
+      {/* Reference-style reel: cream paper, top two-tone caption, stamped
+          display type, character bottom-right. Driven by make-video.mjs. */}
+      <Composition
+        id="StyleReel"
+        component={StyleReel}
+        durationInFrames={360}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          audioFile: "audio/khanpdf-10s.mp3",
+          transcription: bot10Transcription,
+          beats: [],
+          cues: [],
+        }}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: props.durationInFrames ?? 360,
+          fps: FPS,
+          width: WIDTH,
+          height: HEIGHT,
+        })}
+      />
+
       {/* Spec-driven reel. make-video.mjs supplies audio, captions, beats and
           duration through --props; the defaults below are only for Studio. */}
       <Composition

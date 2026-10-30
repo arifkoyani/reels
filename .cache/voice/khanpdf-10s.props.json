@@ -3,123 +3,123 @@
   "transcription": {
     "task": "transcribe",
     "language": "English",
-    "duration": 11.28,
-    "text": " Links go dead. Pages disappear. KhanPDF saves any URL as a clean PDF instantly. Free. No sign up. Just paste and download.",
+    "duration": 11.12,
+    "text": " Links go dead. Pages disappear. KhanPDF saves any URL as a clean PDF instantly. Free. No sign-up. Just paste and download.",
     "words": [
       {
         "word": "Links",
-        "start": 0.02,
+        "start": 0.04,
         "end": 0.36
       },
       {
         "word": "go",
         "start": 0.36,
-        "end": 0.62
+        "end": 0.64
       },
       {
         "word": "dead.",
-        "start": 0.62,
-        "end": 1.4
+        "start": 0.64,
+        "end": 1.56
       },
       {
         "word": "Pages",
-        "start": 1.4,
-        "end": 1.84
+        "start": 1.56,
+        "end": 1.9
       },
       {
         "word": "disappear.",
-        "start": 1.84,
-        "end": 3.3
+        "start": 1.9,
+        "end": 3.12
       },
       {
-        "word": "KhanPDF",
-        "start": 3.24,
-        "end": 3.92
+        "word": "Khan",
+        "start": 3.38,
+        "end": 3.54
+      },
+      {
+        "word": "PDF",
+        "start": 3.54,
+        "end": 3.82
       },
       {
         "word": "saves",
-        "start": 3.92,
+        "start": 3.82,
         "end": 4.34
       },
       {
         "word": "any",
         "start": 4.34,
-        "end": 4.72
+        "end": 4.7
       },
       {
         "word": "URL",
-        "start": 4.72,
-        "end": 5.26
+        "start": 4.7,
+        "end": 5.18
       },
       {
         "word": "as",
-        "start": 5.26,
-        "end": 5.56
+        "start": 5.18,
+        "end": 5.5
       },
       {
         "word": "a",
-        "start": 5.56,
-        "end": 5.82
+        "start": 5.5,
+        "end": 5.72
       },
       {
         "word": "clean",
-        "start": 5.82,
-        "end": 6.08
+        "start": 5.72,
+        "end": 5.94
       },
       {
         "word": "PDF",
-        "start": 6.08,
-        "end": 6.62
+        "start": 5.94,
+        "end": 6.44
       },
       {
         "word": "instantly.",
-        "start": 6.62,
-        "end": 7.82
+        "start": 6.44,
+        "end": 7.06
       },
       {
         "word": "Free.",
-        "start": 7.88,
-        "end": 8.34
+        "start": 7.92,
+        "end": 8.56
       },
       {
         "word": "No",
-        "start": 8.34,
-        "end": 8.8
+        "start": 8.56,
+        "end": 8.7
       },
       {
-        "word": "sign",
-        "start": 8.8,
-        "end": 9.16
-      },
-      {
-        "word": "up.",
-        "start": 9.16,
-        "end": 9.52
+        "word": "sign-up.",
+        "start": 8.7,
+        "end": 9.28
       },
       {
         "word": "Just",
-        "start": 9.52,
-        "end": 9.82
+        "start": 9.28,
+        "end": 9.72
       },
       {
         "word": "paste",
-        "start": 9.82,
-        "end": 10.2
+        "start": 9.72,
+        "end": 10.08
       },
       {
         "word": "and",
-        "start": 10.2,
-        "end": 10.44
+        "start": 10.08,
+        "end": 10.32
       },
       {
         "word": "download.",
-        "start": 10.44,
-        "end": 11.22
+        "start": 10.32,
+        "end": 10.68
       }
     ],
     "segments": null,
     "x_groq": {
-      "id": "req_01m677x9gwex79qvdmtcffp4e6"
+      "id": "req_01m67b0pd4etcrnn0vtyganb14"
     }
   },
   "beats": [
@@ -193,6 +193,112 @@
       },
       "from": 285,
       "to": 360
+    }
+  ],
+  "cues": [
+    {
+      "start": 0.04,
+      "end": 0.36,
+      "until": 1.06,
+      "icon": "link",
+      "label": "link",
+      "tone": "neutral"
+    },
+    {
+      "start": 0.36,
+      "end": 1.56,
+      "until": 2.26,
+      "icon": "unlink",
+      "label": "dead link",
+      "tone": "danger"
+    },
+    {
+      "start": 1.56,
+      "end": 1.9,
+      "until": 2.5999999999999996,
+      "icon": "file",
+      "label": "page",
+      "tone": "neutral"
+    },
+    {
+      "start": 1.9,
+      "end": 3.12,
+      "until": 3.8200000000000003,
+      "icon": "ghost",
+      "label": "gone",
+      "tone": "danger"
+    },
+    {
+      "start": 3.54,
+      "end": 3.82,
+      "until": 4.52,
+      "icon": "file-text",
+      "label": "PDF",
+      "tone": "good"
+    },
+    {
+      "start": 3.82,
+      "end": 4.34,
+      "until": 5.04,
+      "icon": "save",
+      "label": "saved",
+      "tone": "good"
+    },
+    {
+      "start": 4.7,
+      "end": 5.18,
+      "until": 5.88,
+      "icon": "globe",
+      "label": "any URL",
+      "tone": "neutral"
+    },
+    {
+      "start": 5.72,
+      "end": 5.94,
+      "until": 6.640000000000001,
+      "icon": "sparkles",
+      "label": "clean",
+      "tone": "good"
+    },
+    {
+      "start": 5.94,
+      "end": 6.44,
+      "until": 7.140000000000001,
+      "icon": "file-text",
+      "label": "PDF",
+      "tone": "good"
+    },
+    {
+      "start": 6.44,
+      "end": 7.06,
+      "until": 7.76,
+      "icon": "zap",
+      "label": "instant",
+      "tone": "good"
+    },
+    {
+      "start": 7.92,
+      "end": 8.56,
+      "until": 9.26,
+      "icon": "gift",
+      "label": "free",
+      "tone": "good"
+    },
+    {
+      "start": 9.72,
+      "end": 10.08,
+      "until": 10.78,
+      "icon": "clipboard-paste",
+      "label": "paste",
+      "tone": "neutral"
+    },
+    {
+      "start": 10.32,
+      "end": 10.68,
+      "until": 11.379999999999999,
+      "icon": "download",
+      "label": "download",
+      "tone": "good"
     }
   ],
   "speed": 1,

@@ -21,6 +21,8 @@ const TEXT_LIGHT = "#FFFFFF";
 const TEXT_DIM = "rgba(255,255,255,0.40)";
 const SCREEN_GLOW = "#FAD06C";
 const SCREEN = "rgb(22, 26, 36)";
+// Second subtitle line's colour
+const SUBTITLE_ACCENT = "#B04528";
 
 const SERIF_FONT = 'Georgia, Cambria, "Times New Roman", Times, serif';
 const UI_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
@@ -53,7 +55,8 @@ const BEATS = [
   { from: 250, to: 300, step: 0 },
 ];
 
-const buildPages = (words, { maxWords = 3, maxGap = 0.45, maxDuration = 2.2 } = {}) => {
+// Pages hold up to 5 words so they split as 2 / 2 / 1 across stacked lines.
+const buildPages = (words, { maxWords = 5, maxGap = 0.45, maxDuration = 2.6 } = {}) => {
   const pages = [];
   let current = [];
 
@@ -187,10 +190,12 @@ const Bot = ({ speaking, frame }) => {
   const { fps } = useVideoConfig();
   const enter = spring({ frame, fps, config: { damping: 16, stiffness: 110 }, durationInFrames: 22 });
 
-  // Calm hover when idle; a faster vertical shake (~26px peak-to-peak) while
-  // speaking, so the bot visibly drives the voice.
-  const hover = Math.sin(frame / 13) * 10;
-  const shake = speaking ? Math.sin(frame / 1.55) * 13 : 0;
+  // The bot vibrates on its own pivot rather than travelling: a 1.5px idle
+  // breath and a 3px speaking shake, so total movement stays inside 2-4px.
+  const hover = Math.sin(frame / 15) * 1.5;
+  const shake = speaking ? Math.sin(frame / 1.4) * 3 : 0;
+  // a hair of squash on the same beat sells the vibration without moving it
+  const squash = speaking ? 1 + Math.sin(frame / 1.4) * 0.008 : 1;
 
   return (
     <div
@@ -200,7 +205,8 @@ const Bot = ({ speaking, frame }) => {
         left: BOT_LEFT,
         width: BOT_W,
         zIndex: 20,
-        transform: `translateY(${hover + shake + interpolate(enter, [0, 1], [50, 0])}px) scale(${interpolate(enter, [0, 1], [0.86, 1])})`,
+        transformOrigin: "50% 50%",
+        transform: `translateY(${hover + shake + interpolate(enter, [0, 1], [50, 0])}px) scale(${interpolate(enter, [0, 1], [0.86, 1])}) scaleY(${squash})`,
         opacity: enter,
         filter: "drop-shadow(0 22px 40px rgba(0,0,0,0.6))",
       }}
@@ -472,24 +478,133 @@ const BeatFree = ({ length }) => {
   );
 };
 
+// ---------------------------------------------------------------- caption
+// Words stack two per line, with the remainder alone on the last line
+// (5 words => 2 / 2 / 1). Lines alternate between a small bold white sans and a
+// much larger lime serif, each stepped slightly further right than the one above.
+const chunkWords = (words, size = 2) => {
+  const out = [];
+  for (let i = 0; i < words.length; i += size) out.push(words.slice(i, i + size));
+  return out;
+};
+
+const LINE_STYLES = [
+  {
+    fontFamily: UI_FONT,
+    fontSize: 62,
+    fontWeight: 800,
+    letterSpacing: "-1.5px",
+    color: TEXT_LIGHT,
+  },
+  {
+    fontFamily: SERIF_FONT,
+    fontSize: 112,
+    fontWeight: 900,
+    letterSpacing: "-2px",
+    color: SUBTITLE_ACCENT,
+  },
+];
+
+const CaptionBlock = ({ page, time, frame, fps }) => {
+  if (!page) return null;
+  const lines = chunkWords(page.words, 2);
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: TITLE_TOP,
+        left: 60,
+        right: 60,
+        display: "flex",
+        justifyContent: "center",
+        zIndex: 30,
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        {lines.map((line, li) => {
+          const style = LINE_STYLES[li % LINE_STYLES.length];
+          return (
+            <div
+              key={li}
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: 18,
+                marginLeft: li * 46,
+                marginTop: li === 0 ? 0 : -6,
+                textTransform: "lowercase",
+                lineHeight: 1.02,
+                ...style,
+              }}
+            >
+              {line.map((word, wi) => {
+                const isSpoken = time >= word.start;
+                const isActive = time >= word.start && time <= word.end;
+                const enter = spring({
+                  frame: frame - Math.round(word.start * fps),
+                  fps,
+                  config: { damping: 14, stiffness: 220 },
+                  durationInFrames: 8,
+                });
+                const scale = isActive ? interpolate(enter, [0, 1], [0.92, 1.05]) : 1;
+
+                return (
+                  <span
+                    key={`${word.word}-${wi}`}
+                    style={{
+                      display: "inline-block",
+                      transform: `scale(${scale})`,
+                      opacity: isSpoken ? 1 : 0.3,
+                      textShadow: "0 6px 22px rgba(0,0,0,0.85)",
+                    }}
+                  >
+                    {word.word}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------- 300 frames
-export const BotReel = ({ audioFile, transcription }) => {
+export const BotReel = ({ audioFile, transcription, speed = 1, variant = "full", speechEnd }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const time = frame / fps;
 
-  const words = transcription?.words ?? [];
+  // Playing the voice faster compresses every timestamp by the same factor, so
+  // captions and the mouth have to be rescaled or they drift out of sync.
+  const words = (transcription?.words ?? []).map((w) => ({
+    ...w,
+    start: w.start / speed,
+    end: w.end / speed,
+  }));
   const pages = buildPages(words);
   const speaking = words.some((w) => time >= w.start && time <= w.end);
 
-  let activePageIndex = pages.findIndex((p) => time >= p.start && time <= p.end);
+  // Only pages that finish inside the audible range, so no caption shows words
+  // the viewer never hears.
+  const audibleEnd = (speechEnd ?? durationInFrames) / fps;
+  const shownPages = pages.filter((p) => p.end <= audibleEnd);
+
+  let activePageIndex = shownPages.findIndex((p) => time >= p.start && time <= p.end);
   if (activePageIndex === -1) {
-    const passed = pages.filter((p) => p.end < time);
-    activePageIndex = passed.length > 0 ? pages.indexOf(passed[passed.length - 1]) : 0;
+    const passed = shownPages.filter((p) => p.end < time);
+    activePageIndex = passed.length > 0 ? shownPages.indexOf(passed[passed.length - 1]) : 0;
   }
-  const activePage = pages[activePageIndex];
+  const activePage = shownPages[activePageIndex];
 
   const beatComponents = [BeatHook, BeatLink, BeatPdf, BeatShare, BeatFree];
+
+  // The short cut has no room to step through the window: it holds the hook.
+  const beats =
+    variant === "short" ? [{ from: 0, to: durationInFrames, step: 0 }] : BEATS;
+  const audioStop = speechEnd ?? durationInFrames;
 
   return (
     <AbsoluteFill style={{ backgroundColor: BG, overflow: "hidden" }}>
@@ -502,10 +617,14 @@ export const BotReel = ({ audioFile, transcription }) => {
       />
 
       {/* voiceover only — no background sound effects */}
-      {audioFile ? <Audio src={staticFile(audioFile)} /> : null}
+      {audioFile ? (
+        <Sequence from={0} durationInFrames={audioStop}>
+          <Audio src={staticFile(audioFile)} playbackRate={speed} />
+        </Sequence>
+      ) : null}
 
       <Window>
-        {BEATS.map((b, i) => {
+        {beats.map((b, i) => {
           const Component = beatComponents[i];
           return (
             <Sequence key={b.from} from={b.from} durationInFrames={b.to - b.from}>
@@ -518,57 +637,7 @@ export const BotReel = ({ audioFile, transcription }) => {
       <Bot speaking={speaking} frame={frame} />
 
       {/* title sits directly beneath the window */}
-      <div
-        style={{
-          position: "absolute",
-          top: TITLE_TOP,
-          left: 60,
-          right: 60,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          zIndex: 30,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "10px 20px",
-            fontFamily: SERIF_FONT,
-            textAlign: "center",
-          }}
-        >
-          {activePage?.words.map((word, index) => {
-            const isSpoken = time >= word.start;
-            const isActive = time >= word.start && time <= word.end;
-            const enter = spring({
-              frame: frame - Math.round(word.start * fps),
-              fps,
-              config: { damping: 14, stiffness: 220 },
-              durationInFrames: 8,
-            });
-            const scale = isActive ? interpolate(enter, [0, 1], [0.9, 1.06]) : 1;
-
-            return (
-              <span
-                key={`${word.word}-${index}`}
-                style={{
-                  fontSize: 88,
-                  fontWeight: 900,
-                  color: isActive ? ACCENT : isSpoken ? TEXT_LIGHT : TEXT_DIM,
-                  transform: `scale(${scale})`,
-                  textShadow: "0 6px 20px rgba(0,0,0,0.8)",
-                }}
-              >
-                {word.word}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+      <CaptionBlock page={activePage} time={time} frame={frame} fps={fps} />
     </AbsoluteFill>
   );
 };

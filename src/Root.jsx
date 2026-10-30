@@ -35,6 +35,25 @@ const baseProps = {
 export const RemotionRoot = () => {
   return (
     <>
+      {/* 2s cut in the same style, voice at 1.3x */}
+      <Composition
+        id="BotReel2s"
+        component={BotReel}
+        durationInFrames={60}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          audioFile: "audio/bot10-vo-phone.mp3",
+          transcription: bot10Transcription,
+          speed: 1.3,
+          variant: "short",
+          // "forever?" ends at 1.97s of source audio and "Khan" starts at 2.22s;
+          // at 1.3x frame 50 sits between them, so the voice stops on the phrase.
+          speechEnd: 50,
+        }}
+      />
+
       {/* 10s bot reel: light explainer panel above, bot floating over captions */}
       <Composition
         id="BotReel"

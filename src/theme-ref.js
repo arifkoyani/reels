@@ -36,7 +36,7 @@ export const REF_LAYOUT = {
   captionTop: 250, // spoken line
   stageTop: 580, // infographic zone starts
   stageHeight: 820,
-  botWidth: 430, // character, bottom-right and cropped by the frame
-  botRight: -40,
-  botBottom: -60,
+  botWidth: 600, // character, bottom-right and cropped by the frame
+  botRight: -90,
+  botBottom: -120,
 };

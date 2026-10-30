@@ -79,7 +79,7 @@ const MonoLabel = ({ children, style }) => (
   <div
     style={{
       fontFamily: MONO,
-      fontSize: 26,
+      fontSize: 30,
       letterSpacing: 2,
       color: REF.muted,
       ...style,
@@ -142,7 +142,7 @@ const Stamp = ({ text, frame }) => {
         opacity: e,
       }}
     >
-      <div style={{ fontFamily: DISPLAY, fontSize: 82, letterSpacing: 1, lineHeight: 1 }}>
+      <div style={{ fontFamily: DISPLAY, fontSize: 96, letterSpacing: 1, lineHeight: 1 }}>
         {parts.map((p, i) =>
           p.startsWith("{") ? (
             <span key={i} style={{ color: REF.accent }}>
@@ -166,11 +166,11 @@ const Card = ({ icon, title, note, e }) => (
       minWidth: 0,
       backgroundColor: REF.card,
       border: `3px solid ${REF.line}`,
-      borderRadius: 24,
-      padding: "22px 24px",
+      borderRadius: 28,
+      padding: "34px 32px",
       display: "flex",
       alignItems: "center",
-      gap: 18,
+      gap: 26,
       boxShadow: "0 10px 26px rgba(12,10,8,0.08)",
       transform: `translateY(${interpolate(e, [0, 1], [30, 0])}px)`,
       opacity: e,
@@ -178,9 +178,9 @@ const Card = ({ icon, title, note, e }) => (
   >
     <div
       style={{
-        width: 70,
-        height: 70,
-        borderRadius: 16,
+        width: 92,
+        height: 92,
+        borderRadius: 20,
         backgroundColor: REF.ink,
         display: "flex",
         alignItems: "center",
@@ -188,10 +188,10 @@ const Card = ({ icon, title, note, e }) => (
         flexShrink: 0,
       }}
     >
-      <Icon name={icon} size={40} color="#fff" strokeWidth={2.4} />
+      <Icon name={icon} size={52} color="#fff" strokeWidth={2.4} />
     </div>
     <div style={{ minWidth: 0 }}>
-      <div style={{ fontFamily: SANS, fontWeight: 800, fontSize: 40, color: REF.ink }}>{title}</div>
+      <div style={{ fontFamily: SANS, fontWeight: 800, fontSize: 50, color: REF.ink }}>{title}</div>
       {note ? <MonoLabel style={{ marginTop: 4 }}>{`// ${note}`}</MonoLabel> : null}
     </div>
   </div>
@@ -254,7 +254,7 @@ const Stage = ({ beat, length }) => {
             backgroundColor: REF.card,
             border: `3px solid ${REF.line}`,
             fontFamily: MONO,
-            fontSize: 32,
+            fontSize: 38,
             color: REF.ink,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -270,7 +270,7 @@ const Stage = ({ beat, length }) => {
           <div
             style={{
               width: "100%",
-              height: 18,
+              height: 24,
               borderRadius: 999,
               backgroundColor: REF.line,
               overflow: "hidden",
@@ -283,13 +283,13 @@ const Stage = ({ beat, length }) => {
       ) : null}
 
       {beat.widget === "cards" ? (
-        <div style={{ marginTop: 44, display: "flex", flexDirection: "column", gap: 18 }}>
+        <div style={{ marginTop: 54, display: "flex", flexDirection: "column", gap: 24 }}>
           {(beat.cards ?? []).map((c, i) => (
             <Card
               key={c.title}
               {...c}
               e={spring({
-                frame: frame - (14 + i * 18),
+                frame: frame - (10 + i * 12),
                 fps,
                 config: { damping: 14, stiffness: 180 },
                 durationInFrames: 16,

@@ -7,6 +7,8 @@
     "tts": "node --env-file=.env.local tts-test.mjs",
     "tts:list": "node --env-file=.env.local tts-test.mjs --list",
     "transcribe": "node groq-transcription.js",
+    "hyper:preview": "hyperframes preview hyper-comp/index.html",
+    "hyper:render": "hyperframes render hyper-comp/index.html -o finalVideos/hyper-reel.mp4",
     "studio": "node reel.mjs studio",
     "render": "node reel.mjs render",
     "test": "echo \"Error: no test specified\" && exit 1",

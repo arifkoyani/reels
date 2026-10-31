@@ -1,7 +1,6 @@
 import {
   AbsoluteFill,
   Audio,
-  Img,
   Sequence,
   interpolate,
   spring,
@@ -229,6 +228,12 @@ const Stage = ({ beat, length }) => {
         right: L.margin,
         height: L.stageHeight,
         opacity,
+        // centre the group in the zone the character used to share
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        // stretch so cards and the url bar still span the full column
+        alignItems: "stretch",
       }}
     >
       {/* step badge, top right of the stage */}
@@ -240,7 +245,7 @@ const Stage = ({ beat, length }) => {
 
       {beat.kicker ? <MonoLabel>{`// ${beat.kicker}`}</MonoLabel> : null}
 
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 14, alignSelf: "flex-start" }}>
         <Stamp text={beat.stamp ?? beat.title ?? ""} frame={frame} />
       </div>
 
@@ -317,32 +322,6 @@ const Stage = ({ beat, length }) => {
   );
 };
 
-// ---------------------------------------------------------------- bot
-const Bot = ({ speaking, nodAmount, frame }) => {
-  const t = frame / 30;
-  const nod = 5 * nodAmount * Math.sin(t * 2 * Math.PI * 2);
-  return (
-    <div
-      style={{
-        position: "absolute",
-        right: L.botRight,
-        bottom: L.botBottom,
-        width: L.botWidth,
-        perspective: "900px",
-        perspectiveOrigin: "50% 55%",
-        zIndex: 5,
-      }}
-    >
-      <div style={{ transformOrigin: "50% 55%", transform: `rotateX(${nod}deg)` }}>
-        <Img
-          src={staticFile("assets/sprites/bot_large.png")}
-          style={{ width: "100%", height: "auto", display: "block" }}
-        />
-      </div>
-    </div>
-  );
-};
-
 // ---------------------------------------------------------------- helpers
 const buildPages = (words, { maxWords = 5, maxGap = 0.45, maxDuration = 2.6 } = {}) => {
   const pages = [];
@@ -356,7 +335,14 @@ const buildPages = (words, { maxWords = 5, maxGap = 0.45, maxDuration = 2.6 } = 
   for (const w of words) {
     if (cur.length) {
       const prev = cur[cur.length - 1];
-      if (cur.length >= maxWords || w.start - prev.end > maxGap || w.end - cur[0].start > maxDuration) {
+      // break on sentence end so a caption is never split mid-thought
+      const sentenceEnded = /[.!?]$/.test(prev.word);
+      if (
+        sentenceEnded ||
+        cur.length >= maxWords ||
+        w.start - prev.end > maxGap ||
+        w.end - cur[0].start > maxDuration
+      ) {
         flush();
       }
     }
@@ -364,25 +350,6 @@ const buildPages = (words, { maxWords = 5, maxGap = 0.45, maxDuration = 2.6 } = 
   }
   flush();
   return pages;
-};
-
-const speechSpans = (words, gap = 0.35) => {
-  const spans = [];
-  for (const w of words) {
-    const last = spans[spans.length - 1];
-    if (last && w.start - last.end <= gap) last.end = w.end;
-    else spans.push({ start: w.start, end: w.end });
-  }
-  return spans;
-};
-
-const envelopeAt = (spans, t, ramp = 0.25) => {
-  for (const s of spans) {
-    if (t < s.start - ramp || t > s.end + ramp) continue;
-    const r = Math.max(0, Math.min(1, (t - (s.start - ramp)) / ramp, (s.end + ramp - t) / ramp));
-    return r * r * (3 - 2 * r);
-  }
-  return 0;
 };
 
 // ---------------------------------------------------------------- reel
@@ -411,8 +378,6 @@ export const StyleReel = ({
     [...pages].reverse().find((p) => p.end < time) ??
     pages[0];
 
-  const nodAmount = envelopeAt(speechSpans(words), time);
-  const speaking = words.some((w) => time >= w.start && time <= w.end);
 
   const activeBeat = beats.find((b) => frame >= b.from && frame < b.to) ?? beats[0];
   const beatIndex = beats.indexOf(activeBeat) + 1;
@@ -433,7 +398,6 @@ export const StyleReel = ({
         </Sequence>
       ))}
 
-      <Bot speaking={speaking} nodAmount={nodAmount} frame={frame} />
 
       <Grain />
     </AbsoluteFill>

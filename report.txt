@@ -1,0 +1,322 @@
+================================================================================
+REFERENCE VIDEO — VISUAL SYSTEM ANALYSIS
+A general style guide derived from the reference reel, applicable to any topic.
+================================================================================
+
+Source file : reference-video.mp4
+Analysed by : frame extraction (247 frames @ 4fps) + automatic shot detection
+              + two frames read at full resolution + pixel colour sampling
+
+
+--------------------------------------------------------------------------------
+1. SOURCE SPECIFICATIONS
+--------------------------------------------------------------------------------
+
+Duration      61.48 s
+Resolution    720 x 1280  (9:16 vertical)
+Frame rate    30 fps
+Video codec   h264 (avc1), yuv420p, bt709
+Audio         aac, 44100 Hz, stereo, 61 kb/s
+Bitrate       1983 kb/s total
+File size     15.2 MB
+
+NOTE: the reference is 720p. Its quality advantage is entirely design and
+motion craft, not resolution. Rendering at 1080p does not close the gap.
+
+
+--------------------------------------------------------------------------------
+2. SCENE LOGIC AND TIMING  (the most important finding)
+--------------------------------------------------------------------------------
+
+Two different change rates run at the same time:
+
+  MAJOR SCENE CHANGES (diff threshold 40)
+    17 scenes across 61.48 s
+    average hold .......... 3.63 s
+    shortest .............. 0.50 s
+    longest ............... 14.25 s
+
+  MICRO EVENTS (diff threshold 10)
+    98 events across 61.48 s
+    average interval ...... 0.63 s
+
+THE RULE:
+  The SUBJECT changes slowly (~3.6 s per idea).
+  The FRAME changes constantly (~every 0.6 s).
+
+Within a single held scene, something is always arriving: a card slides in,
+a stamp lands, a checkbox ticks, a number advances, confetti fires, an
+annotation draws itself. The viewer never sees a static frame, but is also
+never rushed through the message.
+
+This is the opposite of the common mistake (changing topic quickly while each
+topic sits still). Hold the idea; animate inside it.
+
+Distribution of major scene holds:
+    0.50 - 1.00 s   4 scenes   (punctuation / flash beats)
+    1.00 - 3.00 s   5 scenes   (quick points)
+    3.00 - 5.00 s   5 scenes   (normal explanation)
+    7.00 s +        3 scenes   (the dense demonstration sections)
+
+Long scenes are not static scenes. The 14.25 s scene contains roughly 22
+micro events.
+
+
+--------------------------------------------------------------------------------
+3. LAYOUT GRID  (identical in all 17 scenes)
+--------------------------------------------------------------------------------
+
+  +--------------------------------------------------+
+  |  // 15 · the entire workflow                     |   <- mono micro-label
+  |                                                  |
+  |  That's the entire                               |   <- line 1: bold sans
+  |  workflow.                                       |   <- line 2: italic serif
+  |                                                  |
+  |                                                  |
+  |        [  THE ONLY ZONE THAT VARIES  ]           |   <- the "stage"
+  |        stamps / cards / screenshots /            |
+  |        numerals / mockups / checklists           |
+  |                                                  |
+  |                                       ((char))   |   <- presenter, cropped
+  +--------------------------------------------------+
+
+Vertical zones (as a fraction of a 1280 px tall frame):
+
+    0.00 - 0.06    dead margin
+    0.07 - 0.09    monospace section label
+    0.13 - 0.23    spoken caption (1-2 lines)
+    0.28 - 0.72    THE STAGE  (all varying content lives here)
+    0.68 - 1.00    presenter character, bottom-right, cropped by frame edge
+
+Horizontal: a single generous left margin (~0.12 of width) that the label,
+caption and most stage content all align to. The composition is left-aligned,
+not centred — this is a major part of its editorial feel.
+
+KEY STRUCTURAL CHOICES:
+  * Captions are at the TOP, not the bottom.
+  * The presenter is bottom-RIGHT and deliberately CROPPED by the frame edge.
+  * Only one zone changes between scenes; the scaffolding never moves.
+
+
+--------------------------------------------------------------------------------
+4. COLOUR PALETTE  (sampled directly from pixels)
+--------------------------------------------------------------------------------
+
+    #ECEAE5     background     warm off-white / paper
+    #0C0A08     ink            near-black (not pure black)
+    #F83820     accent         red-orange
+    #AEACA6     muted          monospace micro-labels
+    #FBFAF7     card           slightly lighter than background
+    #DCD9D2     line           card borders and inactive tracks
+
+ONE accent colour only. It is reserved and always does the same jobs:
+    - the emphasised word inside the headline
+    - the stamp outline and half the stamp lettering
+    - the active step pip
+    - hand-drawn marks (underlines, circles, arrows)
+    - the primary call-to-action
+
+Everything else is paper, ink and grey. The restraint is what makes the red
+read as meaningful rather than decorative.
+
+The background is NOT pure white and the ink is NOT pure black. The slight
+warmth on both is what makes it feel printed instead of digital.
+
+
+--------------------------------------------------------------------------------
+5. TYPOGRAPHY SYSTEM  (four roles, never more)
+--------------------------------------------------------------------------------
+
+  ROLE 1 — HEADLINE / CAPTION
+    Bold geometric sans, heavy weight (~800), tight negative letter-spacing.
+    Colour: ink. Size: very large (~0.06 of frame height).
+    Carries the spoken line.
+
+  ROLE 2 — EMPHASIS
+    Italic serif, slightly LARGER than the sans around it.
+    Colour: accent red.
+    Used on one or two key words INSIDE the headline, inline — not as a
+    separate line. This mixed-face inline emphasis is the signature move.
+
+  ROLE 3 — DISPLAY / STAMP
+    Condensed sans caps, very heavy (Anton-like), tight tracking.
+    Two-tone: part ink, part accent, split on the meaningful word.
+    Always enclosed in a stamp box (see section 7).
+
+  ROLE 4 — MICRO-LABEL
+    Monospace, small, wide letter-spacing, grey.
+    Always prefixed with "// ".
+    Used for: section labels, card subtitles, status readouts.
+    This single device does enormous work — it signals "technical",
+    adds texture at small scale, and fills space without noise.
+
+Hierarchy ratio is aggressive: the headline is roughly 3x the micro-label.
+There is no mid-size text. Big or small, nothing in between.
+
+
+--------------------------------------------------------------------------------
+6. SCENE-BY-SCENE BREAKDOWN  (17 detected scenes)
+--------------------------------------------------------------------------------
+
+  #   start    held    stage content
+  --  -------  ------  --------------------------------------------------------
+   1   0.00s   4.00s   Scattered photo / polaroid collage on a textured board
+   2   4.00s   1.25s   Paper note card with stamped text + hand-drawn red arrow
+   3   5.25s   3.25s   Envelope illustration + floating "?" marks
+   4   8.50s   1.00s   Phone mockup + huge display type + envelope, overlapping
+   5   9.50s  11.50s   Big numeral badge; app icon; label with underline
+   6  21.00s   2.50s   App screenshot + red annotation box + numbered badge
+   7  23.50s   0.75s   OS file dialog screenshot + small checklist card
+   8  24.25s   2.50s   Chat UI screenshot + file-attachment card
+   9  26.75s   7.25s   Large numeral + app screenshot, annotated
+  10  34.00s   0.50s   Numeral + partial display word (flash beat)
+  11  34.50s  14.25s   Display phrase + confetti poppers + screenshot
+  12  48.75s   3.75s   Numeral + before/after phone mockups side by side
+  13  52.50s   0.50s   Transition flash into the summary
+  14  53.00s   4.50s   6-item CHECKLIST GRID, two columns, all ticking
+  15  57.50s   1.75s   Social profile screenshot + count badge
+  16  59.25s   1.00s   Social comment UI with text being typed
+  17  60.25s   1.50s   Large CTA pill button + DM screenshot
+
+OBSERVATION: almost no archetype repeats back-to-back. Across 61 seconds
+there are roughly 12 DISTINCT visual archetypes. Variety is the engagement
+engine — not motion speed.
+
+
+--------------------------------------------------------------------------------
+7. GRAPHICS TECHNIQUES  (the craft devices, in order of impact)
+--------------------------------------------------------------------------------
+
+  7.1  PAPER GRAIN
+       A fine monochrome noise texture over the ENTIRE frame, multiplied.
+       Low opacity (~30%). Removes the flat digital look instantly.
+       Cheapest high-impact device in the whole video.
+
+  7.2  RUBBER-STAMP BADGE
+       Condensed caps inside a thin red rectangular outline, rotated
+       1-2 degrees off axis, with a distressed / eroded edge texture.
+       Lands with a quick scale-down impact. Used once per scene as the
+       "title" of the stage.
+
+  7.3  MONOSPACE MICRO-LABELS
+       "// claude code", "// steps done", "// 61% rendered".
+       Placed under cards, beside numerals, above stamps.
+       Adds density and a technical register at almost no visual cost.
+
+  7.4  HAND-DRAWN RED MARKS
+       Underlines, circles, arrows, brackets drawn in a rough marker style
+       over screenshots and words. They APPEAR BY DRAWING THEMSELVES, left
+       to right, rather than fading in.
+
+  7.5  NUMBERED STEP BADGE + PROGRESS PIPS
+       A black rounded square holding a large numeral, with a row of small
+       pips beneath showing position in the sequence. Persistent across a
+       multi-step section so the viewer always knows where they are.
+
+  7.6  REAL SCREENSHOTS AS CONTENT
+       Actual UI captures — not mockup illustrations — cropped, rounded,
+       drop-shadowed and annotated. This is a large share of the credibility.
+
+  7.7  CHECKLIST CARDS
+       White rounded cards, each with a large black checkbox, a bold title
+       and a monospace sub-note. Ticked progressively. Used for the summary.
+
+  7.8  HALFTONE SHADING
+       The illustrated character is shaded with visible halftone dots rather
+       than smooth gradients, matching the printed-paper theme.
+
+  7.9  CELEBRATORY PARTICLES
+       Confetti and party poppers on the payoff beat only. Used once, so it
+       still means something.
+
+  7.10 DEVICE MOCKUPS
+       Phone frames holding screenshots, sometimes two side by side for
+       before/after comparison.
+
+
+--------------------------------------------------------------------------------
+8. ANIMATION LOGIC
+--------------------------------------------------------------------------------
+
+  ENTRANCES
+    Elements arrive with a short overshoot (spring), not a linear fade.
+    Typical duration 8-16 frames. Direction varies by element type:
+      - cards and chips   : up from below
+      - stamps            : scale down into place, slight rotation
+      - annotations       : draw along their own path
+      - numerals          : pop with scale
+      - text              : reveal per word, in time with the voice
+
+  STAGGER
+    Grouped items (cards, checklist rows) never arrive together.
+    Offset is 10-18 frames per item. This alone produces several of the
+    "micro events" per second noted in section 2.
+
+  THE PRESENTER
+    Changes POSE between scenes (pointing, celebrating, shrugging,
+    presenting) but barely moves within a scene. The pose is chosen to match
+    the message. There is no continuous idle animation — the character is
+    effectively a series of stills.
+
+  CAMERA
+    Completely locked. No zoom, no pan, no shake, at any point in 61 seconds.
+    All energy comes from elements moving within a fixed frame.
+
+  TRANSITIONS
+    Hard cuts, plus occasional one-to-two-frame white flashes on the biggest
+    changes. No dissolves, no slides between scenes.
+
+
+--------------------------------------------------------------------------------
+9. THE UNDERLYING RULES  (transferable to any topic)
+--------------------------------------------------------------------------------
+
+   1. Hold the idea ~3.5 s. Animate inside it every ~0.6 s.
+   2. Fix the scaffolding (label, caption, character). Vary only the stage.
+   3. Captions at the top. Presenter bottom-right, cropped.
+   4. Left-align almost everything. Avoid centring.
+   5. One accent colour, used only for meaning.
+   6. Warm off-white background, warm near-black ink. Never pure values.
+   7. Four type roles: heavy sans, italic serif accent, condensed display
+      caps, monospace micro-label. Nothing in between in size.
+   8. Put the emphasis word in italic serif INSIDE the sans headline.
+   9. Grain over everything.
+  10. Change the visual ARCHETYPE every scene, not just the content.
+  11. Stagger every group. Nothing arrives simultaneously.
+  12. Lock the camera. All motion is internal.
+  13. Use real screenshots wherever the topic allows.
+  14. Spend the celebration once, on the payoff.
+  15. Keep a persistent step indicator through multi-step sections.
+
+
+--------------------------------------------------------------------------------
+10. WHAT IS HARD TO REPRODUCE WITHOUT NEW ASSETS
+--------------------------------------------------------------------------------
+
+  These are design/asset problems, not code problems:
+
+  A. A PRESENTER CHARACTER WITH MULTIPLE POSES
+     The reference changes pose almost every scene. A single static
+     character, however well drawn, loses a large share of the liveliness.
+     Needs roughly 6 poses as transparent cut-outs:
+       point / celebrate / shrug / present / think / approve
+
+  B. A SCREENSHOT LIBRARY
+     Much of the stage is annotated real UI. For any product video this
+     means actually capturing the product's screens at the right moments.
+
+  C. DISTRESSED STAMP TEXTURE
+     The eroded edge on the stamp badge is a texture asset or a noise-based
+     displacement filter, not a plain border.
+
+  D. HALFTONE CHARACTER SHADING
+     Must be baked into the character artwork, or applied as an SVG filter.
+
+  Everything else in this document — layout, palette, typography, timing,
+  stamps, cards, numerals, micro-labels, annotations, grain, stagger — is
+  reproducible in code with no new artwork.
+
+
+================================================================================
+END OF REPORT
+================================================================================

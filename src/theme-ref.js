@@ -34,9 +34,8 @@ export const REF_LAYOUT = {
   margin: 130, // left/right text margin
   labelTop: 135, // mono section label
   captionTop: 250, // spoken line
-  stageTop: 580, // infographic zone starts
-  stageHeight: 820,
-  botWidth: 600, // character, bottom-right and cropped by the frame
-  botRight: -90,
-  botBottom: -120,
+  // With no character in the lower right, the stage owns everything below
+  // the caption.
+  stageTop: 580,
+  stageHeight: 1120,
 };

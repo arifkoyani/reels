@@ -237,16 +237,15 @@ const Stage = ({ beat, length }) => {
       }}
     >
       {/* step badge, top right of the stage */}
-      {beat.step ? (
-        <div style={{ position: "absolute", top: 0, right: 0 }}>
-          <StepBadge step={beat.step} />
+      {/* kicker + stamp on the left, step badge riding the same row */}
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 28 }}>
+        <div>
+          {beat.kicker ? <MonoLabel>{`// ${beat.kicker}`}</MonoLabel> : null}
+          <div style={{ marginTop: 14 }}>
+            <Stamp text={beat.stamp ?? beat.title ?? ""} frame={frame} />
+          </div>
         </div>
-      ) : null}
-
-      {beat.kicker ? <MonoLabel>{`// ${beat.kicker}`}</MonoLabel> : null}
-
-      <div style={{ marginTop: 14, alignSelf: "flex-start" }}>
-        <Stamp text={beat.stamp ?? beat.title ?? ""} frame={frame} />
+        {beat.step ? <StepBadge step={beat.step} /> : null}
       </div>
 
       {/* widgets */}

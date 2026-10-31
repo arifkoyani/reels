@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reel Composition - HyperFrames</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #0B0F19;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+
+    /* 1080x1920 9:16 Canvas */
+    [data-composition-id="reel-main"] {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      background: #131C2D;
+      overflow: hidden;
+    }
+
+    /* Ambient glow */
+    .glow-left {
+      position: absolute;
+      top: 35%;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 85, 13, 0.18) 0%, rgba(19, 28, 45, 0) 70%);
+      pointer-events: none;
+    }
+    .glow-right {
+      position: absolute;
+      top: 40%;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 85, 13, 0.18) 0%, rgba(19, 28, 45, 0) 70%);
+      pointer-events: none;
+    }
+
+    /* Explainer White Card */
+    .card-panel {
+      position: absolute;
+      top: 130px;
+      left: 75px;
+      width: 930px;
+      height: 910px;
+      border-radius: 44px;
+      background: #FFFFFF;
+      box-shadow: 0 34px 80px rgba(0,0,0,0.5);
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justifyContent: center;
+      text-align: center;
+      color: #131C2D;
+      z-index: 10;
+    }
+
+    .badge-step {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #FF550D;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 78px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    .card-title .accent {
+      color: #FF550D;
+    }
+
+    .card-sub {
+      font-size: 38px;
+      color: #5A6678;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* Tiles container */
+    .tiles-row {
+      display: flex;
+      gap: 24px;
+      width: 100%;
+      margin-top: 40px;
+    }
+    .tile-box {
+      flex: 1;
+      padding: 30px 18px;
+      border-radius: 24px;
+      background: #FBFCFE;
+      border: 3px solid #E3E7EE;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .tile-icon {
+      width: 64px;
+      height: 64px;
+      color: #FF550D;
+    }
+    .tile-label {
+      font-size: 34px;
+      font-weight: 800;
+      color: #131C2D;
+    }
+
+    /* Robot Container */
+    .bot-wrapper {
+      position: absolute;
+      top: 840px;
+      left: 88px;
+      width: 310px;
+      z-index: 20;
+      perspective: 900px;
+      filter: drop-shadow(0 22px 40px rgba(0,0,0,0.6));
+    }
+
+    .bot-head {
+      transform-origin: 50% 55%;
+      position: relative;
+    }
+
+    .bot-head img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Kinetic Captions Area */
+    .caption-container {
+      position: absolute;
+      top: 1280px;
+      left: 60px;
+      right: 60px;
+      display: flex;
+      flex-wrap: wrap;
+      justifyContent: center;
+      align-items: center;
+      gap: 14px 22px;
+      z-index: 30;
+    }
+
+    .caption-word {
+      display: inline-block;
+      font-family: "Arial Black", -apple-system, sans-serif;
+      font-size: 96px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      opacity: 0.3;
+      transform-origin: 50% 50%;
+    }
+
+    .caption-word.active {
+      color: #FF550D;
+      opacity: 1;
+      text-shadow: 0 0 50px #FF550D, 0 6px 20px rgba(0,0,0,0.9);
+      transform: scale(1.15);
+    }
+
+    .caption-word.spoken {
+      color: #FFFFFF;
+      opacity: 1;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main HyperFrames Composition -->
+  <div data-composition-id="reel-main" data-width="1080" data-height="1920" data-fps="30" data-duration="10">
+    <div class="glow-left"></div>
+    <div class="glow-right"></div>
+
+    <!-- UI Card Panel -->
+    <div class="card-panel" id="cardPanel">
+      <div class="badge-step" id="badgeStep">INSTANT CONVERSION</div>
+      <div class="card-title" id="cardTitle">Turn any URL into a <span class="accent">clean PDF</span></div>
+      <div class="card-sub" id="cardSub">No ads · No watermark · 100% Free</div>
+
+      <div class="tiles-row" id="tilesRow">
+        <div class="tile-box">
+          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <div class="tile-label">Download</div>
+        </div>
+        <div class="tile-box">
+          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+          <div class="tile-label">Email</div>
+        </div>
+        <div class="tile-box">
+          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <div class="tile-label">Share</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Robot with Pitch Nod -->
+    <div class="bot-wrapper" id="botWrapper">
+      <div class="bot-head" id="botHead">
+        <img src="assets/bot_large.png" alt="Bot">
+      </div>
+    </div>
+
+    <!-- Kinetic Captions Container -->
+    <div class="caption-container" id="captionBox">
+      <!-- Words dynamically updated or animated via GSAP timeline -->
+      <span class="caption-word" id="w0">LINKS</span>
+      <span class="caption-word" id="w1">GO</span>
+      <span class="caption-word" id="w2">DEAD</span>
+      <span class="caption-word" id="w3">PAGES</span>
+      <span class="caption-word" id="w4">VANISH</span>
+    </div>
+  </div>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+
+  <!-- HyperFrames Master Timeline -->
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    // 1. MUST be paused: true so HyperFrames captures deterministically frame-by-frame
+    const tl = gsap.timeline({ paused: true });
+
+    // 2. Card entrance
+    tl.from("#cardPanel", {
+      duration: 0.8,
+      y: 60,
+      opacity: 0,
+      scale: 0.94,
+      ease: "back.out(1.5)"
+    }, 0.2);
+
+    // 3. Tiles stagger in
+    tl.from(".tile-box", {
+      duration: 0.6,
+      y: 40,
+      opacity: 0,
+      scale: 0.88,
+      stagger: 0.15,
+      ease: "power3.out"
+    }, 0.8);
+
+    // 4. Bot entrance
+    tl.from("#botWrapper", {
+      duration: 0.9,
+      y: 70,
+      scale: 0.85,
+      opacity: 0,
+      ease: "back.out(1.4)"
+    }, 0.3);
+
+    // 5. Bot head human-like nod (pitch rotateX)
+    // 1s still -> 3s nodding (2 Hz, +-5 deg) -> settles
+    const nodTl = gsap.timeline();
+    for (let i = 0; i < 6; i++) {
+      nodTl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" })
+           .to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" });
+    }
+    nodTl.to("#botHead", { duration: 0.25, rotateX: 0, ease: "sine.out" });
+    tl.add(nodTl, 1.0);
+
+    // 6. Kinetic Caption Word blasts
+    const wordTimes = [
+      { id: "#w0", at: 0.1 },
+      { id: "#w1", at: 0.4 },
+      { id: "#w2", at: 0.7 },
+      { id: "#w3", at: 1.4 },
+      { id: "#w4", at: 1.8 }
+    ];
+
+    wordTimes.forEach(w => {
+      tl.to(w.id, {
+        duration: 0.2,
+        opacity: 1,
+        scale: 1.15,
+        color: "#FF550D",
+        textShadow: "0 0 50px #FF550D",
+        ease: "power2.out"
+      }, w.at);
+      tl.to(w.id, {
+        duration: 0.25,
+        scale: 1.0,
+        color: "#FFFFFF",
+        textShadow: "0 4px 12px rgba(0,0,0,0.7)",
+        ease: "power2.in"
+      }, w.at + 0.35);
+    });
+
+    // 7. Register timeline under matching data-composition-id
+    window.__timelines["reel-main"] = tl;
+  </script>
+</body>
+</html>

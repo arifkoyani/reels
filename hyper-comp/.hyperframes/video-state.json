@@ -1,0 +1,391 @@
+{
+  "version": 1,
+  "historyId": "0cdefb38-be63-4e25-ad8f-dccdb6e02973",
+  "currentRevision": "5113eaa2-7fa3-40d0-8a8b-addc9976fcb6",
+  "pendingChanges": false,
+  "files": {
+    "assets/bot_large.png": {
+      "hash": "e9461601c1ab01ab66c012cd354570c4ca2cbf9d9f85998578c70d077996f1ec",
+      "content": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\e9\\e9461601c1ab01ab66c012cd354570c4ca2cbf9d9f85998578c70d077996f1ec"
+    },
+    "index.html": {
+      "hash": "c59b7968ce272d813fe028a51d31b9a8ab1c64c21b8422f11915fab82ccab0e3",
+      "content": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\c5\\c59b7968ce272d813fe028a51d31b9a8ab1c64c21b8422f11915fab82ccab0e3"
+    },
+    "assets/vo.mp3": {
+      "hash": "9fb60b15c2d6c2782e7457ac676bbef66950baa618a79d124f5fc379cda9ee88",
+      "content": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\9f\\9fb60b15c2d6c2782e7457ac676bbef66950baa618a79d124f5fc379cda9ee88"
+    },
+    "index.manual.html.bak": {
+      "hash": "d19112af98539c2217afee5450e0c17c386e0ccba41440c545840015a35be064",
+      "content": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\d1\\d19112af98539c2217afee5450e0c17c386e0ccba41440c545840015a35be064"
+    },
+    "assets/gsap.min.js": {
+      "hash": "92bb9a96476f983d212a2bc4f54c889039c1696dd4461d40a736860938570fbb",
+      "content": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\92\\92bb9a96476f983d212a2bc4f54c889039c1696dd4461d40a736860938570fbb"
+    }
+  },
+  "revisions": {
+    "637f64a6-b271-42aa-a6fd-7254518db47a": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793466011803,
+      "endedAt": 1793466015176,
+      "files": {
+        "assets/vo.mp3": {
+          "before": null,
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\9f\\9fb60b15c2d6c2782e7457ac676bbef66950baa618a79d124f5fc379cda9ee88"
+        },
+        "index.html": {
+          "before": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\d1\\d19112af98539c2217afee5450e0c17c386e0ccba41440c545840015a35be064",
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\1b\\1bba6e5e0253b7acfc51bdde88d08dfd106ec2d7209c54edff7b619ffe6f381f"
+        },
+        "index.manual.html.bak": {
+          "before": null,
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\d1\\d19112af98539c2217afee5450e0c17c386e0ccba41440c545840015a35be064"
+        }
+      }
+    },
+    "553a8aa3-23f6-4da7-9486-e47f2d9cccf2": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793466045376,
+      "endedAt": 1793466045383,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\1b\\1bba6e5e0253b7acfc51bdde88d08dfd106ec2d7209c54edff7b619ffe6f381f",
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\eb\\eb9b1bb46107e525c591fdc0a5166f430bffc6e7a09d83c43dc9746dd860abd9"
+        }
+      }
+    },
+    "bc46f00e-861f-4f54-8a5a-db94e24625a8": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793466211402,
+      "endedAt": 1793466211408,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\eb\\eb9b1bb46107e525c591fdc0a5166f430bffc6e7a09d83c43dc9746dd860abd9",
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\c3\\c3c7db83bab7a65caece088e0704fd22a7d9d239d6df2e8ecfbc5a99622b7dbe"
+        }
+      }
+    },
+    "5113eaa2-7fa3-40d0-8a8b-addc9976fcb6": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793466277783,
+      "endedAt": 1793466277806,
+      "files": {
+        "assets/gsap.min.js": {
+          "before": null,
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\92\\92bb9a96476f983d212a2bc4f54c889039c1696dd4461d40a736860938570fbb"
+        },
+        "index.html": {
+          "before": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\c3\\c3c7db83bab7a65caece088e0704fd22a7d9d239d6df2e8ecfbc5a99622b7dbe",
+          "after": "C:\\Users\\GLT COMPUTER\\.cache\\hyperframes\\history\\0cdefb38-be63-4e25-ad8f-dccdb6e02973\\blobs\\c5\\c59b7968ce272d813fe028a51d31b9a8ab1c64c21b8422f11915fab82ccab0e3"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "5113eaa2-7fa3-40d0-8a8b-addc9976fcb6",
+      "id": "e372f2ad-85aa-42ec-a63b-040cc6f2b5bd"
+    },
+    "revisions": {
+      "637f64a6-b271-42aa-a6fd-7254518db47a": [
+        {
+          "id": "c1975c34-b48d-4971-823b-b941938c0d21",
+          "scope": "project",
+          "report": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\checks\\c1975c34-b48d-4971-823b-b941938c0d21.json",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": true,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793466015463,
+          "contentHash": "0f80203a5de385c1d6e028feec6981ef57fb86b71995f99a6f0f1a6fd6c3e4cb",
+          "revision": "637f64a6-b271-42aa-a6fd-7254518db47a",
+          "inputFingerprint": "ab93853d4ec14b85b214b6677ea673e476d9fd5bf61af5703e020be26ef38c64",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "553a8aa3-23f6-4da7-9486-e47f2d9cccf2": [
+        {
+          "id": "4edfabd6-0b8a-41ff-af26-8ef9b356a96b",
+          "scope": "project",
+          "report": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\checks\\4edfabd6-0b8a-41ff-af26-8ef9b356a96b.json",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793466071592,
+          "contentHash": "07d40c8fb193b5e8b61ddbafa125244449efabd803052e37db60d5745d1328d8",
+          "revision": "553a8aa3-23f6-4da7-9486-e47f2d9cccf2",
+          "inputFingerprint": "3a884b7316453896cf95302688a99c89e67a7dc598b1524860bb0b48e34836e8",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "bc46f00e-861f-4f54-8a5a-db94e24625a8": [
+        {
+          "id": "5d3d5899-712d-4f6a-97c7-e146cddc1fdf",
+          "scope": "project",
+          "report": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\checks\\5d3d5899-712d-4f6a-97c7-e146cddc1fdf.json",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793466228054,
+          "contentHash": "353e147d17595702e44cdda0d6bc3b1d189daa49442b7ba5652256bff29be6b0",
+          "revision": "bc46f00e-861f-4f54-8a5a-db94e24625a8",
+          "inputFingerprint": "0b64ce1d837c26f7cf8fb2e5f359d642957a7e87d2f58895442a348bfbf27423",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "5113eaa2-7fa3-40d0-8a8b-addc9976fcb6": [
+        {
+          "id": "cb272835-50fc-4a6a-b225-b005da6bee9c",
+          "scope": "project",
+          "report": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\checks\\cb272835-50fc-4a6a-b225-b005da6bee9c.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793466292672,
+          "contentHash": "8f7d0f03e06ff0649fc6214d1129844003a9ba5592e3eed954616c5a80554757",
+          "revision": "5113eaa2-7fa3-40d0-8a8b-addc9976fcb6",
+          "inputFingerprint": "e5129ee6543ffeacb6ce0573a462e33f644286da3b190298a510e0391e174b64",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "id": "e372f2ad-85aa-42ec-a63b-040cc6f2b5bd",
+          "scope": "project",
+          "report": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\checks\\e372f2ad-85aa-42ec-a63b-040cc6f2b5bd.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793466333273,
+          "contentHash": "8f7d0f03e06ff0649fc6214d1129844003a9ba5592e3eed954616c5a80554757",
+          "revision": "5113eaa2-7fa3-40d0-8a8b-addc9976fcb6",
+          "inputFingerprint": "e5129ee6543ffeacb6ce0573a462e33f644286da3b190298a510e0391e174b64",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "aedc71cf-ab32-44d2-b3ae-cb9d05d71a6f",
+        "scope": "project",
+        "report": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\checks\\aedc71cf-ab32-44d2-b3ae-cb9d05d71a6f.json",
+        "metadata": {
+          "ok": true,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 10000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1793465683296,
+        "contentHash": "3e9a853c4b39e45c3636ee528393bc4728f88e2fb28b44f96a8c91bb5e146f1d",
+        "revision": null,
+        "inputFingerprint": "dbc9645c63d4052619879c0cb2dfa9598164c72d92534d8cf276f90a2ea0b791",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": null,
+      "id": "54d7d03e-20c6-4a5e-af14-3fb38e58eb76-1"
+    },
+    "revisions": {},
+    "unversioned": [
+      {
+        "scope": "crop",
+        "id": "74a3e883-6198-4481-b1de-31f94f020464-0",
+        "image": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\snapshots\\64f04990-2dca-475c-bbca-4331f9288c4a\\frame-00-at-1.25s.png",
+        "time": 1.25,
+        "metadata": {
+          "width": 724,
+          "height": 674,
+          "crop": {
+            "x": 62.01014709472656,
+            "y": 818.8180541992188,
+            "width": 361.97967529296875,
+            "height": 337.40386962890625
+          },
+          "zoom": {
+            "kind": "selector",
+            "selector": "#botHead"
+          },
+          "zoomScale": 2,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1793465797509,
+        "contentHash": "4e41d57b8d8fe29a99465e6439362d19d26fd9a3a74165e8bfd860ac53eb2520",
+        "revision": null,
+        "inputFingerprint": "dbc9645c63d4052619879c0cb2dfa9598164c72d92534d8cf276f90a2ea0b791",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "crop",
+        "id": "74a3e883-6198-4481-b1de-31f94f020464-1",
+        "image": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\artifacts\\snapshots\\64f04990-2dca-475c-bbca-4331f9288c4a\\frame-01-at-1.5s.png",
+        "time": 1.5,
+        "metadata": {
+          "width": 724,
+          "height": 678,
+          "crop": {
+            "x": 61.561004638671875,
+            "y": 814.3298950195312,
+            "width": 362.87799072265625,
+            "height": 338.21746826171875
+          },
+          "zoom": {
+            "kind": "selector",
+            "selector": "#botHead"
+          },
+          "zoomScale": 2,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1793465797510,
+        "contentHash": "53274ce673ab75b659db7e51422f2e6d87e43187b09f04371b502e6e0ee039f3",
+        "revision": null,
+        "inputFingerprint": "dbc9645c63d4052619879c0cb2dfa9598164c72d92534d8cf276f90a2ea0b791",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "54d7d03e-20c6-4a5e-af14-3fb38e58eb76-0",
+        "image": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\nodtest\\frame-00-at-1.25s.png",
+        "time": 1.25,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1793465863180,
+        "contentHash": "792f910735ccaa1d688606cc5db944110ae05693bb1b977831590e2f68c75d57",
+        "revision": null,
+        "inputFingerprint": "dbc9645c63d4052619879c0cb2dfa9598164c72d92534d8cf276f90a2ea0b791",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "54d7d03e-20c6-4a5e-af14-3fb38e58eb76-1",
+        "image": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\.hyperframes\\nodtest\\frame-01-at-1.5s.png",
+        "time": 1.5,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1793465863181,
+        "contentHash": "2e0131d3d85222f35e10aa9b1b967fe42a580f7de484abf622a05a3a2b7a085c",
+        "revision": null,
+        "inputFingerprint": "dbc9645c63d4052619879c0cb2dfa9598164c72d92534d8cf276f90a2ea0b791",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  }
+}

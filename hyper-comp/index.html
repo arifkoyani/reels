@@ -1,328 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Reel Composition - HyperFrames</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      background-color: #0B0F19;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<title>khanpdf-ref — HyperFrames</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0B0F19;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  [data-composition-id="reel-main"] {
+    width: 1080px; height: 1920px; position: relative;
+    background: #131C2D; overflow: hidden;
+  }
+  .glow-left, .glow-right {
+    position: absolute; width: 500px; height: 500px; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,85,13,0.18) 0%, rgba(19,28,45,0) 70%);
+  }
+  .glow-left  { top: 35%; left: -100px; }
+  .glow-right { top: 40%; right: -100px; }
 
-    /* 1080x1920 9:16 Canvas */
-    [data-composition-id="reel-main"] {
-      width: 1080px;
-      height: 1920px;
-      position: relative;
-      background: #131C2D;
-      overflow: hidden;
-    }
+  .card-panel {
+    position: absolute; top: 130px; left: 75px;
+    width: 930px; height: 910px;
+    border-radius: 44px; background: #FFFFFF;
+    box-shadow: 0 34px 80px rgba(0,0,0,0.5);
+    overflow: hidden; z-index: 10; color: #131C2D;
+  }
+  /* one beat fills the card; only one is visible at a time.
+     hidden by default so a JS failure can't stack all of them */
+  .beat {
+    position: absolute; inset: 0; opacity: 0;
+    padding: 60px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .badge-step {
+    font-size: 28px; font-weight: 800; letter-spacing: 3px;
+    color: #FF550D; margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 76px; font-weight: 900; line-height: 1.15;
+    letter-spacing: -1.5px; margin-bottom: 18px;
+  }
+  .card-title .accent, .brand .accent { color: #FF550D; }
+  .card-sub { font-size: 36px; color: #5A6678; font-weight: 600; line-height: 1.3; }
 
-    /* Ambient glow */
-    .glow-left {
-      position: absolute;
-      top: 35%;
-      left: -100px;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(255, 85, 13, 0.18) 0%, rgba(19, 28, 45, 0) 70%);
-      pointer-events: none;
-    }
-    .glow-right {
-      position: absolute;
-      top: 40%;
-      right: -100px;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(255, 85, 13, 0.18) 0%, rgba(19, 28, 45, 0) 70%);
-      pointer-events: none;
-    }
+  .tiles-row { display: flex; gap: 24px; width: 100%; margin-top: 40px; }
+  .tile-box {
+    flex: 1; padding: 30px 18px; border-radius: 24px;
+    background: #FBFCFE; border: 3px solid #E3E7EE;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .tile-icon { width: 64px; height: 64px; color: #FF550D; }
+  .tile-label { font-size: 32px; font-weight: 800; color: #131C2D; }
 
-    /* Explainer White Card */
-    .card-panel {
-      position: absolute;
-      top: 130px;
-      left: 75px;
-      width: 930px;
-      height: 910px;
-      border-radius: 44px;
-      background: #FFFFFF;
-      box-shadow: 0 34px 80px rgba(0,0,0,0.5);
-      padding: 60px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justifyContent: center;
-      text-align: center;
-      color: #131C2D;
-      z-index: 10;
-    }
+  .url-bar {
+    margin-top: 38px; width: 100%; padding: 26px 30px;
+    border-radius: 20px; background: #F7F9FC; border: 3px solid #E3E7EE;
+    font-family: "JetBrains Mono", Consolas, monospace; font-size: 32px;
+    color: #131C2D; text-align: left; white-space: nowrap; overflow: hidden;
+  }
+  .caret { color: #FF550D; }
 
-    .badge-step {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: 3px;
-      color: #FF550D;
-      margin-bottom: 20px;
-    }
+  .bar-track {
+    margin-top: 44px; width: 100%; height: 22px; border-radius: 999px;
+    background: #E3E7EE; overflow: hidden;
+  }
+  .bar-fill { width: 0%; height: 100%; background: #FF550D; }
 
-    .card-title {
-      font-size: 78px;
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: -1.5px;
-      margin-bottom: 20px;
-    }
+  .brand { margin-top: 30px; font-size: 92px; font-weight: 900; letter-spacing: -3px; }
+  .brand-url { margin-top: 8px; font-size: 44px; font-weight: 700; color: #FF550D; }
 
-    .card-title .accent {
-      color: #FF550D;
-    }
+  .bot-wrapper {
+    position: absolute; top: 1120px; left: 88px; width: 310px;
+    z-index: 20; perspective: 900px;
+    filter: drop-shadow(0 22px 40px rgba(0,0,0,0.6));
+  }
+  .bot-head { transform-origin: 50% 55%; position: relative; }
+  .bot-head img { width: 100%; height: auto; display: block; }
 
-    .card-sub {
-      font-size: 38px;
-      color: #5A6678;
-      font-weight: 600;
-      line-height: 1.3;
-    }
+  .cue-rail {
+    position: absolute; top: 1180px; left: 440px; right: 60px;
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: 14px; z-index: 25;
+  }
+  .cue {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 24px; border-radius: 999px;
+    background: rgba(10,16,28,0.92); color: #fff;
+    font-size: 32px; font-weight: 800; white-space: nowrap;
+    opacity: 0; position: absolute;
+  }
+  .cue-icon { width: 44px; height: 44px; }
+  .cue-good    { border: 3px solid #FF550D; }
+  .cue-good .cue-icon    { color: #FF550D; }
+  .cue-danger  { border: 3px solid #FF4D4D; }
+  .cue-danger .cue-icon  { color: #FF4D4D; }
+  .cue-danger span { text-decoration: line-through; }
+  .cue-neutral { border: 3px solid #FFFFFF; }
+  .cue-neutral .cue-icon { color: #FFFFFF; }
 
-    /* Tiles container */
-    .tiles-row {
-      display: flex;
-      gap: 24px;
-      width: 100%;
-      margin-top: 40px;
-    }
-    .tile-box {
-      flex: 1;
-      padding: 30px 18px;
-      border-radius: 24px;
-      background: #FBFCFE;
-      border: 3px solid #E3E7EE;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-    .tile-icon {
-      width: 64px;
-      height: 64px;
-      color: #FF550D;
-    }
-    .tile-label {
-      font-size: 34px;
-      font-weight: 800;
-      color: #131C2D;
-    }
-
-    /* Robot Container */
-    .bot-wrapper {
-      position: absolute;
-      top: 840px;
-      left: 88px;
-      width: 310px;
-      z-index: 20;
-      perspective: 900px;
-      filter: drop-shadow(0 22px 40px rgba(0,0,0,0.6));
-    }
-
-    .bot-head {
-      transform-origin: 50% 55%;
-      position: relative;
-    }
-
-    .bot-head img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    /* Kinetic Captions Area */
-    .caption-container {
-      position: absolute;
-      top: 1280px;
-      left: 60px;
-      right: 60px;
-      display: flex;
-      flex-wrap: wrap;
-      justifyContent: center;
-      align-items: center;
-      gap: 14px 22px;
-      z-index: 30;
-    }
-
-    .caption-word {
-      display: inline-block;
-      font-family: "Arial Black", -apple-system, sans-serif;
-      font-size: 96px;
-      font-weight: 900;
-      letter-spacing: -2px;
-      text-transform: uppercase;
-      color: #FFFFFF;
-      opacity: 0.3;
-      transform-origin: 50% 50%;
-    }
-
-    .caption-word.active {
-      color: #FF550D;
-      opacity: 1;
-      text-shadow: 0 0 50px #FF550D, 0 6px 20px rgba(0,0,0,0.9);
-      transform: scale(1.15);
-    }
-
-    .caption-word.spoken {
-      color: #FFFFFF;
-      opacity: 1;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.7);
-    }
-  </style>
+  .caption-container {
+    position: absolute; top: 1540px; left: 60px; right: 60px;
+    height: 240px; z-index: 30;
+  }
+  /* pages stack in the same box; one is visible at a time */
+  .caption-page {
+    position: absolute; inset: 0; opacity: 0;
+    display: flex; flex-wrap: wrap;
+    justify-content: center; align-content: flex-start;
+    gap: 10px 20px;
+  }
+  .caption-word {
+    display: inline-block;
+    font-family: "Arial Black", -apple-system, sans-serif;
+    font-size: 82px; font-weight: 900; letter-spacing: -2px;
+    text-transform: uppercase; color: #FFFFFF; opacity: 0.25;
+    transform-origin: 50% 50%;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.7);
+  }
+</style>
 </head>
 <body>
 
-  <!-- Main HyperFrames Composition -->
-  <div data-composition-id="reel-main" data-width="1080" data-height="1920" data-fps="30" data-duration="10">
-    <div class="glow-left"></div>
-    <div class="glow-right"></div>
+<div data-composition-id="reel-main" data-width="1080" data-height="1920" data-fps="30" data-duration="12">
+  <div class="glow-left"></div>
+  <div class="glow-right"></div>
 
-    <!-- UI Card Panel -->
-    <div class="card-panel" id="cardPanel">
-      <div class="badge-step" id="badgeStep">INSTANT CONVERSION</div>
-      <div class="card-title" id="cardTitle">Turn any URL into a <span class="accent">clean PDF</span></div>
-      <div class="card-sub" id="cardSub">No ads · No watermark · 100% Free</div>
+  <!-- id is required: the renderer discovers media by id, and without it the
+       render is silent (hyperframes lint: media_missing_id). -->
+  <audio id="vo" src="assets/vo.mp3" data-start="0" data-has-audio="true" data-volume="1"></audio>
 
-      <div class="tiles-row" id="tilesRow">
-        <div class="tile-box">
-          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          <div class="tile-label">Download</div>
-        </div>
-        <div class="tile-box">
-          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-          </svg>
-          <div class="tile-label">Email</div>
-        </div>
-        <div class="tile-box">
-          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
-          <div class="tile-label">Share</div>
-        </div>
-      </div>
+  <div class="card-panel">
+    <div class="beat" id="beat-0">
+      
+      <div class="card-title">LINKS <span class="accent">GO DEAD</span></div>
+      
+      <div class="tiles-row"><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.84 12.25 1.72-1.71h-.02a5.004 5.004 0 0 0-.12-7.07 5.006 5.006 0 0 0-6.95 0l-1.72 1.71"></path><path d="m5.17 11.75-1.71 1.71a5.004 5.004 0 0 0 .12 7.07 5.006 5.006 0 0 0 6.95 0l1.71-1.71"></path><line x1="8" x2="8" y1="2" y2="5"></line><line x1="2" x2="5" y1="8" y2="8"></line><line x1="16" x2="16" y1="19" y2="22"></line><line x1="19" x2="22" y1="16" y2="16"></line></svg><div class="tile-label">Broken link</div></div><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10v1"></path><path d="M7.528 20.472a1.6 1.6 0 012.277 0l1.057 1.056a1.6 1.6 0 002.276 0l1.057-1.056a1.6 1.6 0 012.277 0l1.114 1.114a1.4 1.4 0 002.414-1V10a8 8 0 00-16 0v10.586a1.4 1.4 0 002.414 1z"></path><path d="M9 10v1"></path></svg><div class="tile-label">Page removed</div></div></div>
     </div>
-
-    <!-- Floating Robot with Pitch Nod -->
-    <div class="bot-wrapper" id="botWrapper">
-      <div class="bot-head" id="botHead">
-        <img src="assets/bot_large.png" alt="Bot">
-      </div>
+    <div class="beat" id="beat-1">
+      <div class="badge-step">STEP 1</div>
+      <div class="card-title">PASTE THE <span class="accent">URL</span></div>
+      
+      <div class="url-bar"><span class="url-text" id="url-1"></span><span class="caret">|</span></div>
     </div>
-
-    <!-- Kinetic Captions Container -->
-    <div class="caption-container" id="captionBox">
-      <!-- Words dynamically updated or animated via GSAP timeline -->
-      <span class="caption-word" id="w0">LINKS</span>
-      <span class="caption-word" id="w1">GO</span>
-      <span class="caption-word" id="w2">DEAD</span>
-      <span class="caption-word" id="w3">PAGES</span>
-      <span class="caption-word" id="w4">VANISH</span>
+    <div class="beat" id="beat-2">
+      <div class="badge-step">STEP 2</div>
+      <div class="card-title">GET A <span class="accent">CLEAN</span> PDF</div>
+      
+      <div class="bar-track"><div class="bar-fill" id="bar-2"></div></div>
+    </div>
+    <div class="beat" id="beat-3">
+      <div class="badge-step">STEP 3</div>
+      <div class="card-title">KEEP OR <span class="accent">SHARE</span></div>
+      
+      <div class="tiles-row"><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg><div class="tile-label">Download</div></div><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg><div class="tile-label">Email it</div></div></div>
+    </div>
+    <div class="beat" id="beat-4">
+      
+      <div class="card-title"><span class="accent">FREE.</span> NO SIGN-UP</div>
+      
+      <div class="brand">Khan<span class="accent">PDF</span></div><div class="brand-url">khanpdf.com</div>
     </div>
   </div>
 
-  <!-- GSAP CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <div class="bot-wrapper">
+    <div class="bot-head" id="botHead">
+      <img src="assets/bot_large.png" alt="">
+    </div>
+  </div>
 
-  <!-- HyperFrames Master Timeline -->
-  <script>
-    window.__timelines = window.__timelines || {};
+  <div class="cue-rail">
+      <div class="cue cue-neutral" id="cue-0"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span>link</span></div>
+      <div class="cue cue-danger" id="cue-1"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.84 12.25 1.72-1.71h-.02a5.004 5.004 0 0 0-.12-7.07 5.006 5.006 0 0 0-6.95 0l-1.72 1.71"></path><path d="m5.17 11.75-1.71 1.71a5.004 5.004 0 0 0 .12 7.07 5.006 5.006 0 0 0 6.95 0l1.71-1.71"></path><line x1="8" x2="8" y1="2" y2="5"></line><line x1="2" x2="5" y1="8" y2="8"></line><line x1="16" x2="16" y1="19" y2="22"></line><line x1="19" x2="22" y1="16" y2="16"></line></svg><span>dead link</span></div>
+      <div class="cue cue-neutral" id="cue-2"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path></svg><span>page</span></div>
+      <div class="cue cue-danger" id="cue-3"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10v1"></path><path d="M7.528 20.472a1.6 1.6 0 012.277 0l1.057 1.056a1.6 1.6 0 002.276 0l1.057-1.056a1.6 1.6 0 012.277 0l1.114 1.114a1.4 1.4 0 002.414-1V10a8 8 0 00-16 0v10.586a1.4 1.4 0 002.414 1z"></path><path d="M9 10v1"></path></svg><span>gone</span></div>
+      <div class="cue cue-good" id="cue-4"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span>PDF</span></div>
+      <div class="cue cue-good" id="cue-5"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path><path d="M7 3v4a1 1 0 0 0 1 1h7"></path></svg><span>saved</span></div>
+      <div class="cue cue-neutral" id="cue-6"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><span>any URL</span></div>
+      <div class="cue cue-good" id="cue-7"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg><span>clean</span></div>
+      <div class="cue cue-good" id="cue-8"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span>PDF</span></div>
+      <div class="cue cue-good" id="cue-9"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"></path></svg><span>instant</span></div>
+      <div class="cue cue-good" id="cue-10"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"></path><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5"></path><rect x="3" y="7" width="18" height="4" rx="1"></rect></svg><span>free</span></div>
+      <div class="cue cue-neutral" id="cue-11"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"></path><path d="M16 4h2a2 2 0 0 1 2 2v1.344"></path><path d="m17 18 4-4-4-4"></path><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect></svg><span>paste</span></div>
+      <div class="cue cue-good" id="cue-12"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg><span>download</span></div>
+  </div>
 
-    // 1. MUST be paused: true so HyperFrames captures deterministically frame-by-frame
-    const tl = gsap.timeline({ paused: true });
+  <div class="caption-container">
+      <div class="caption-page" id="page-0"><span class="caption-word" id="w0">Links</span><span class="caption-word" id="w1">go</span><span class="caption-word" id="w2">dead.</span></div>
+      <div class="caption-page" id="page-1"><span class="caption-word" id="w3">Pages</span><span class="caption-word" id="w4">disappear.</span></div>
+      <div class="caption-page" id="page-2"><span class="caption-word" id="w5">Khan</span><span class="caption-word" id="w6">PDF</span><span class="caption-word" id="w7">saves</span><span class="caption-word" id="w8">any</span></div>
+      <div class="caption-page" id="page-3"><span class="caption-word" id="w9">URL</span><span class="caption-word" id="w10">as</span><span class="caption-word" id="w11">a</span><span class="caption-word" id="w12">clean</span></div>
+      <div class="caption-page" id="page-4"><span class="caption-word" id="w13">PDF</span><span class="caption-word" id="w14">instantly.</span></div>
+      <div class="caption-page" id="page-5"><span class="caption-word" id="w15">Free.</span></div>
+      <div class="caption-page" id="page-6"><span class="caption-word" id="w16">No</span><span class="caption-word" id="w17">sign-up.</span></div>
+      <div class="caption-page" id="page-7"><span class="caption-word" id="w18">Just</span><span class="caption-word" id="w19">paste</span><span class="caption-word" id="w20">and</span><span class="caption-word" id="w21">download.</span></div>
+  </div>
+</div>
 
-    // 2. Card entrance
-    tl.from("#cardPanel", {
-      duration: 0.8,
-      y: 60,
-      opacity: 0,
-      scale: 0.94,
-      ease: "back.out(1.5)"
-    }, 0.2);
+<script src="assets/gsap.min.js"></script>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
 
-    // 3. Tiles stagger in
-    tl.from(".tile-box", {
-      duration: 0.6,
-      y: 40,
-      opacity: 0,
-      scale: 0.88,
-      stagger: 0.15,
-      ease: "power3.out"
-    }, 0.8);
+  // Typewriter: GSAP tweens a counter, we write the substring each update.
+  function typeUrl(tl, sel, text, at, dur) {
+    const el = document.querySelector(sel);
+    const state = { n: 0 };
+    tl.to(state, {
+      duration: dur,
+      n: text.length,
+      ease: "none",
+      onUpdate: () => { el.textContent = text.slice(0, Math.round(state.n)); }
+    }, at);
+  }
 
-    // 4. Bot entrance
-    tl.from("#botWrapper", {
-      duration: 0.9,
-      y: 70,
-      scale: 0.85,
-      opacity: 0,
-      ease: "back.out(1.4)"
-    }, 0.3);
+    tl.set("#beat-0", { autoAlpha: 0 }, 0);
+    tl.to("#beat-0", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 0);
+    tl.to("#beat-0", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 2.9000000000000004);
+    tl.from("#beat-0 .tile-box", { duration: 0.4, y: 40, autoAlpha: 0, scale: 0.9, stagger: 0.12, ease: "back.out(1.4)" }, 0.25);
+    tl.set("#beat-1", { autoAlpha: 0 }, 0);
+    tl.to("#beat-1", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 3.2);
+    tl.to("#beat-1", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 5);
+    typeUrl(tl, "#url-1", "https://en.wikipedia.org/wiki/PDF", 3.5, 1.60);
+    tl.set("#beat-2", { autoAlpha: 0 }, 0);
+    tl.to("#beat-2", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 5.3);
+    tl.to("#beat-2", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 7.5);
+    tl.set("#bar-2", { width: "0%" }, 0);
+    tl.to("#bar-2", { duration: 1.90, width: "100%", ease: "power1.inOut" }, 5.6);
+    tl.set("#beat-3", { autoAlpha: 0 }, 0);
+    tl.to("#beat-3", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 7.8);
+    tl.to("#beat-3", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 9.2);
+    tl.from("#beat-3 .tile-box", { duration: 0.4, y: 40, autoAlpha: 0, scale: 0.9, stagger: 0.12, ease: "back.out(1.4)" }, 8.05);
+    tl.set("#beat-4", { autoAlpha: 0 }, 0);
+    tl.to("#beat-4", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 9.5);
+    tl.to("#beat-4", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 11.7);
+    tl.set("#page-0", { autoAlpha: 0 }, 0);
+    tl.to("#page-0", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 0.00);
+    tl.to("#page-0", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 1.48);
+    tl.to("#w0", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 0.04);
+    tl.to("#w0", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 0.38);
+    tl.to("#w1", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 0.36);
+    tl.to("#w1", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 0.66);
+    tl.to("#w2", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 0.64);
+    tl.to("#w2", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 1.58);
+    tl.set("#page-1", { autoAlpha: 0 }, 0);
+    tl.to("#page-1", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 1.46);
+    tl.to("#page-1", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 3.30);
+    tl.to("#w3", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 1.56);
+    tl.to("#w3", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 1.92);
+    tl.to("#w4", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 1.90);
+    tl.to("#w4", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 3.14);
+    tl.set("#page-2", { autoAlpha: 0 }, 0);
+    tl.to("#page-2", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 3.28);
+    tl.to("#page-2", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 4.62);
+    tl.to("#w5", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 3.38);
+    tl.to("#w5", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 3.56);
+    tl.to("#w6", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 3.54);
+    tl.to("#w6", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 3.84);
+    tl.to("#w7", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 3.82);
+    tl.to("#w7", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 4.36);
+    tl.to("#w8", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 4.34);
+    tl.to("#w8", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 4.72);
+    tl.set("#page-3", { autoAlpha: 0 }, 0);
+    tl.to("#page-3", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 4.60);
+    tl.to("#page-3", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 5.86);
+    tl.to("#w9", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 4.70);
+    tl.to("#w9", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.20);
+    tl.to("#w10", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.18);
+    tl.to("#w10", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.52);
+    tl.to("#w11", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.50);
+    tl.to("#w11", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.74);
+    tl.to("#w12", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.72);
+    tl.to("#w12", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.96);
+    tl.set("#page-4", { autoAlpha: 0 }, 0);
+    tl.to("#page-4", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 5.84);
+    tl.to("#page-4", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 7.84);
+    tl.to("#w13", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.94);
+    tl.to("#w13", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 6.46);
+    tl.to("#w14", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 6.44);
+    tl.to("#w14", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 7.08);
+    tl.set("#page-5", { autoAlpha: 0 }, 0);
+    tl.to("#page-5", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 7.82);
+    tl.to("#page-5", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 8.48);
+    tl.to("#w15", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 7.92);
+    tl.to("#w15", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 8.58);
+    tl.set("#page-6", { autoAlpha: 0 }, 0);
+    tl.to("#page-6", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 8.46);
+    tl.to("#page-6", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 9.20);
+    tl.to("#w16", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 8.56);
+    tl.to("#w16", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 8.72);
+    tl.to("#w17", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 8.70);
+    tl.to("#w17", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 9.30);
+    tl.set("#page-7", { autoAlpha: 0 }, 0);
+    tl.to("#page-7", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 9.18);
+    tl.to("#page-7", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 11.28);
+    tl.to("#w18", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 9.28);
+    tl.to("#w18", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 9.74);
+    tl.to("#w19", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 9.72);
+    tl.to("#w19", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 10.10);
+    tl.to("#w20", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 10.08);
+    tl.to("#w20", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 10.34);
+    tl.to("#w21", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 10.32);
+    tl.to("#w21", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 10.70);
+    tl.fromTo("#cue-0", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 0.04);
+    tl.to("#cue-0", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 0.34);
+    tl.fromTo("#cue-1", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 0.36);
+    tl.to("#cue-1", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 1.46);
+    tl.fromTo("#cue-2", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 1.56);
+    tl.to("#cue-2", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 1.86);
+    tl.fromTo("#cue-3", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 1.90);
+    tl.to("#cue-3", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 3.44);
+    tl.fromTo("#cue-4", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 3.54);
+    tl.to("#cue-4", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 3.84);
+    tl.fromTo("#cue-5", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 3.82);
+    tl.to("#cue-5", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 4.60);
+    tl.fromTo("#cue-6", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 4.70);
+    tl.to("#cue-6", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 5.62);
+    tl.fromTo("#cue-7", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 5.72);
+    tl.to("#cue-7", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 6.02);
+    tl.fromTo("#cue-8", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 5.94);
+    tl.to("#cue-8", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 6.34);
+    tl.fromTo("#cue-9", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 6.44);
+    tl.to("#cue-9", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 7.76);
+    tl.fromTo("#cue-10", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 7.92);
+    tl.to("#cue-10", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 9.26);
+    tl.fromTo("#cue-11", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 9.72);
+    tl.to("#cue-11", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 10.22);
+    tl.fromTo("#cue-12", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 10.32);
+    tl.to("#cue-12", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 11.38);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 0.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 0.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 0.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 0.79);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 1.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 1.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 1.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 1.79);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 2.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 2.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 2.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 2.79);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 3.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 3.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 3.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 3.79);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 4.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 4.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 4.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 4.79);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 5.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 5.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 5.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 5.79);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 6.04);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 6.29);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 6.54);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 6.79);
+    tl.to("#botHead", { duration: 0.2, rotateX: 0, ease: "sine.out" }, 7.06);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 7.92);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 8.17);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 8.42);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 8.67);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 8.92);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 9.17);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 9.42);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 9.67);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 9.92);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 10.17);
+    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 10.42);
+    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 10.67);
+    tl.to("#botHead", { duration: 0.2, rotateX: 0, ease: "sine.out" }, 10.68);
 
-    // 5. Bot head human-like nod (pitch rotateX)
-    // 1s still -> 3s nodding (2 Hz, +-5 deg) -> settles
-    const nodTl = gsap.timeline();
-    for (let i = 0; i < 6; i++) {
-      nodTl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" })
-           .to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" });
-    }
-    nodTl.to("#botHead", { duration: 0.25, rotateX: 0, ease: "sine.out" });
-    tl.add(nodTl, 1.0);
-
-    // 6. Kinetic Caption Word blasts
-    const wordTimes = [
-      { id: "#w0", at: 0.1 },
-      { id: "#w1", at: 0.4 },
-      { id: "#w2", at: 0.7 },
-      { id: "#w3", at: 1.4 },
-      { id: "#w4", at: 1.8 }
-    ];
-
-    wordTimes.forEach(w => {
-      tl.to(w.id, {
-        duration: 0.2,
-        opacity: 1,
-        scale: 1.15,
-        color: "#FF550D",
-        textShadow: "0 0 50px #FF550D",
-        ease: "power2.out"
-      }, w.at);
-      tl.to(w.id, {
-        duration: 0.25,
-        scale: 1.0,
-        color: "#FFFFFF",
-        textShadow: "0 4px 12px rgba(0,0,0,0.7)",
-        ease: "power2.in"
-      }, w.at + 0.35);
-    });
-
-    // 7. Register timeline under matching data-composition-id
-    window.__timelines["reel-main"] = tl;
-  </script>
+  window.__timelines["reel-main"] = tl;
+</script>
 </body>
 </html>

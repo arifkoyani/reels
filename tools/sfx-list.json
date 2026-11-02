@@ -1,0 +1,45 @@
+{
+  "_comment": "Sound library for reels. generate-sfx.mjs creates any that are missing from public/sfx/ and skips the rest, so re-running costs nothing.",
+  "effects": [
+    {
+      "name": "ui-click",
+      "prompt": "A clean, crisp, subtle modern digital UI mouse click pop sound effect",
+      "duration": 1
+    },
+    {
+      "name": "whoosh",
+      "prompt": "Short smooth air whoosh for a UI scene transition, soft and clean, no music, no reverb tail",
+      "duration": 0.8
+    },
+    {
+      "name": "pop",
+      "prompt": "Very short crisp bubble pop for a card appearing on screen, dry, minimal, no reverb",
+      "duration": 0.5
+    },
+    {
+      "name": "type",
+      "prompt": "Short burst of soft mechanical keyboard typing, a few keystrokes, dry and close",
+      "duration": 1.2
+    },
+    {
+      "name": "stamp",
+      "prompt": "A rubber stamp hitting paper once, firm thud with a short paper snap, dry, no reverb",
+      "duration": 0.7
+    },
+    {
+      "name": "paper-pin",
+      "prompt": "A sheet of paper being placed on a cork board and a pushpin pressed in, soft paper rustle and a small tap",
+      "duration": 0.9
+    },
+    {
+      "name": "ding",
+      "prompt": "A single soft pleasant confirmation chime, one clean bell note, modern UI success, no reverb",
+      "duration": 1
+    },
+    {
+      "name": "swipe",
+      "prompt": "Quick short fabric swipe for text sliding into place, soft and dry, no music",
+      "duration": 0.6
+    }
+  ]
+}

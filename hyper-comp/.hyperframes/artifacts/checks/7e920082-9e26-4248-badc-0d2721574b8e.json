@@ -11,7 +11,7 @@
       {
         "code": "composition_file_too_large",
         "severity": "warning",
-        "message": "This HTML composition file has 699 lines. Smaller sub-compositions are easier to read, iterate on, and diff.",
+        "message": "This HTML composition file has 800 lines. Smaller sub-compositions are easier to read, iterate on, and diff.",
         "selector": "[data-composition-id]",
         "dataAttributes": {},
         "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
@@ -764,28 +764,103 @@
   "contrast": {
     "ok": true,
     "errorCount": 0,
-    "warningCount": 9,
+    "warningCount": 18,
     "infoCount": 0,
     "findings": [
       {
         "code": "contrast_aa_failure",
         "severity": "warning",
-        "message": "Contrast is 1.89:1; WCAG AA requires 3:1.",
-        "text": "// 01 · the hook",
-        "fg": "rgb(174,172,166)",
-        "bg": "rgb(236,234,229)",
-        "ratio": 1.89,
+        "message": "Contrast is 2.89:1; WCAG AA requires 3:1.",
+        "text": "nobody's",
+        "fg": "rgb(154,147,138)",
+        "bg": "rgb(96,69,47)",
+        "ratio": 2.89,
         "requiredRatio": 3,
-        "suggestedColor": "rgb(136,134,130)",
+        "suggestedColor": "rgb(157,150,141)",
         "large": true,
-        "selector": "div > div:nth-of-type(2) > div:nth-of-type(1)",
+        "selector": "#w10",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 464.96875,
+          "y": 230,
+          "width": 340.90625,
+          "height": 92
+        },
+        "time": 3.411,
+        "times": [
+          3.411
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.94:1; WCAG AA requires 3:1.",
+        "text": "showing",
+        "fg": "rgb(154,147,138)",
+        "bg": "rgb(95,68,47)",
+        "ratio": 2.94,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(156,149,140)",
+        "large": true,
+        "selector": "#w11",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 120,
-          "y": 834.765625,
-          "width": 281.609375,
-          "height": 35
+          "y": 332,
+          "width": 307.96875,
+          "height": 92
+        },
+        "time": 3.411,
+        "times": [
+          3.411
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.22:1; WCAG AA requires 3:1.",
+        "text": "NOBODY SHOWS YOU HOW",
+        "fg": "rgb(12,10,8)",
+        "bg": "rgb(96,68,46)",
+        "ratio": 2.22,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(151,150,149)",
+        "large": true,
+        "selector": "div > div:nth-of-type(4) > div:nth-of-type(2) > div",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 118.5926742553711,
+          "y": 482.3416442871094,
+          "width": 722.111572265625,
+          "height": 141.53543090820312
+        },
+        "time": 3.411,
+        "times": [
+          3.411
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.35:1; WCAG AA requires 3:1.",
+        "text": "YOU HOW",
+        "fg": "rgb(248,56,32)",
+        "bg": "rgb(97,68,47)",
+        "ratio": 2.35,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(250,103,84)",
+        "large": true,
+        "selector": "div > div:nth-of-type(4) > div:nth-of-type(2) > div > span",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 571.0925903320312,
+          "y": 493.0959777832031,
+          "width": 238.52313232421875,
+          "height": 115.73037719726562
         },
         "time": 3.411,
         "times": [
@@ -828,18 +903,43 @@
         "requiredRatio": 3,
         "suggestedColor": "rgb(136,134,130)",
         "large": true,
-        "selector": "div > div:nth-of-type(5) > div:nth-of-type(1)",
+        "selector": "div > div:nth-of-type(7) > div:nth-of-type(1)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 120,
-          "y": 813.09375,
-          "width": 281.609375,
-          "height": 35
+          "y": 812.09375,
+          "width": 300.8125,
+          "height": 37
         },
         "time": 17.056,
         "times": [
           17.056
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.35:1; WCAG AA requires 3:1.",
+        "text": "setup.",
+        "fg": "rgb(255,106,82)",
+        "bg": "rgb(236,234,229)",
+        "ratio": 2.35,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(223,93,72)",
+        "large": true,
+        "selector": "#w103",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 120,
+          "y": 230,
+          "width": 226.890625,
+          "height": 112
+        },
+        "time": 30.7,
+        "times": [
+          30.7
         ]
       },
       {
@@ -853,14 +953,14 @@
         "requiredRatio": 3,
         "suggestedColor": "rgb(136,134,130)",
         "large": true,
-        "selector": "div > div:nth-of-type(7) > div:nth-of-type(1)",
+        "selector": "div > div:nth-of-type(9) > div:nth-of-type(1)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 120,
-          "y": 706.703125,
-          "width": 299.203125,
-          "height": 35
+          "y": 702.703125,
+          "width": 319.609375,
+          "height": 37
         },
         "time": 30.7,
         "times": [
@@ -878,14 +978,14 @@
         "requiredRatio": 3,
         "suggestedColor": "rgb(136,134,130)",
         "large": true,
-        "selector": "div > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)",
+        "selector": "div > div:nth-of-type(9) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 202,
-          "y": 960.703125,
-          "width": 281.609375,
-          "height": 35
+          "y": 958.703125,
+          "width": 300.8125,
+          "height": 37
         },
         "time": 30.7,
         "times": [
@@ -903,14 +1003,14 @@
         "requiredRatio": 3,
         "suggestedColor": "rgb(136,134,130)",
         "large": true,
-        "selector": "div > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)",
+        "selector": "div > div:nth-of-type(9) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 202,
           "y": 1058.703125,
-          "width": 299.203125,
-          "height": 35
+          "width": 319.609375,
+          "height": 37
         },
         "time": 30.7,
         "times": [
@@ -928,14 +1028,14 @@
         "requiredRatio": 3,
         "suggestedColor": "rgb(136,134,130)",
         "large": true,
-        "selector": "div > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)",
+        "selector": "div > div:nth-of-type(9) > div:nth-of-type(3) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 202,
-          "y": 1156.703125,
-          "width": 264,
-          "height": 35
+          "y": 1158.703125,
+          "width": 282,
+          "height": 37
         },
         "time": 30.7,
         "times": [
@@ -953,14 +1053,14 @@
         "requiredRatio": 3,
         "suggestedColor": "rgb(136,134,130)",
         "large": true,
-        "selector": "div > div:nth-of-type(10) > div:nth-of-type(1)",
+        "selector": "div > div:nth-of-type(12) > div:nth-of-type(1)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 120,
-          "y": 630.5,
-          "width": 352,
-          "height": 35
+          "y": 629.5,
+          "width": 376,
+          "height": 37
         },
         "time": 44.344,
         "times": [
@@ -970,22 +1070,147 @@
       {
         "code": "contrast_aa_failure",
         "severity": "warning",
-        "message": "Contrast is 1.89:1; WCAG AA requires 3:1.",
-        "text": "// 12 · get the system",
-        "fg": "rgb(174,172,166)",
-        "bg": "rgb(236,234,229)",
-        "ratio": 1.89,
+        "message": "Contrast is 2.89:1; WCAG AA requires 3:1.",
+        "text": "this",
+        "fg": "rgb(154,147,138)",
+        "bg": "rgb(96,69,48)",
+        "ratio": 2.89,
         "requiredRatio": 3,
-        "suggestedColor": "rgb(136,134,130)",
+        "suggestedColor": "rgb(157,150,141)",
         "large": true,
-        "selector": "div > div:nth-of-type(13) > div:nth-of-type(1)",
+        "selector": "#w199",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 397.96875,
+          "y": 230,
+          "width": 134.671875,
+          "height": 92
+        },
+        "time": 57.989,
+        "times": [
+          57.989
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.94:1; WCAG AA requires 3:1.",
+        "text": "account,",
+        "fg": "rgb(154,147,138)",
+        "bg": "rgb(95,68,47)",
+        "ratio": 2.94,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(156,149,140)",
+        "large": true,
+        "selector": "#w200",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 558.640625,
+          "y": 230,
+          "width": 318.625,
+          "height": 92
+        },
+        "time": 57.989,
+        "times": [
+          57.989
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.26:1; WCAG AA requires 3:1.",
+        "text": "COMMENT SKILL",
+        "fg": "rgb(12,10,8)",
+        "bg": "rgb(97,69,47)",
+        "ratio": 2.26,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(152,151,150)",
+        "large": true,
+        "selector": "div > div:nth-of-type(15) > div:nth-of-type(2) > div",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 118.55670928955078,
+          "y": 778.7702026367188,
+          "width": 481.1522216796875,
+          "height": 135.6470947265625
+        },
+        "time": 57.989,
+        "times": [
+          57.989
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.31:1; WCAG AA requires 3:1.",
+        "text": "SKILL",
+        "fg": "rgb(248,56,32)",
+        "bg": "rgb(98,69,48)",
+        "ratio": 2.31,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(250,106,88)",
+        "large": true,
+        "selector": "div > div:nth-of-type(15) > div:nth-of-type(2) > div > span",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 423.7880859375,
+          "y": 789.5245971679688,
+          "width": 144.83233642578125,
+          "height": 113.4407958984375
+        },
+        "time": 57.989,
+        "times": [
+          57.989
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.36:1; WCAG AA requires 3:1.",
+        "text": "221",
+        "fg": "rgb(248,56,32)",
+        "bg": "rgb(96,68,47)",
+        "ratio": 2.36,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(250,103,84)",
+        "large": true,
+        "selector": "div > div:nth-of-type(15) > div:nth-of-type(3)",
         "dataAttributes": {},
         "sourceFile": "index.html",
         "bbox": {
           "x": 120,
-          "y": 730.59375,
-          "width": 387.203125,
-          "height": 35
+          "y": 936.59375,
+          "width": 212.53125,
+          "height": 198
+        },
+        "time": 57.989,
+        "times": [
+          57.989
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.25:1; WCAG AA requires 3:1.",
+        "text": "files behind every reel",
+        "fg": "rgb(12,10,8)",
+        "bg": "rgb(96,69,48)",
+        "ratio": 2.25,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(152,151,150)",
+        "large": true,
+        "selector": "div > div:nth-of-type(15) > div:nth-of-type(4)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 120,
+          "y": 1162.59375,
+          "width": 552,
+          "height": 53
         },
         "time": 57.989,
         "times": [
@@ -1001,254 +1226,15 @@
       44.344,
       57.989
     ],
-    "checked": 56,
-    "passed": 47
+    "checked": 61,
+    "passed": 43
   },
   "craft": {
     "ok": true,
     "errorCount": 0,
-    "warningCount": 2,
+    "warningCount": 1,
     "infoCount": 0,
     "findings": [
-      {
-        "code": "text_below_floor",
-        "severity": "warning",
-        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 27 text elements stay under it for 0.5 s or more, the smallest \"// download it\" at 25 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
-        "text": "// download it",
-        "selector": "#b2 > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2)",
-        "dataAttributes": {},
-        "sourceFile": "index.html",
-        "bbox": {
-          "x": 152.46,
-          "y": 1174.83,
-          "width": 241.53,
-          "height": 34.3
-        },
-        "time": 9.485,
-        "times": [
-          0.125,
-          4.992,
-          9.235,
-          9.485,
-          9.609,
-          13.852,
-          20.342,
-          20.591,
-          20.716,
-          26.457,
-          26.707,
-          26.831,
-          26.956,
-          34.07,
-          37.564,
-          41.183,
-          48.546,
-          48.796,
-          48.92,
-          52.415,
-          52.789,
-          52.789,
-          52.914,
-          53.039,
-          53.163,
-          53.288,
-          54.287
-        ],
-        "fontPx": 25.49,
-        "floorPx": 28,
-        "seconds": 4.243,
-        "elements": [
-          {
-            "selector": "#b2 > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2)",
-            "text": "// download it",
-            "fontPx": 25.49,
-            "time": 9.485,
-            "seconds": 4.243
-          },
-          {
-            "selector": "#b4 > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2)",
-            "text": "// then pick the folder",
-            "fontPx": 25.49,
-            "time": 20.591,
-            "seconds": 5.741
-          },
-          {
-            "selector": "#b9 > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2)",
-            "text": "// like a real editor",
-            "fontPx": 25.49,
-            "time": 48.796,
-            "seconds": 3.494
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// ai video editor",
-            "fontPx": 25.49,
-            "time": 52.789,
-            "seconds": 1.498
-          },
-          {
-            "selector": "div.card.bad > div:nth-of-type(2)",
-            "text": "// won't work",
-            "fontPx": 25.63,
-            "time": 9.609,
-            "seconds": 4.119
-          },
-          {
-            "selector": "#b4 > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// Claude owns the files",
-            "fontPx": 25.63,
-            "time": 20.716,
-            "seconds": 5.616
-          },
-          {
-            "selector": "#b9 > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// no re-prompting",
-            "fontPx": 25.63,
-            "time": 48.92,
-            "seconds": 3.37
-          },
-          {
-            "selector": "#b5 > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// motion engine",
-            "fontPx": 25.79,
-            "time": 26.707,
-            "seconds": 7.238
-          },
-          {
-            "selector": "#b5 > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// text to speech",
-            "fontPx": 25.79,
-            "time": 26.831,
-            "seconds": 7.114
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(3) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// new chat",
-            "fontPx": 25.79,
-            "time": 52.914,
-            "seconds": 1.373
-          },
-          {
-            "selector": "#b5 > div:nth-of-type(3) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// video output",
-            "fontPx": 25.99,
-            "time": 26.956,
-            "seconds": 6.989
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(3) > div:nth-of-type(4) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// tools checked",
-            "fontPx": 25.99,
-            "time": 53.039,
-            "seconds": 1.248
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(3) > div:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// the idea",
-            "fontPx": 25.99,
-            "time": 53.163,
-            "seconds": 1.124
-          },
-          {
-            "selector": "#b0 > div:nth-of-type(1)",
-            "text": "// 01 · the hook",
-            "fontPx": 26,
-            "time": 0.125,
-            "seconds": 4.742
-          },
-          {
-            "selector": "#b1 > div:nth-of-type(1)",
-            "text": "// 02 · the roadmap",
-            "fontPx": 26,
-            "time": 4.992,
-            "seconds": 4.118
-          },
-          {
-            "selector": "#b2 > div:nth-of-type(1)",
-            "text": "// 03 · step one",
-            "fontPx": 26,
-            "time": 9.235,
-            "seconds": 4.493
-          },
-          {
-            "selector": "#b3 > div:nth-of-type(1)",
-            "text": "// 04 · step two",
-            "fontPx": 26,
-            "time": 13.852,
-            "seconds": 6.365
-          },
-          {
-            "selector": "#b4 > div:nth-of-type(1)",
-            "text": "// 05 · step three",
-            "fontPx": 26,
-            "time": 20.342,
-            "seconds": 5.99
-          },
-          {
-            "selector": "#b5 > div:nth-of-type(1)",
-            "text": "// 06 · step four",
-            "fontPx": 26,
-            "time": 26.457,
-            "seconds": 7.488
-          },
-          {
-            "selector": "#b6 > div:nth-of-type(1)",
-            "text": "// 07 · the fun part",
-            "fontPx": 26,
-            "time": 34.07,
-            "seconds": 3.369
-          },
-          {
-            "selector": "#b7 > div:nth-of-type(1)",
-            "text": "// 08 · the prompt",
-            "fontPx": 26,
-            "time": 37.564,
-            "seconds": 3.494
-          },
-          {
-            "selector": "#b8 > div:nth-of-type(1)",
-            "text": "// 09 · what it does",
-            "fontPx": 26,
-            "time": 41.183,
-            "seconds": 7.238
-          },
-          {
-            "selector": "#b9 > div:nth-of-type(1)",
-            "text": "// 10 · step six",
-            "fontPx": 26,
-            "time": 48.546,
-            "seconds": 3.744
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(1)",
-            "text": "// 11 · the whole thing",
-            "fontPx": 26,
-            "time": 52.415,
-            "seconds": 1.872
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// claude code",
-            "fontPx": 26,
-            "time": 52.789,
-            "seconds": 1.498
-          },
-          {
-            "selector": "#b10 > div:nth-of-type(3) > div:nth-of-type(6) > div:nth-of-type(2) > div:nth-of-type(2)",
-            "text": "// tell it what to fix",
-            "fontPx": 26,
-            "time": 53.288,
-            "seconds": 0.999
-          },
-          {
-            "selector": "#b11 > div:nth-of-type(1)",
-            "text": "// 12 · get the system",
-            "fontPx": 26,
-            "time": 54.287,
-            "seconds": 7.113
-          }
-        ]
-      },
       {
         "code": "line_unread",
         "severity": "warning",
@@ -1259,9 +1245,9 @@
         "sourceFile": "index.html",
         "bbox": {
           "x": 200.82,
-          "y": 1362.77,
-          "width": 388.56,
-          "height": 35.11999999999989
+          "y": 1367.76,
+          "width": 415.05,
+          "height": 37.13000000000011
         },
         "time": 53.171,
         "words": 5,

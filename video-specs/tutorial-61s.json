@@ -1,0 +1,151 @@
+{
+  "id": "tutorial-61s",
+  "durationSeconds": 61.4,
+  "speed": 1,
+  "audioFile": "mp3/audio.mp3",
+  "transcriptFile": "transcriptionasJSON/audio.json",
+  "beats": [
+    {
+      "fromSeconds": 0,
+      "toSeconds": 4.9,
+      "kicker": "the hook",
+      "stamp": "NOBODY SHOWS {YOU HOW}",
+      "widget": "statement",
+      "lead": "Everyone is making AI reels.",
+      "sub": "Almost no one shows the actual steps."
+    },
+    {
+      "fromSeconds": 4.9,
+      "toSeconds": 9.1,
+      "kicker": "the roadmap",
+      "stamp": "EVERY {STEP}",
+      "widget": "list",
+      "items": [
+        { "icon": "monitor", "label": "Desktop app" },
+        { "icon": "folder", "label": "A project folder" },
+        { "icon": "message-square", "label": "A local chat" },
+        { "icon": "wrench", "label": "The right tools" },
+        { "icon": "sparkles", "label": "One line of prompt" },
+        { "icon": "check-check", "label": "Your feedback" }
+      ]
+    },
+    {
+      "fromSeconds": 9.1,
+      "toSeconds": 13.7,
+      "kicker": "step one",
+      "step": 1,
+      "stamp": "GET {CLAUDE CODE}",
+      "widget": "cards",
+      "cards": [
+        { "icon": "monitor", "title": "Desktop app", "note": "download it", "tone": "good" },
+        { "icon": "globe", "title": "Not the browser", "note": "won't work", "tone": "danger" }
+      ]
+    },
+    {
+      "fromSeconds": 13.7,
+      "toSeconds": 20.2,
+      "kicker": "step two",
+      "step": 2,
+      "stamp": "MAKE A {FOLDER}",
+      "widget": "path",
+      "path": "~/AI Video Editor",
+      "sub": "Skill files and every finished reel live here."
+    },
+    {
+      "fromSeconds": 20.2,
+      "toSeconds": 26.3,
+      "kicker": "step three",
+      "step": 3,
+      "stamp": "NEW CHAT, {LOCAL}",
+      "widget": "cards",
+      "cards": [
+        { "icon": "folder-open", "title": "Choose Local", "note": "then pick the folder" },
+        { "icon": "file-pen", "title": "Read + write", "note": "Claude owns the files" }
+      ]
+    },
+    {
+      "fromSeconds": 26.3,
+      "toSeconds": 33.9,
+      "kicker": "step four",
+      "step": 4,
+      "stamp": "CHECK YOUR {SETUP}",
+      "widget": "checklist",
+      "items": [
+        { "label": "Animate", "note": "motion engine" },
+        { "label": "Voice", "note": "text to speech" },
+        { "label": "Render", "note": "video output" }
+      ],
+      "sub": "It installs what's missing and walks you through every click."
+    },
+    {
+      "fromSeconds": 33.9,
+      "toSeconds": 37.4,
+      "kicker": "the fun part",
+      "step": 5,
+      "stamp": "ONE {LINE}",
+      "widget": "statement",
+      "lead": "Type what the reel is about.",
+      "sub": "That is the whole brief."
+    },
+    {
+      "fromSeconds": 37.4,
+      "toSeconds": 41.0,
+      "kicker": "the prompt",
+      "stamp": "LIKE {THIS}",
+      "widget": "prompt",
+      "prompt": "make a reel about why airplane food tastes so bland"
+    },
+    {
+      "fromSeconds": 41.0,
+      "toSeconds": 48.4,
+      "kicker": "what it does",
+      "stamp": "IT DOES {ALL OF IT}",
+      "widget": "list",
+      "items": [
+        { "icon": "pen-line", "label": "Writes the script" },
+        { "icon": "mic", "label": "Records the voiceover" },
+        { "icon": "clapperboard", "label": "Animates every scene" },
+        { "icon": "captions", "label": "Times captions to words" },
+        { "icon": "scan-eye", "label": "Checks its own motion" }
+      ]
+    },
+    {
+      "fromSeconds": 48.4,
+      "toSeconds": 52.3,
+      "kicker": "step six",
+      "step": 6,
+      "stamp": "JUST {TELL IT}",
+      "widget": "cards",
+      "cards": [
+        { "icon": "message-circle", "title": "Say what's off", "note": "like a real editor" },
+        { "icon": "wand-sparkles", "title": "It fixes it", "note": "no re-prompting" }
+      ]
+    },
+    {
+      "fromSeconds": 52.3,
+      "toSeconds": 54.2,
+      "kicker": "the whole thing",
+      "stamp": "ENTIRE {WORKFLOW}",
+      "widget": "checklist",
+      "allDone": true,
+      "items": [
+        { "label": "Desktop app", "note": "claude code" },
+        { "label": "Folder", "note": "ai video editor" },
+        { "label": "Local chat", "note": "new chat" },
+        { "label": "Setup", "note": "tools checked" },
+        { "label": "One line", "note": "the idea" },
+        { "label": "Feedback", "note": "tell it what to fix" }
+      ]
+    },
+    {
+      "fromSeconds": 54.2,
+      "toSeconds": 61.4,
+      "kicker": "get the system",
+      "stamp": "COMMENT {SKILL}",
+      "widget": "cta",
+      "stat": "221",
+      "statLabel": "files behind every reel",
+      "sub": "and I'll send the whole system to you."
+    }
+  ]
+}

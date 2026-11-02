@@ -2,204 +2,315 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>khanpdf-ref — HyperFrames</title>
+<title>tutorial-61s</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #0B0F19;
-    display: flex; justify-content: center; align-items: center;
-    min-height: 100vh; overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  body { background:#111; display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
+
+  /* report.txt palette */
+  :root {
+    --paper:#ECEAE5; --ink:#0C0A08; --hot:#F83820; --muted:#AEACA6;
+    --card:#FBFAF7; --line:#DCD9D2;
   }
   [data-composition-id="reel-main"] {
-    width: 1080px; height: 1920px; position: relative;
-    background: #131C2D; overflow: hidden;
+    width:1080px; height:1920px; position:relative;
+    background:var(--paper); overflow:hidden;
+    font-family:Inter, sans-serif; color:var(--ink);
   }
-  .glow-left, .glow-right {
-    position: absolute; width: 500px; height: 500px; pointer-events: none;
-    background: radial-gradient(circle, rgba(255,85,13,0.18) 0%, rgba(19,28,45,0) 70%);
-  }
-  .glow-left  { top: 35%; left: -100px; }
-  .glow-right { top: 40%; right: -100px; }
 
-  .card-panel {
-    position: absolute; top: 130px; left: 75px;
-    width: 930px; height: 910px;
-    border-radius: 44px; background: #FFFFFF;
-    box-shadow: 0 34px 80px rgba(0,0,0,0.5);
-    overflow: hidden; z-index: 10; color: #131C2D;
+  /* four type roles */
+  .mono { font-family:"JetBrains Mono",monospace; font-size:26px; letter-spacing:2px; color:var(--muted); }
+  .mono-lg { font-family:"JetBrains Mono",monospace; font-size:40px; color:var(--ink); }
+  .stamp {
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:92px; line-height:1;
+    letter-spacing:1px; text-transform:uppercase;
+    border:5px solid var(--hot); border-radius:8px; padding:14px 26px 8px;
+    transform:rotate(-1.4deg); display:inline-block;
   }
-  /* one beat fills the card; only one is visible at a time.
-     hidden by default so a JS failure can't stack all of them */
+  .hot { color:var(--hot); }
+
+  /* caption at the TOP, two tones */
+  .cap-box { position:absolute; top:230px; left:120px; right:120px; height:260px; z-index:30; }
+  .cap-page { position:absolute; inset:0; opacity:0; display:flex; flex-wrap:wrap; align-content:flex-start; gap:10px 26px; }
+  .cap { font-size:76px; font-weight:800; letter-spacing:-2px; color:#6E6A63; }
+  .cap.key { font-family:"Playfair Display",serif; font-style:italic; font-weight:700; font-size:84px; color:#D9A99F; letter-spacing:0; }
+
+  /* the stage */
   .beat {
-    position: absolute; inset: 0; opacity: 0;
-    padding: 60px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
+    position:absolute; top:560px; left:120px; right:120px; height:900px;
+    opacity:0; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:28px;
   }
-  .badge-step {
-    font-size: 28px; font-weight: 800; letter-spacing: 3px;
-    color: #FF550D; margin-bottom: 20px;
+  .kicker { margin-bottom:-10px; }
+  .stamp-row { display:flex; align-items:flex-end; gap:28px; }
+  .step {
+    width:86px; height:86px; border-radius:20px; background:var(--ink); color:#fff;
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:56px;
+    display:flex; align-items:center; justify-content:center; padding-top:6px;
   }
-  .card-title {
-    font-size: 76px; font-weight: 900; line-height: 1.15;
-    letter-spacing: -1.5px; margin-bottom: 18px;
-  }
-  .card-title .accent, .brand .accent { color: #FF550D; }
-  .card-sub { font-size: 36px; color: #5A6678; font-weight: 600; line-height: 1.3; }
+  .lead { font-size:62px; font-weight:800; line-height:1.14; letter-spacing:-1px; }
+  .sub { font-size:36px; color:#5A6678; font-weight:600; line-height:1.3; }
 
-  .tiles-row { display: flex; gap: 24px; width: 100%; margin-top: 40px; }
-  .tile-box {
-    flex: 1; padding: 30px 18px; border-radius: 24px;
-    background: #FBFCFE; border: 3px solid #E3E7EE;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  .list { display:flex; flex-direction:column; gap:16px; width:100%; }
+  .row {
+    display:flex; align-items:center; gap:22px; width:100%;
+    background:var(--card); border:3px solid var(--line); border-radius:22px; padding:20px 26px;
+    font-size:40px; font-weight:800;
   }
-  .tile-icon { width: 64px; height: 64px; color: #FF550D; }
-  .tile-label { font-size: 32px; font-weight: 800; color: #131C2D; }
+  .row-icon { width:52px; height:52px; color:var(--hot); flex:0 0 auto; }
 
-  .url-bar {
-    margin-top: 38px; width: 100%; padding: 26px 30px;
-    border-radius: 20px; background: #F7F9FC; border: 3px solid #E3E7EE;
-    font-family: "JetBrains Mono", Consolas, monospace; font-size: 32px;
-    color: #131C2D; text-align: left; white-space: nowrap; overflow: hidden;
+  .cards { display:flex; gap:24px; width:100%; }
+  .card {
+    flex:1; background:var(--card); border:3px solid var(--line); border-radius:28px;
+    padding:30px 26px; display:flex; flex-direction:column; gap:12px;
   }
-  .caret { color: #FF550D; }
+  .card.bad { border-color:#E5B4AC; }
+  .card-icon { width:64px; height:64px; color:var(--hot); }
+  .card.bad .card-icon { color:#C0392B; }
+  .card-t { font-size:44px; font-weight:800; }
 
-  .bar-track {
-    margin-top: 44px; width: 100%; height: 22px; border-radius: 999px;
-    background: #E3E7EE; overflow: hidden;
+  .path {
+    display:flex; align-items:center; gap:20px; width:100%;
+    background:var(--card); border:3px solid var(--line); border-radius:22px; padding:26px 30px;
   }
-  .bar-fill { width: 0%; height: 100%; background: #FF550D; }
+  .path-icon { width:56px; height:56px; color:var(--hot); }
 
-  .brand { margin-top: 30px; font-size: 92px; font-weight: 900; letter-spacing: -3px; }
-  .brand-url { margin-top: 8px; font-size: 44px; font-weight: 700; color: #FF550D; }
-
-  .bot-wrapper {
-    position: absolute; top: 1120px; left: 88px; width: 310px;
-    z-index: 20; perspective: 900px;
-    filter: drop-shadow(0 22px 40px rgba(0,0,0,0.6));
+  .checks { display:flex; flex-direction:column; gap:14px; width:100%; }
+  .check { display:flex; align-items:center; gap:20px; }
+  .box {
+    width:62px; height:62px; border-radius:14px; background:var(--ink);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
   }
-  .bot-head { transform-origin: 50% 55%; position: relative; }
-  .bot-head img { width: 100%; height: auto; display: block; }
+  .check-icon { width:38px; height:38px; color:#fff; }
+  .check-t { font-size:40px; font-weight:800; }
 
-  .cue-rail {
-    position: absolute; top: 1180px; left: 440px; right: 60px;
-    display: flex; flex-direction: column; align-items: flex-start;
-    gap: 14px; z-index: 25;
+  .prompt {
+    display:flex; align-items:center; width:100%;
+    background:var(--card); border:3px solid var(--line); border-radius:22px;
+    padding:28px 30px; white-space:nowrap; overflow:hidden;
   }
+  .caret { color:var(--hot); font-family:"JetBrains Mono",monospace; font-size:40px; }
+
+  .stat { font-family:"League Gothic","Archivo Black",sans-serif; font-size:220px; line-height:0.9; color:var(--hot); }
+
+  /* cue chips, bottom strip */
+  .cue-strip { position:absolute; top:1500px; left:120px; right:120px; height:200px; z-index:25;
+    display:flex; align-items:center; }
   .cue {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 24px; border-radius: 999px;
-    background: rgba(10,16,28,0.92); color: #fff;
-    font-size: 32px; font-weight: 800; white-space: nowrap;
-    opacity: 0; position: absolute;
+    position:absolute; opacity:0; display:flex; align-items:center; gap:16px;
+    background:var(--ink); color:#fff; border-radius:999px; padding:18px 32px;
+    font-size:40px; font-weight:800; white-space:nowrap;
   }
-  .cue-icon { width: 44px; height: 44px; }
-  .cue-good    { border: 3px solid #FF550D; }
-  .cue-good .cue-icon    { color: #FF550D; }
-  .cue-danger  { border: 3px solid #FF4D4D; }
-  .cue-danger .cue-icon  { color: #FF4D4D; }
-  .cue-danger span { text-decoration: line-through; }
-  .cue-neutral { border: 3px solid #FFFFFF; }
-  .cue-neutral .cue-icon { color: #FFFFFF; }
+  .cue-icon { width:52px; height:52px; }
+  .cue.good .cue-icon { color:var(--hot); }
+  .cue.danger .cue-icon { color:#FF6B5A; }
+  .cue.danger span { text-decoration:line-through; }
+  .cue.neutral .cue-icon { color:#fff; }
 
-  .caption-container {
-    position: absolute; top: 1540px; left: 60px; right: 60px;
-    height: 240px; z-index: 30;
-  }
-  /* pages stack in the same box; one is visible at a time */
-  .caption-page {
-    position: absolute; inset: 0; opacity: 0;
-    display: flex; flex-wrap: wrap;
-    justify-content: center; align-content: flex-start;
-    gap: 10px 20px;
-  }
-  .caption-word {
-    display: inline-block;
-    font-family: "Arial Black", -apple-system, sans-serif;
-    font-size: 82px; font-weight: 900; letter-spacing: -2px;
-    text-transform: uppercase; color: #FFFFFF; opacity: 0.25;
-    transform-origin: 50% 50%;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.7);
-  }
+  /* paper grain over everything */
+  .grain { position:absolute; inset:0; pointer-events:none; mix-blend-mode:multiply; opacity:0.30; }
 </style>
 </head>
 <body>
 
-<div data-composition-id="reel-main" data-width="1080" data-height="1920" data-fps="30" data-duration="12">
-  <div class="glow-left"></div>
-  <div class="glow-right"></div>
+<div data-composition-id="reel-main" data-width="1080" data-height="1920" data-fps="30" data-duration="61.4">
 
-  <!-- id is required: the renderer discovers media by id, and without it the
-       render is silent (hyperframes lint: media_missing_id). -->
   <audio id="vo" src="assets/vo.mp3" data-start="0" data-has-audio="true" data-volume="1"></audio>
 
-  <div class="card-panel">
-    <div class="beat" id="beat-0">
-      
-      <div class="card-title">LINKS <span class="accent">GO DEAD</span></div>
-      
-      <div class="tiles-row"><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.84 12.25 1.72-1.71h-.02a5.004 5.004 0 0 0-.12-7.07 5.006 5.006 0 0 0-6.95 0l-1.72 1.71"></path><path d="m5.17 11.75-1.71 1.71a5.004 5.004 0 0 0 .12 7.07 5.006 5.006 0 0 0 6.95 0l1.71-1.71"></path><line x1="8" x2="8" y1="2" y2="5"></line><line x1="2" x2="5" y1="8" y2="8"></line><line x1="16" x2="16" y1="19" y2="22"></line><line x1="19" x2="22" y1="16" y2="16"></line></svg><div class="tile-label">Broken link</div></div><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10v1"></path><path d="M7.528 20.472a1.6 1.6 0 012.277 0l1.057 1.056a1.6 1.6 0 002.276 0l1.057-1.056a1.6 1.6 0 012.277 0l1.114 1.114a1.4 1.4 0 002.414-1V10a8 8 0 00-16 0v10.586a1.4 1.4 0 002.414 1z"></path><path d="M9 10v1"></path></svg><div class="tile-label">Page removed</div></div></div>
-    </div>
-    <div class="beat" id="beat-1">
-      <div class="badge-step">STEP 1</div>
-      <div class="card-title">PASTE THE <span class="accent">URL</span></div>
-      
-      <div class="url-bar"><span class="url-text" id="url-1"></span><span class="caret">|</span></div>
-    </div>
-    <div class="beat" id="beat-2">
-      <div class="badge-step">STEP 2</div>
-      <div class="card-title">GET A <span class="accent">CLEAN</span> PDF</div>
-      
-      <div class="bar-track"><div class="bar-fill" id="bar-2"></div></div>
-    </div>
-    <div class="beat" id="beat-3">
-      <div class="badge-step">STEP 3</div>
-      <div class="card-title">KEEP OR <span class="accent">SHARE</span></div>
-      
-      <div class="tiles-row"><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg><div class="tile-label">Download</div></div><div class="tile-box"><svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg><div class="tile-label">Email it</div></div></div>
-    </div>
-    <div class="beat" id="beat-4">
-      
-      <div class="card-title"><span class="accent">FREE.</span> NO SIGN-UP</div>
-      
-      <div class="brand">Khan<span class="accent">PDF</span></div><div class="brand-url">khanpdf.com</div>
-    </div>
+  <div class="cap-box">
+      <div class="cap-page" id="cp0"><span class="cap " id="w0">Everyone's</span><span class="cap " id="w1">making</span><span class="cap " id="w2">AI</span><span class="cap " id="w3">animated</span></div>
+      <div class="cap-page" id="cp1"><span class="cap key" id="w4">reels</span><span class="cap " id="w5">with</span><span class="cap " id="w6">Claudecode</span><span class="cap " id="w7">right</span></div>
+      <div class="cap-page" id="cp2"><span class="cap " id="w8">now,</span><span class="cap " id="w9">but</span><span class="cap " id="w10">nobody's</span><span class="cap " id="w11">showing</span></div>
+      <div class="cap-page" id="cp3"><span class="cap " id="w12">you</span><span class="cap " id="w13">how.</span></div>
+      <div class="cap-page" id="cp4"><span class="cap " id="w14">So</span><span class="cap " id="w15">I'll</span><span class="cap " id="w16">show</span><span class="cap " id="w17">you</span></div>
+      <div class="cap-page" id="cp5"><span class="cap " id="w18">everything,</span><span class="cap " id="w19">every</span><span class="cap " id="w20">step</span><span class="cap " id="w21">you</span></div>
+      <div class="cap-page" id="cp6"><span class="cap " id="w22">need</span><span class="cap " id="w23">to</span><span class="cap " id="w24">make</span><span class="cap key" id="w25">reels</span></div>
+      <div class="cap-page" id="cp7"><span class="cap " id="w26">like</span><span class="cap " id="w27">this</span><span class="cap " id="w28">one.</span></div>
+      <div class="cap-page" id="cp8"><span class="cap " id="w29">First,</span><span class="cap " id="w30">you</span><span class="cap " id="w31">need</span><span class="cap " id="w32">Claudecode.</span></div>
+      <div class="cap-page" id="cp9"><span class="cap " id="w33">Don't</span><span class="cap " id="w34">use</span><span class="cap " id="w35">it</span><span class="cap " id="w36">in</span><span class="cap " id="w37">the</span><span class="cap key" id="w38">browser.</span></div>
+      <div class="cap-page" id="cp10"><span class="cap " id="w39">Download</span><span class="cap " id="w40">the</span><span class="cap " id="w41">desktop</span><span class="cap " id="w42">app.</span></div>
+      <div class="cap-page" id="cp11"><span class="cap " id="w43">Next,</span><span class="cap " id="w44">make</span><span class="cap " id="w45">a</span><span class="cap key" id="w46">folder</span></div>
+      <div class="cap-page" id="cp12"><span class="cap " id="w47">on</span><span class="cap " id="w48">your</span><span class="cap " id="w49">computer</span><span class="cap " id="w50">and</span></div>
+      <div class="cap-page" id="cp13"><span class="cap " id="w51">call</span><span class="cap " id="w52">it</span><span class="cap " id="w53">AI</span><span class="cap " id="w54">Video</span></div>
+      <div class="cap-page" id="cp14"><span class="cap " id="w55">Editor.</span><span class="cap " id="w56">That's</span><span class="cap " id="w57">where</span><span class="cap " id="w58">your</span><span class="cap key" id="w59">skill</span></div>
+      <div class="cap-page" id="cp15"><span class="cap " id="w60">files</span><span class="cap " id="w61">and</span><span class="cap " id="w62">every</span><span class="cap " id="w63">finished</span></div>
+      <div class="cap-page" id="cp16"><span class="cap key" id="w64">reel</span><span class="cap " id="w65">will</span><span class="cap " id="w66">live.</span></div>
+      <div class="cap-page" id="cp17"><span class="cap " id="w67">Then</span><span class="cap " id="w68">start</span><span class="cap " id="w69">a</span><span class="cap " id="w70">new</span></div>
+      <div class="cap-page" id="cp18"><span class="cap " id="w71">Claudecode</span><span class="cap key" id="w72">chat,</span><span class="cap " id="w73">choose</span><span class="cap " id="w74">local</span></div>
+      <div class="cap-page" id="cp19"><span class="cap " id="w75">and</span><span class="cap " id="w76">select</span><span class="cap " id="w77">that</span><span class="cap key" id="w78">folder.</span></div>
+      <div class="cap-page" id="cp20"><span class="cap " id="w79">Now</span><span class="cap " id="w80">Claude</span><span class="cap " id="w81">can</span><span class="cap " id="w82">read</span></div>
+      <div class="cap-page" id="cp21"><span class="cap " id="w83">and</span><span class="cap " id="w84">write</span><span class="cap " id="w85">your</span><span class="cap key" id="w86">files.</span></div>
+      <div class="cap-page" id="cp22"><span class="cap " id="w87">Claude</span><span class="cap " id="w88">needs</span><span class="cap " id="w89">a</span><span class="cap " id="w90">few</span></div>
+      <div class="cap-page" id="cp23"><span class="cap key" id="w91">tools</span><span class="cap " id="w92">to</span><span class="cap " id="w93">animate,</span><span class="cap " id="w94">voice</span></div>
+      <div class="cap-page" id="cp24"><span class="cap " id="w95">and</span><span class="cap key" id="w96">render,</span><span class="cap " id="w97">so</span><span class="cap " id="w98">tell</span></div>
+      <div class="cap-page" id="cp25"><span class="cap " id="w99">it</span><span class="cap " id="w100">to</span><span class="cap " id="w101">check</span><span class="cap " id="w102">your</span></div>
+      <div class="cap-page" id="cp26"><span class="cap key" id="w103">setup.</span></div>
+      <div class="cap-page" id="cp27"><span class="cap " id="w104">It</span><span class="cap " id="w105">installs</span><span class="cap " id="w106">what's</span><span class="cap " id="w107">missing</span></div>
+      <div class="cap-page" id="cp28"><span class="cap " id="w108">and</span><span class="cap " id="w109">walks</span><span class="cap " id="w110">you</span><span class="cap " id="w111">through</span></div>
+      <div class="cap-page" id="cp29"><span class="cap " id="w112">every</span><span class="cap " id="w113">click.</span></div>
+      <div class="cap-page" id="cp30"><span class="cap " id="w114">Now</span><span class="cap " id="w115">the</span><span class="cap " id="w116">fun</span><span class="cap " id="w117">part.</span></div>
+      <div class="cap-page" id="cp31"><span class="cap " id="w118">Type</span><span class="cap " id="w119">what</span><span class="cap " id="w120">the</span><span class="cap key" id="w121">reel</span></div>
+      <div class="cap-page" id="cp32"><span class="cap " id="w122">is</span><span class="cap " id="w123">about</span><span class="cap " id="w124">in</span><span class="cap " id="w125">one</span></div>
+      <div class="cap-page" id="cp33"><span class="cap " id="w126">line.</span></div>
+      <div class="cap-page" id="cp34"><span class="cap " id="w127">Something</span><span class="cap " id="w128">like,</span><span class="cap " id="w129">make</span><span class="cap " id="w130">a</span></div>
+      <div class="cap-page" id="cp35"><span class="cap key" id="w131">reel</span><span class="cap " id="w132">about</span><span class="cap " id="w133">why</span><span class="cap " id="w134">airplane</span></div>
+      <div class="cap-page" id="cp36"><span class="cap " id="w135">food</span><span class="cap " id="w136">tastes</span><span class="cap " id="w137">so</span><span class="cap " id="w138">bland.</span></div>
+      <div class="cap-page" id="cp37"><span class="cap " id="w139">It</span><span class="cap " id="w140">writes</span><span class="cap " id="w141">the</span><span class="cap key" id="w142">script,</span></div>
+      <div class="cap-page" id="cp38"><span class="cap " id="w143">records</span><span class="cap " id="w144">the</span><span class="cap " id="w145">voiceover,</span><span class="cap key" id="w146">animates</span></div>
+      <div class="cap-page" id="cp39"><span class="cap " id="w147">every</span><span class="cap " id="w148">scene,</span><span class="cap " id="w149">times</span><span class="cap " id="w150">the</span></div>
+      <div class="cap-page" id="cp40"><span class="cap key" id="w151">captions</span><span class="cap " id="w152">to</span><span class="cap " id="w153">every</span><span class="cap " id="w154">word</span></div>
+      <div class="cap-page" id="cp41"><span class="cap " id="w155">and</span><span class="cap " id="w156">checks</span><span class="cap " id="w157">its</span><span class="cap " id="w158">own</span></div>
+      <div class="cap-page" id="cp42"><span class="cap key" id="w159">motion</span><span class="cap " id="w160">before</span><span class="cap " id="w161">you</span><span class="cap " id="w162">see</span></div>
+      <div class="cap-page" id="cp43"><span class="cap " id="w163">it.</span><span class="cap " id="w164">If</span><span class="cap " id="w165">something</span><span class="cap " id="w166">feels</span><span class="cap " id="w167">off,</span></div>
+      <div class="cap-page" id="cp44"><span class="cap " id="w168">just</span><span class="cap " id="w169">tell</span><span class="cap " id="w170">it,</span><span class="cap " id="w171">like</span></div>
+      <div class="cap-page" id="cp45"><span class="cap " id="w172">you</span><span class="cap " id="w173">would</span><span class="cap " id="w174">a</span><span class="cap key" id="w175">reel</span></div>
+      <div class="cap-page" id="cp46"><span class="cap " id="w176">editor,</span><span class="cap " id="w177">and</span><span class="cap " id="w178">it</span><span class="cap " id="w179">fixes</span></div>
+      <div class="cap-page" id="cp47"><span class="cap " id="w180">it.</span><span class="cap " id="w181">That's</span><span class="cap " id="w182">the</span><span class="cap " id="w183">entire</span><span class="cap " id="w184">workflow.</span></div>
+      <div class="cap-page" id="cp48"><span class="cap " id="w185">And</span><span class="cap " id="w186">if</span><span class="cap " id="w187">you</span><span class="cap " id="w188">want</span></div>
+      <div class="cap-page" id="cp49"><span class="cap " id="w189">my</span><span class="cap " id="w190">personal</span><span class="cap key" id="w191">system,</span><span class="cap " id="w192">the</span></div>
+      <div class="cap-page" id="cp50"><span class="cap " id="w193">221</span><span class="cap key" id="w194">files</span><span class="cap " id="w195">behind</span><span class="cap " id="w196">every</span></div>
+      <div class="cap-page" id="cp51"><span class="cap " id="w197">reel</span><span class="cap " id="w198">on</span><span class="cap " id="w199">this</span><span class="cap " id="w200">account,</span></div>
+      <div class="cap-page" id="cp52"><span class="cap key" id="w201">comment</span><span class="cap " id="w202">SKILL</span><span class="cap " id="w203">and</span><span class="cap " id="w204">I'll</span></div>
+      <div class="cap-page" id="cp53"><span class="cap " id="w205">send</span><span class="cap " id="w206">it</span><span class="cap " id="w207">to</span><span class="cap " id="w208">you.</span></div>
   </div>
 
-  <div class="bot-wrapper">
-    <div class="bot-head" id="botHead">
-      <img src="assets/bot_large.png" alt="">
+    <div class="beat" id="b0">
+      <div class="kicker mono">// 01 · the hook</div>
+      <div class="stamp-row">
+        <div class="stamp">NOBODY SHOWS <span class="hot">YOU HOW</span></div>
+        
+      </div>
+      <div class="lead">Everyone is making AI reels.</div>
+      <div class="sub">Almost no one shows the actual steps.</div>
     </div>
+    <div class="beat" id="b1">
+      <div class="kicker mono">// 02 · the roadmap</div>
+      <div class="stamp-row">
+        <div class="stamp">EVERY <span class="hot">STEP</span></div>
+        
+      </div>
+      <div class="list"><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg><span>Desktop app</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>A project folder</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path></svg><span>A local chat</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg><span>The right tools</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg><span>One line of prompt</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path></svg><span>Your feedback</span></div></div>
+      
+    </div>
+    <div class="beat" id="b2">
+      <div class="kicker mono">// 03 · step one</div>
+      <div class="stamp-row">
+        <div class="stamp">GET <span class="hot">CLAUDE CODE</span></div>
+        <div class="step">1</div>
+      </div>
+      <div class="cards"><div class="card "><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg><div class="card-t">Desktop app</div><div class="mono">// download it</div></div><div class="card bad"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><div class="card-t">Not the browser</div><div class="mono">// won't work</div></div></div>
+      
+    </div>
+    <div class="beat" id="b3">
+      <div class="kicker mono">// 04 · step two</div>
+      <div class="stamp-row">
+        <div class="stamp">MAKE A <span class="hot">FOLDER</span></div>
+        <div class="step">2</div>
+      </div>
+      <div class="path"><svg class="path-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span class="mono-lg">~/AI Video Editor</span></div>
+      <div class="sub">Skill files and every finished reel live here.</div>
+    </div>
+    <div class="beat" id="b4">
+      <div class="kicker mono">// 05 · step three</div>
+      <div class="stamp-row">
+        <div class="stamp">NEW CHAT, <span class="hot">LOCAL</span></div>
+        <div class="step">3</div>
+      </div>
+      <div class="cards"><div class="card "><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg><div class="card-t">Choose Local</div><div class="mono">// then pick the folder</div></div><div class="card "><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"></path></svg><div class="card-t">Read + write</div><div class="mono">// Claude owns the files</div></div></div>
+      
+    </div>
+    <div class="beat" id="b5">
+      <div class="kicker mono">// 06 · step four</div>
+      <div class="stamp-row">
+        <div class="stamp">CHECK YOUR <span class="hot">SETUP</span></div>
+        <div class="step">4</div>
+      </div>
+      <div class="checks"><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Animate</div><div class="mono">// motion engine</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Voice</div><div class="mono">// text to speech</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Render</div><div class="mono">// video output</div></div></div></div>
+      <div class="sub">It installs what's missing and walks you through every click.</div>
+    </div>
+    <div class="beat" id="b6">
+      <div class="kicker mono">// 07 · the fun part</div>
+      <div class="stamp-row">
+        <div class="stamp">ONE <span class="hot">LINE</span></div>
+        <div class="step">5</div>
+      </div>
+      <div class="lead">Type what the reel is about.</div>
+      <div class="sub">That is the whole brief.</div>
+    </div>
+    <div class="beat" id="b7">
+      <div class="kicker mono">// 08 · the prompt</div>
+      <div class="stamp-row">
+        <div class="stamp">LIKE <span class="hot">THIS</span></div>
+        
+      </div>
+      <div class="prompt"><span class="mono-lg" id="pr-7"></span><span class="caret">|</span></div>
+      
+    </div>
+    <div class="beat" id="b8">
+      <div class="kicker mono">// 09 · what it does</div>
+      <div class="stamp-row">
+        <div class="stamp">IT DOES <span class="hot">ALL OF IT</span></div>
+        
+      </div>
+      <div class="list"><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h8"></path><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg><span>Writes the script</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg><span>Records the voiceover</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>Animates every scene</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="5" rx="2" ry="2"></rect><path d="M7 15h4M15 15h2M7 11h2M13 11h4"></path></svg><span>Times captions to words</span></div><div class="row"><svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="1"></circle><path d="M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0"></path></svg><span>Checks its own motion</span></div></div>
+      
+    </div>
+    <div class="beat" id="b9">
+      <div class="kicker mono">// 10 · step six</div>
+      <div class="stamp-row">
+        <div class="stamp">JUST <span class="hot">TELL IT</span></div>
+        <div class="step">6</div>
+      </div>
+      <div class="cards"><div class="card "><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg><div class="card-t">Say what's off</div><div class="mono">// like a real editor</div></div><div class="card "><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"></path><path d="m14 7 3 3"></path><path d="M5 6v4"></path><path d="M19 14v4"></path><path d="M10 2v2"></path><path d="M7 8H3"></path><path d="M21 16h-4"></path><path d="M11 3H9"></path></svg><div class="card-t">It fixes it</div><div class="mono">// no re-prompting</div></div></div>
+      
+    </div>
+    <div class="beat" id="b10">
+      <div class="kicker mono">// 11 · the whole thing</div>
+      <div class="stamp-row">
+        <div class="stamp">ENTIRE <span class="hot">WORKFLOW</span></div>
+        
+      </div>
+      <div class="checks"><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Desktop app</div><div class="mono">// claude code</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Folder</div><div class="mono">// ai video editor</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Local chat</div><div class="mono">// new chat</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Setup</div><div class="mono">// tools checked</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">One line</div><div class="mono">// the idea</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Feedback</div><div class="mono">// tell it what to fix</div></div></div></div>
+      
+    </div>
+    <div class="beat" id="b11">
+      <div class="kicker mono">// 12 · get the system</div>
+      <div class="stamp-row">
+        <div class="stamp">COMMENT <span class="hot">SKILL</span></div>
+        
+      </div>
+      <div class="stat">221</div><div class="mono-lg">files behind every reel</div>
+      <div class="sub">and I'll send the whole system to you.</div>
+    </div>
+
+  <div class="cue-strip">
+      <div class="cue neutral" id="cu0"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reels</span></div>
+      <div class="cue neutral" id="cu1"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reels</span></div>
+      <div class="cue danger" id="cu2"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><span>not the browser</span></div>
+      <div class="cue neutral" id="cu3"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>folder</span></div>
+      <div class="cue good" id="cu4"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg><span>SKILL</span></div>
+      <div class="cue neutral" id="cu5"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reel</span></div>
+      <div class="cue neutral" id="cu6"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path></svg><span>new chat</span></div>
+      <div class="cue neutral" id="cu7"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span>folder</span></div>
+      <div class="cue neutral" id="cu8"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"></path><path d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"></path><path d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"></path></svg><span>files</span></div>
+      <div class="cue neutral" id="cu9"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg><span>tools</span></div>
+      <div class="cue good" id="cu10"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg><span>render</span></div>
+      <div class="cue neutral" id="cu11"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><span>setup</span></div>
+      <div class="cue neutral" id="cu12"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reel</span></div>
+      <div class="cue neutral" id="cu13"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reel</span></div>
+      <div class="cue good" id="cu14"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h8"></path><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg><span>script</span></div>
+      <div class="cue good" id="cu15"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M7 3v18"></path><path d="M3 7.5h4"></path><path d="M3 12h18"></path><path d="M3 16.5h4"></path><path d="M17 3v18"></path><path d="M17 7.5h4"></path><path d="M17 16.5h4"></path></svg><span>animates</span></div>
+      <div class="cue good" id="cu16"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="5" rx="2" ry="2"></rect><path d="M7 15h4M15 15h2M7 11h2M13 11h4"></path></svg><span>captions</span></div>
+      <div class="cue good" id="cu17"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg><span>motion</span></div>
+      <div class="cue neutral" id="cu18"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reel</span></div>
+      <div class="cue good" id="cu19"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"></path><path d="m7 16.5-4.74-2.85"></path><path d="m7 16.5 5-3"></path><path d="M7 16.5v5.17"></path><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"></path><path d="m17 16.5-5-3"></path><path d="m17 16.5 4.74-2.85"></path><path d="M17 16.5v5.17"></path><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"></path><path d="M12 8 7.26 5.15"></path><path d="m12 8 4.74-2.85"></path><path d="M12 13.5V8"></path></svg><span>the system</span></div>
+      <div class="cue neutral" id="cu20"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"></path><path d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"></path><path d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"></path></svg><span>files</span></div>
+      <div class="cue good" id="cu21"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg><span>comment</span></div>
   </div>
 
-  <div class="cue-rail">
-      <div class="cue cue-neutral" id="cue-0"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span>link</span></div>
-      <div class="cue cue-danger" id="cue-1"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.84 12.25 1.72-1.71h-.02a5.004 5.004 0 0 0-.12-7.07 5.006 5.006 0 0 0-6.95 0l-1.72 1.71"></path><path d="m5.17 11.75-1.71 1.71a5.004 5.004 0 0 0 .12 7.07 5.006 5.006 0 0 0 6.95 0l1.71-1.71"></path><line x1="8" x2="8" y1="2" y2="5"></line><line x1="2" x2="5" y1="8" y2="8"></line><line x1="16" x2="16" y1="19" y2="22"></line><line x1="19" x2="22" y1="16" y2="16"></line></svg><span>dead link</span></div>
-      <div class="cue cue-neutral" id="cue-2"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path></svg><span>page</span></div>
-      <div class="cue cue-danger" id="cue-3"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10v1"></path><path d="M7.528 20.472a1.6 1.6 0 012.277 0l1.057 1.056a1.6 1.6 0 002.276 0l1.057-1.056a1.6 1.6 0 012.277 0l1.114 1.114a1.4 1.4 0 002.414-1V10a8 8 0 00-16 0v10.586a1.4 1.4 0 002.414 1z"></path><path d="M9 10v1"></path></svg><span>gone</span></div>
-      <div class="cue cue-good" id="cue-4"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span>PDF</span></div>
-      <div class="cue cue-good" id="cue-5"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path><path d="M7 3v4a1 1 0 0 0 1 1h7"></path></svg><span>saved</span></div>
-      <div class="cue cue-neutral" id="cue-6"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><span>any URL</span></div>
-      <div class="cue cue-good" id="cue-7"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg><span>clean</span></div>
-      <div class="cue cue-good" id="cue-8"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span>PDF</span></div>
-      <div class="cue cue-good" id="cue-9"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"></path></svg><span>instant</span></div>
-      <div class="cue cue-good" id="cue-10"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"></path><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5"></path><rect x="3" y="7" width="18" height="4" rx="1"></rect></svg><span>free</span></div>
-      <div class="cue cue-neutral" id="cue-11"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"></path><path d="M16 4h2a2 2 0 0 1 2 2v1.344"></path><path d="m17 18 4-4-4-4"></path><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect></svg><span>paste</span></div>
-      <div class="cue cue-good" id="cue-12"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg><span>download</span></div>
-  </div>
-
-  <div class="caption-container">
-      <div class="caption-page" id="page-0"><span class="caption-word" id="w0">Links</span><span class="caption-word" id="w1">go</span><span class="caption-word" id="w2">dead.</span></div>
-      <div class="caption-page" id="page-1"><span class="caption-word" id="w3">Pages</span><span class="caption-word" id="w4">disappear.</span></div>
-      <div class="caption-page" id="page-2"><span class="caption-word" id="w5">Khan</span><span class="caption-word" id="w6">PDF</span><span class="caption-word" id="w7">saves</span><span class="caption-word" id="w8">any</span></div>
-      <div class="caption-page" id="page-3"><span class="caption-word" id="w9">URL</span><span class="caption-word" id="w10">as</span><span class="caption-word" id="w11">a</span><span class="caption-word" id="w12">clean</span></div>
-      <div class="caption-page" id="page-4"><span class="caption-word" id="w13">PDF</span><span class="caption-word" id="w14">instantly.</span></div>
-      <div class="caption-page" id="page-5"><span class="caption-word" id="w15">Free.</span></div>
-      <div class="caption-page" id="page-6"><span class="caption-word" id="w16">No</span><span class="caption-word" id="w17">sign-up.</span></div>
-      <div class="caption-page" id="page-7"><span class="caption-word" id="w18">Just</span><span class="caption-word" id="w19">paste</span><span class="caption-word" id="w20">and</span><span class="caption-word" id="w21">download.</span></div>
-  </div>
+  <svg class="grain">
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="100%" height="100%" filter="url(#g)" opacity="0.5"/>
+  </svg>
 </div>
 
 <script src="assets/gsap.min.js"></script>
@@ -207,174 +318,485 @@
   window.__timelines = window.__timelines || {};
   const tl = gsap.timeline({ paused: true });
 
-  // Typewriter: GSAP tweens a counter, we write the substring each update.
-  function typeUrl(tl, sel, text, at, dur) {
+  function typeText(tl, sel, text, at, dur) {
     const el = document.querySelector(sel);
-    const state = { n: 0 };
-    tl.to(state, {
-      duration: dur,
-      n: text.length,
-      ease: "none",
-      onUpdate: () => { el.textContent = text.slice(0, Math.round(state.n)); }
-    }, at);
+    const s = { n: 0 };
+    tl.to(s, { duration: dur, n: text.length, ease: "none",
+      onUpdate: () => { el.textContent = text.slice(0, Math.round(s.n)); } }, at);
   }
 
-    tl.set("#beat-0", { autoAlpha: 0 }, 0);
-    tl.to("#beat-0", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 0);
-    tl.to("#beat-0", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 2.9000000000000004);
-    tl.from("#beat-0 .tile-box", { duration: 0.4, y: 40, autoAlpha: 0, scale: 0.9, stagger: 0.12, ease: "back.out(1.4)" }, 0.25);
-    tl.set("#beat-1", { autoAlpha: 0 }, 0);
-    tl.to("#beat-1", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 3.2);
-    tl.to("#beat-1", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 5);
-    typeUrl(tl, "#url-1", "https://en.wikipedia.org/wiki/PDF", 3.5, 1.60);
-    tl.set("#beat-2", { autoAlpha: 0 }, 0);
-    tl.to("#beat-2", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 5.3);
-    tl.to("#beat-2", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 7.5);
-    tl.set("#bar-2", { width: "0%" }, 0);
-    tl.to("#bar-2", { duration: 1.90, width: "100%", ease: "power1.inOut" }, 5.6);
-    tl.set("#beat-3", { autoAlpha: 0 }, 0);
-    tl.to("#beat-3", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 7.8);
-    tl.to("#beat-3", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 9.2);
-    tl.from("#beat-3 .tile-box", { duration: 0.4, y: 40, autoAlpha: 0, scale: 0.9, stagger: 0.12, ease: "back.out(1.4)" }, 8.05);
-    tl.set("#beat-4", { autoAlpha: 0 }, 0);
-    tl.to("#beat-4", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, 9.5);
-    tl.to("#beat-4", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, 11.7);
-    tl.set("#page-0", { autoAlpha: 0 }, 0);
-    tl.to("#page-0", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 0.00);
-    tl.to("#page-0", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 1.48);
-    tl.to("#w0", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 0.04);
-    tl.to("#w0", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 0.38);
-    tl.to("#w1", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 0.36);
-    tl.to("#w1", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 0.66);
-    tl.to("#w2", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 0.64);
-    tl.to("#w2", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 1.58);
-    tl.set("#page-1", { autoAlpha: 0 }, 0);
-    tl.to("#page-1", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 1.46);
-    tl.to("#page-1", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 3.30);
-    tl.to("#w3", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 1.56);
-    tl.to("#w3", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 1.92);
-    tl.to("#w4", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 1.90);
-    tl.to("#w4", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 3.14);
-    tl.set("#page-2", { autoAlpha: 0 }, 0);
-    tl.to("#page-2", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 3.28);
-    tl.to("#page-2", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 4.62);
-    tl.to("#w5", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 3.38);
-    tl.to("#w5", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 3.56);
-    tl.to("#w6", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 3.54);
-    tl.to("#w6", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 3.84);
-    tl.to("#w7", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 3.82);
-    tl.to("#w7", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 4.36);
-    tl.to("#w8", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 4.34);
-    tl.to("#w8", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 4.72);
-    tl.set("#page-3", { autoAlpha: 0 }, 0);
-    tl.to("#page-3", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 4.60);
-    tl.to("#page-3", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 5.86);
-    tl.to("#w9", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 4.70);
-    tl.to("#w9", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.20);
-    tl.to("#w10", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.18);
-    tl.to("#w10", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.52);
-    tl.to("#w11", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.50);
-    tl.to("#w11", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.74);
-    tl.to("#w12", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.72);
-    tl.to("#w12", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 5.96);
-    tl.set("#page-4", { autoAlpha: 0 }, 0);
-    tl.to("#page-4", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 5.84);
-    tl.to("#page-4", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 7.84);
-    tl.to("#w13", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 5.94);
-    tl.to("#w13", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 6.46);
-    tl.to("#w14", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 6.44);
-    tl.to("#w14", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 7.08);
-    tl.set("#page-5", { autoAlpha: 0 }, 0);
-    tl.to("#page-5", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 7.82);
-    tl.to("#page-5", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 8.48);
-    tl.to("#w15", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 7.92);
-    tl.to("#w15", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 8.58);
-    tl.set("#page-6", { autoAlpha: 0 }, 0);
-    tl.to("#page-6", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 8.46);
-    tl.to("#page-6", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 9.20);
-    tl.to("#w16", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 8.56);
-    tl.to("#w16", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 8.72);
-    tl.to("#w17", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 8.70);
-    tl.to("#w17", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 9.30);
-    tl.set("#page-7", { autoAlpha: 0 }, 0);
-    tl.to("#page-7", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, 9.18);
-    tl.to("#page-7", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, 11.28);
-    tl.to("#w18", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 9.28);
-    tl.to("#w18", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 9.74);
-    tl.to("#w19", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 9.72);
-    tl.to("#w19", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 10.10);
-    tl.to("#w20", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 10.08);
-    tl.to("#w20", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 10.34);
-    tl.to("#w21", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, 10.32);
-    tl.to("#w21", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, 10.70);
-    tl.fromTo("#cue-0", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 0.04);
-    tl.to("#cue-0", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 0.34);
-    tl.fromTo("#cue-1", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 0.36);
-    tl.to("#cue-1", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 1.46);
-    tl.fromTo("#cue-2", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 1.56);
-    tl.to("#cue-2", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 1.86);
-    tl.fromTo("#cue-3", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 1.90);
-    tl.to("#cue-3", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 3.44);
-    tl.fromTo("#cue-4", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 3.54);
-    tl.to("#cue-4", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 3.84);
-    tl.fromTo("#cue-5", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 3.82);
-    tl.to("#cue-5", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 4.60);
-    tl.fromTo("#cue-6", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 4.70);
-    tl.to("#cue-6", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 5.62);
-    tl.fromTo("#cue-7", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 5.72);
-    tl.to("#cue-7", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 6.02);
-    tl.fromTo("#cue-8", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 5.94);
-    tl.to("#cue-8", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 6.34);
-    tl.fromTo("#cue-9", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 6.44);
-    tl.to("#cue-9", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 7.76);
-    tl.fromTo("#cue-10", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 7.92);
-    tl.to("#cue-10", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 9.26);
-    tl.fromTo("#cue-11", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 9.72);
-    tl.to("#cue-11", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 10.22);
-    tl.fromTo("#cue-12", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 10.32);
-    tl.to("#cue-12", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, 11.38);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 0.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 0.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 0.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 0.79);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 1.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 1.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 1.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 1.79);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 2.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 2.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 2.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 2.79);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 3.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 3.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 3.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 3.79);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 4.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 4.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 4.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 4.79);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 5.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 5.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 5.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 5.79);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 6.04);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 6.29);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 6.54);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 6.79);
-    tl.to("#botHead", { duration: 0.2, rotateX: 0, ease: "sine.out" }, 7.06);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 7.92);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 8.17);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 8.42);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 8.67);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 8.92);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 9.17);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 9.42);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 9.67);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 9.92);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 10.17);
-    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, 10.42);
-    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, 10.67);
-    tl.to("#botHead", { duration: 0.2, rotateX: 0, ease: "sine.out" }, 10.68);
+    tl.set("#b0", { autoAlpha: 0 }, 0);
+    tl.to("#b0", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 0);
+    tl.to("#b0", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 4.65);
+    tl.from("#b0 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 0.1);
+    tl.set("#b1", { autoAlpha: 0 }, 0);
+    tl.to("#b1", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 4.9);
+    tl.to("#b1", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 8.85);
+    tl.from("#b1 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 5);
+    tl.from("#b1 .row", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.1, ease: "back.out(1.5)" }, 5.2);
+    tl.set("#b2", { autoAlpha: 0 }, 0);
+    tl.to("#b2", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 9.1);
+    tl.to("#b2", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 13.45);
+    tl.from("#b2 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 9.2);
+    tl.from("#b2 .card", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.12, ease: "back.out(1.5)" }, 9.4);
+    tl.set("#b3", { autoAlpha: 0 }, 0);
+    tl.to("#b3", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 13.7);
+    tl.to("#b3", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 19.95);
+    tl.from("#b3 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 13.799999999999999);
+    tl.set("#b4", { autoAlpha: 0 }, 0);
+    tl.to("#b4", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 20.2);
+    tl.to("#b4", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 26.05);
+    tl.from("#b4 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 20.3);
+    tl.from("#b4 .card", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.12, ease: "back.out(1.5)" }, 20.5);
+    tl.set("#b5", { autoAlpha: 0 }, 0);
+    tl.to("#b5", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 26.3);
+    tl.to("#b5", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 33.65);
+    tl.from("#b5 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 26.400000000000002);
+    tl.from("#b5 .check", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.1, ease: "back.out(1.5)" }, 26.6);
+    tl.set("#b6", { autoAlpha: 0 }, 0);
+    tl.to("#b6", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 33.9);
+    tl.to("#b6", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 37.15);
+    tl.from("#b6 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 34);
+    tl.set("#b7", { autoAlpha: 0 }, 0);
+    tl.to("#b7", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 37.4);
+    tl.to("#b7", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 40.75);
+    tl.from("#b7 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 37.5);
+    typeText(tl, "#pr-7", "make a reel about why airplane food tastes so bland", 37.75, 2.20);
+    tl.set("#b8", { autoAlpha: 0 }, 0);
+    tl.to("#b8", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 41);
+    tl.to("#b8", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 48.15);
+    tl.from("#b8 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 41.1);
+    tl.from("#b8 .row", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.1, ease: "back.out(1.5)" }, 41.3);
+    tl.set("#b9", { autoAlpha: 0 }, 0);
+    tl.to("#b9", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 48.4);
+    tl.to("#b9", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 52.05);
+    tl.from("#b9 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 48.5);
+    tl.from("#b9 .card", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.12, ease: "back.out(1.5)" }, 48.699999999999996);
+    tl.set("#b10", { autoAlpha: 0 }, 0);
+    tl.to("#b10", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 52.3);
+    tl.to("#b10", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 53.95);
+    tl.from("#b10 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 52.4);
+    tl.from("#b10 .check", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: 0.1, ease: "back.out(1.5)" }, 52.599999999999994);
+    tl.set("#b11", { autoAlpha: 0 }, 0);
+    tl.to("#b11", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 54.2);
+    tl.to("#b11", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 61.15);
+    tl.from("#b11 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 54.300000000000004);
+    tl.from("#b11 .stat", { duration: 0.5, scale: 0.7, autoAlpha: 0, ease: "back.out(2)" }, 54.6);
+    tl.set("#cp0", { autoAlpha: 0 }, 0);
+    tl.to("#cp0", { duration: 0.1, autoAlpha: 1 }, 0.00);
+    tl.to("#cp0", { duration: 0.1, autoAlpha: 0 }, 1.50);
+    tl.to("#w0", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 0.00);
+    tl.to("#w1", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 0.44);
+    tl.to("#w2", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 0.72);
+    tl.to("#w3", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 1.12);
+    tl.set("#cp1", { autoAlpha: 0 }, 0);
+    tl.to("#cp1", { duration: 0.1, autoAlpha: 1 }, 1.48);
+    tl.to("#cp1", { duration: 0.1, autoAlpha: 0 }, 2.70);
+    tl.to("#w4", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 1.56);
+    tl.to("#w5", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 1.84);
+    tl.to("#w6", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 2.12);
+    tl.to("#w7", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 2.48);
+    tl.set("#cp2", { autoAlpha: 0 }, 0);
+    tl.to("#cp2", { duration: 0.1, autoAlpha: 1 }, 2.68);
+    tl.to("#cp2", { duration: 0.1, autoAlpha: 0 }, 4.10);
+    tl.to("#w8", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 2.76);
+    tl.to("#w9", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 3.36);
+    tl.to("#w10", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 3.42);
+    tl.to("#w11", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 3.98);
+    tl.set("#cp3", { autoAlpha: 0 }, 0);
+    tl.to("#cp3", { duration: 0.1, autoAlpha: 1 }, 4.08);
+    tl.to("#cp3", { duration: 0.1, autoAlpha: 0 }, 4.82);
+    tl.to("#w12", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 4.16);
+    tl.to("#w13", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 4.30);
+    tl.set("#cp4", { autoAlpha: 0 }, 0);
+    tl.to("#cp4", { duration: 0.1, autoAlpha: 1 }, 4.80);
+    tl.to("#cp4", { duration: 0.1, autoAlpha: 0 }, 5.66);
+    tl.to("#w14", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 4.88);
+    tl.to("#w15", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.08);
+    tl.to("#w16", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.42);
+    tl.to("#w17", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.56);
+    tl.set("#cp5", { autoAlpha: 0 }, 0);
+    tl.to("#cp5", { duration: 0.1, autoAlpha: 1 }, 5.64);
+    tl.to("#cp5", { duration: 0.1, autoAlpha: 0 }, 7.18);
+    tl.to("#w18", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.72);
+    tl.to("#w19", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 6.52);
+    tl.to("#w20", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 6.84);
+    tl.to("#w21", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.10);
+    tl.set("#cp6", { autoAlpha: 0 }, 0);
+    tl.to("#cp6", { duration: 0.1, autoAlpha: 1 }, 7.16);
+    tl.to("#cp6", { duration: 0.1, autoAlpha: 0 }, 8.00);
+    tl.to("#w22", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.24);
+    tl.to("#w23", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.44);
+    tl.to("#w24", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.64);
+    tl.to("#w25", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 7.80);
+    tl.set("#cp7", { autoAlpha: 0 }, 0);
+    tl.to("#cp7", { duration: 0.1, autoAlpha: 1 }, 7.98);
+    tl.to("#cp7", { duration: 0.1, autoAlpha: 0 }, 9.14);
+    tl.to("#w26", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 8.06);
+    tl.to("#w27", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 8.32);
+    tl.to("#w28", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 8.60);
+    tl.set("#cp8", { autoAlpha: 0 }, 0);
+    tl.to("#cp8", { duration: 0.1, autoAlpha: 1 }, 9.12);
+    tl.to("#cp8", { duration: 0.1, autoAlpha: 0 }, 10.84);
+    tl.to("#w29", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.20);
+    tl.to("#w30", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.52);
+    tl.to("#w31", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.76);
+    tl.to("#w32", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.94);
+    tl.set("#cp9", { autoAlpha: 0 }, 0);
+    tl.to("#cp9", { duration: 0.1, autoAlpha: 1 }, 10.82);
+    tl.to("#cp9", { duration: 0.1, autoAlpha: 0 }, 12.12);
+    tl.to("#w33", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 10.90);
+    tl.to("#w34", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.08);
+    tl.to("#w35", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.24);
+    tl.to("#w36", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.34);
+    tl.to("#w37", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.42);
+    tl.to("#w38", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 11.52);
+    tl.set("#cp10", { autoAlpha: 0 }, 0);
+    tl.to("#cp10", { duration: 0.1, autoAlpha: 1 }, 12.10);
+    tl.to("#cp10", { duration: 0.1, autoAlpha: 0 }, 13.58);
+    tl.to("#w39", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.18);
+    tl.to("#w40", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.34);
+    tl.to("#w41", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.58);
+    tl.to("#w42", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.96);
+    tl.set("#cp11", { autoAlpha: 0 }, 0);
+    tl.to("#cp11", { duration: 0.1, autoAlpha: 1 }, 13.56);
+    tl.to("#cp11", { duration: 0.1, autoAlpha: 0 }, 14.62);
+    tl.to("#w43", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 13.64);
+    tl.to("#w44", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.18);
+    tl.to("#w45", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.30);
+    tl.to("#w46", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 14.42);
+    tl.set("#cp12", { autoAlpha: 0 }, 0);
+    tl.to("#cp12", { duration: 0.1, autoAlpha: 1 }, 14.60);
+    tl.to("#cp12", { duration: 0.1, autoAlpha: 0 }, 15.56);
+    tl.to("#w47", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.68);
+    tl.to("#w48", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.80);
+    tl.to("#w49", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.92);
+    tl.to("#w50", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.38);
+    tl.set("#cp13", { autoAlpha: 0 }, 0);
+    tl.to("#cp13", { duration: 0.1, autoAlpha: 1 }, 15.54);
+    tl.to("#cp13", { duration: 0.1, autoAlpha: 0 }, 16.66);
+    tl.to("#w51", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.62);
+    tl.to("#w52", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.82);
+    tl.to("#w53", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.94);
+    tl.to("#w54", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 16.38);
+    tl.set("#cp14", { autoAlpha: 0 }, 0);
+    tl.to("#cp14", { duration: 0.1, autoAlpha: 1 }, 16.64);
+    tl.to("#cp14", { duration: 0.1, autoAlpha: 0 }, 17.88);
+    tl.to("#w55", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 16.72);
+    tl.to("#w56", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.26);
+    tl.to("#w57", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.44);
+    tl.to("#w58", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.54);
+    tl.to("#w59", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 17.70);
+    tl.set("#cp15", { autoAlpha: 0 }, 0);
+    tl.to("#cp15", { duration: 0.1, autoAlpha: 1 }, 17.86);
+    tl.to("#cp15", { duration: 0.1, autoAlpha: 0 }, 19.02);
+    tl.to("#w60", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.94);
+    tl.to("#w61", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 18.28);
+    tl.to("#w62", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 18.42);
+    tl.to("#w63", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 18.76);
+    tl.set("#cp16", { autoAlpha: 0 }, 0);
+    tl.to("#cp16", { duration: 0.1, autoAlpha: 1 }, 19.00);
+    tl.to("#cp16", { duration: 0.1, autoAlpha: 0 }, 20.04);
+    tl.to("#w64", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 19.08);
+    tl.to("#w65", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 19.28);
+    tl.to("#w66", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 19.48);
+    tl.set("#cp17", { autoAlpha: 0 }, 0);
+    tl.to("#cp17", { duration: 0.1, autoAlpha: 1 }, 20.02);
+    tl.to("#cp17", { duration: 0.1, autoAlpha: 0 }, 20.96);
+    tl.to("#w67", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.10);
+    tl.to("#w68", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.32);
+    tl.to("#w69", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.68);
+    tl.to("#w70", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.86);
+    tl.set("#cp18", { autoAlpha: 0 }, 0);
+    tl.to("#cp18", { duration: 0.1, autoAlpha: 1 }, 20.94);
+    tl.to("#cp18", { duration: 0.1, autoAlpha: 0 }, 22.64);
+    tl.to("#w71", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 21.02);
+    tl.to("#w72", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 21.46);
+    tl.to("#w73", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 22.12);
+    tl.to("#w74", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 22.34);
+    tl.set("#cp19", { autoAlpha: 0 }, 0);
+    tl.to("#cp19", { duration: 0.1, autoAlpha: 1 }, 22.62);
+    tl.to("#cp19", { duration: 0.1, autoAlpha: 0 }, 24.06);
+    tl.to("#w75", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 22.70);
+    tl.to("#w76", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 23.00);
+    tl.to("#w77", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 23.32);
+    tl.to("#w78", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 23.52);
+    tl.set("#cp20", { autoAlpha: 0 }, 0);
+    tl.to("#cp20", { duration: 0.1, autoAlpha: 1 }, 24.04);
+    tl.to("#cp20", { duration: 0.1, autoAlpha: 0 }, 25.00);
+    tl.to("#w79", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.12);
+    tl.to("#w80", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.36);
+    tl.to("#w81", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.66);
+    tl.to("#w82", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.82);
+    tl.set("#cp21", { autoAlpha: 0 }, 0);
+    tl.to("#cp21", { duration: 0.1, autoAlpha: 1 }, 24.98);
+    tl.to("#cp21", { duration: 0.1, autoAlpha: 0 }, 26.26);
+    tl.to("#w83", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 25.06);
+    tl.to("#w84", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 25.28);
+    tl.to("#w85", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 25.52);
+    tl.to("#w86", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 25.64);
+    tl.set("#cp22", { autoAlpha: 0 }, 0);
+    tl.to("#cp22", { duration: 0.1, autoAlpha: 1 }, 26.24);
+    tl.to("#cp22", { duration: 0.1, autoAlpha: 0 }, 26.94);
+    tl.to("#w87", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.32);
+    tl.to("#w88", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.52);
+    tl.to("#w89", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.70);
+    tl.to("#w90", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.84);
+    tl.set("#cp23", { autoAlpha: 0 }, 0);
+    tl.to("#cp23", { duration: 0.1, autoAlpha: 1 }, 26.92);
+    tl.to("#cp23", { duration: 0.1, autoAlpha: 0 }, 28.28);
+    tl.to("#w91", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 27.00);
+    tl.to("#w92", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 27.34);
+    tl.to("#w93", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 27.50);
+    tl.to("#w94", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 28.00);
+    tl.set("#cp24", { autoAlpha: 0 }, 0);
+    tl.to("#cp24", { duration: 0.1, autoAlpha: 1 }, 28.26);
+    tl.to("#cp24", { duration: 0.1, autoAlpha: 0 }, 29.42);
+    tl.to("#w95", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 28.34);
+    tl.to("#w96", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 28.50);
+    tl.to("#w97", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.12);
+    tl.to("#w98", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.22);
+    tl.set("#cp25", { autoAlpha: 0 }, 0);
+    tl.to("#cp25", { duration: 0.1, autoAlpha: 1 }, 29.40);
+    tl.to("#cp25", { duration: 0.1, autoAlpha: 0 }, 30.02);
+    tl.to("#w99", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.48);
+    tl.to("#w100", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.56);
+    tl.to("#w101", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.70);
+    tl.to("#w102", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.92);
+    tl.set("#cp26", { autoAlpha: 0 }, 0);
+    tl.to("#cp26", { duration: 0.1, autoAlpha: 1 }, 30.00);
+    tl.to("#cp26", { duration: 0.1, autoAlpha: 0 }, 30.74);
+    tl.to("#w103", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 30.08);
+    tl.set("#cp27", { autoAlpha: 0 }, 0);
+    tl.to("#cp27", { duration: 0.1, autoAlpha: 1 }, 30.72);
+    tl.to("#cp27", { duration: 0.1, autoAlpha: 0 }, 31.72);
+    tl.to("#w104", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 30.80);
+    tl.to("#w105", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 30.90);
+    tl.to("#w106", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 31.36);
+    tl.to("#w107", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 31.52);
+    tl.set("#cp28", { autoAlpha: 0 }, 0);
+    tl.to("#cp28", { duration: 0.1, autoAlpha: 1 }, 31.70);
+    tl.to("#cp28", { duration: 0.1, autoAlpha: 0 }, 32.60);
+    tl.to("#w108", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 31.78);
+    tl.to("#w109", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.12);
+    tl.to("#w110", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.34);
+    tl.to("#w111", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.50);
+    tl.set("#cp29", { autoAlpha: 0 }, 0);
+    tl.to("#cp29", { duration: 0.1, autoAlpha: 1 }, 32.58);
+    tl.to("#cp29", { duration: 0.1, autoAlpha: 0 }, 33.82);
+    tl.to("#w112", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.66);
+    tl.to("#w113", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 33.06);
+    tl.set("#cp30", { autoAlpha: 0 }, 0);
+    tl.to("#cp30", { duration: 0.1, autoAlpha: 1 }, 33.80);
+    tl.to("#cp30", { duration: 0.1, autoAlpha: 0 }, 35.00);
+    tl.to("#w114", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 33.88);
+    tl.to("#w115", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 34.00);
+    tl.to("#w116", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 34.12);
+    tl.to("#w117", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 34.38);
+    tl.set("#cp31", { autoAlpha: 0 }, 0);
+    tl.to("#cp31", { duration: 0.1, autoAlpha: 1 }, 34.98);
+    tl.to("#cp31", { duration: 0.1, autoAlpha: 0 }, 35.58);
+    tl.to("#w118", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.06);
+    tl.to("#w119", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.20);
+    tl.to("#w120", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.38);
+    tl.to("#w121", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 35.58);
+    tl.set("#cp32", { autoAlpha: 0 }, 0);
+    tl.to("#cp32", { duration: 0.1, autoAlpha: 1 }, 35.56);
+    tl.to("#cp32", { duration: 0.1, autoAlpha: 0 }, 36.56);
+    tl.to("#w122", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.64);
+    tl.to("#w123", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.78);
+    tl.to("#w124", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 36.12);
+    tl.to("#w125", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 36.40);
+    tl.set("#cp33", { autoAlpha: 0 }, 0);
+    tl.to("#cp33", { duration: 0.1, autoAlpha: 1 }, 36.54);
+    tl.to("#cp33", { duration: 0.1, autoAlpha: 0 }, 37.30);
+    tl.to("#w126", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 36.62);
+    tl.set("#cp34", { autoAlpha: 0 }, 0);
+    tl.to("#cp34", { duration: 0.1, autoAlpha: 1 }, 37.28);
+    tl.to("#cp34", { duration: 0.1, autoAlpha: 0 }, 38.30);
+    tl.to("#w127", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 37.36);
+    tl.to("#w128", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 37.50);
+    tl.to("#w129", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.08);
+    tl.to("#w130", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.22);
+    tl.set("#cp35", { autoAlpha: 0 }, 0);
+    tl.to("#cp35", { duration: 0.1, autoAlpha: 1 }, 38.28);
+    tl.to("#cp35", { duration: 0.1, autoAlpha: 0 }, 39.28);
+    tl.to("#w131", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 38.36);
+    tl.to("#w132", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.52);
+    tl.to("#w133", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.76);
+    tl.to("#w134", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.96);
+    tl.set("#cp36", { autoAlpha: 0 }, 0);
+    tl.to("#cp36", { duration: 0.1, autoAlpha: 1 }, 39.26);
+    tl.to("#cp36", { duration: 0.1, autoAlpha: 0 }, 40.98);
+    tl.to("#w135", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 39.34);
+    tl.to("#w136", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 39.68);
+    tl.to("#w137", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 40.00);
+    tl.to("#w138", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 40.22);
+    tl.set("#cp37", { autoAlpha: 0 }, 0);
+    tl.to("#cp37", { duration: 0.1, autoAlpha: 1 }, 40.96);
+    tl.to("#cp37", { duration: 0.1, autoAlpha: 0 }, 42.02);
+    tl.to("#w139", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 41.04);
+    tl.to("#w140", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 41.12);
+    tl.to("#w141", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 41.32);
+    tl.to("#w142", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 41.52);
+    tl.set("#cp38", { autoAlpha: 0 }, 0);
+    tl.to("#cp38", { duration: 0.1, autoAlpha: 1 }, 42.00);
+    tl.to("#cp38", { duration: 0.1, autoAlpha: 0 }, 43.44);
+    tl.to("#w143", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 42.08);
+    tl.to("#w144", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 42.32);
+    tl.to("#w145", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 42.50);
+    tl.to("#w146", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 43.26);
+    tl.set("#cp39", { autoAlpha: 0 }, 0);
+    tl.to("#cp39", { duration: 0.1, autoAlpha: 1 }, 43.42);
+    tl.to("#cp39", { duration: 0.1, autoAlpha: 0 }, 44.82);
+    tl.to("#w147", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 43.50);
+    tl.to("#w148", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 43.88);
+    tl.to("#w149", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 44.54);
+    tl.to("#w150", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 44.74);
+    tl.set("#cp40", { autoAlpha: 0 }, 0);
+    tl.to("#cp40", { duration: 0.1, autoAlpha: 1 }, 44.80);
+    tl.to("#cp40", { duration: 0.1, autoAlpha: 0 }, 45.96);
+    tl.to("#w151", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 44.88);
+    tl.to("#w152", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 45.22);
+    tl.to("#w153", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 45.38);
+    tl.to("#w154", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 45.70);
+    tl.set("#cp41", { autoAlpha: 0 }, 0);
+    tl.to("#cp41", { duration: 0.1, autoAlpha: 1 }, 45.94);
+    tl.to("#cp41", { duration: 0.1, autoAlpha: 0 }, 46.98);
+    tl.to("#w155", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.02);
+    tl.to("#w156", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.32);
+    tl.to("#w157", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.62);
+    tl.to("#w158", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.74);
+    tl.set("#cp42", { autoAlpha: 0 }, 0);
+    tl.to("#cp42", { duration: 0.1, autoAlpha: 1 }, 46.96);
+    tl.to("#cp42", { duration: 0.1, autoAlpha: 0 }, 48.06);
+    tl.to("#w159", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 47.04);
+    tl.to("#w160", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 47.40);
+    tl.to("#w161", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 47.74);
+    tl.to("#w162", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 47.96);
+    tl.set("#cp43", { autoAlpha: 0 }, 0);
+    tl.to("#cp43", { duration: 0.1, autoAlpha: 1 }, 48.04);
+    tl.to("#cp43", { duration: 0.1, autoAlpha: 0 }, 49.44);
+    tl.to("#w163", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.12);
+    tl.to("#w164", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.44);
+    tl.to("#w165", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.54);
+    tl.to("#w166", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.78);
+    tl.to("#w167", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.04);
+    tl.set("#cp44", { autoAlpha: 0 }, 0);
+    tl.to("#cp44", { duration: 0.1, autoAlpha: 1 }, 49.42);
+    tl.to("#cp44", { duration: 0.1, autoAlpha: 0 }, 50.26);
+    tl.to("#w168", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.50);
+    tl.to("#w169", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.64);
+    tl.to("#w170", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.82);
+    tl.to("#w171", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.02);
+    tl.set("#cp45", { autoAlpha: 0 }, 0);
+    tl.to("#cp45", { duration: 0.1, autoAlpha: 1 }, 50.24);
+    tl.to("#cp45", { duration: 0.1, autoAlpha: 0 }, 50.76);
+    tl.to("#w172", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.32);
+    tl.to("#w173", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.44);
+    tl.to("#w174", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.54);
+    tl.to("#w175", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 50.64);
+    tl.set("#cp46", { autoAlpha: 0 }, 0);
+    tl.to("#cp46", { duration: 0.1, autoAlpha: 1 }, 50.74);
+    tl.to("#cp46", { duration: 0.1, autoAlpha: 0 }, 51.86);
+    tl.to("#w176", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.82);
+    tl.to("#w177", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.42);
+    tl.to("#w178", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.50);
+    tl.to("#w179", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.60);
+    tl.set("#cp47", { autoAlpha: 0 }, 0);
+    tl.to("#cp47", { duration: 0.1, autoAlpha: 1 }, 51.84);
+    tl.to("#cp47", { duration: 0.1, autoAlpha: 0 }, 53.48);
+    tl.to("#w180", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.92);
+    tl.to("#w181", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 52.30);
+    tl.to("#w182", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 52.54);
+    tl.to("#w183", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 52.64);
+    tl.to("#w184", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 53.14);
+    tl.set("#cp48", { autoAlpha: 0 }, 0);
+    tl.to("#cp48", { duration: 0.1, autoAlpha: 1 }, 53.46);
+    tl.to("#cp48", { duration: 0.1, autoAlpha: 0 }, 54.28);
+    tl.to("#w185", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 53.54);
+    tl.to("#w186", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.04);
+    tl.to("#w187", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.14);
+    tl.to("#w188", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.24);
+    tl.set("#cp49", { autoAlpha: 0 }, 0);
+    tl.to("#cp49", { duration: 0.1, autoAlpha: 1 }, 54.26);
+    tl.to("#cp49", { duration: 0.1, autoAlpha: 0 }, 55.50);
+    tl.to("#w189", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.34);
+    tl.to("#w190", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.46);
+    tl.to("#w191", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 54.86);
+    tl.to("#w192", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 55.46);
+    tl.set("#cp50", { autoAlpha: 0 }, 0);
+    tl.to("#cp50", { duration: 0.1, autoAlpha: 1 }, 55.48);
+    tl.to("#cp50", { duration: 0.1, autoAlpha: 0 }, 57.54);
+    tl.to("#w193", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 55.56);
+    tl.to("#w194", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 56.44);
+    tl.to("#w195", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 56.86);
+    tl.to("#w196", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.14);
+    tl.set("#cp51", { autoAlpha: 0 }, 0);
+    tl.to("#cp51", { duration: 0.1, autoAlpha: 1 }, 57.52);
+    tl.to("#cp51", { duration: 0.1, autoAlpha: 0 }, 58.78);
+    tl.to("#w197", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.60);
+    tl.to("#w198", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.84);
+    tl.to("#w199", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.98);
+    tl.to("#w200", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 58.16);
+    tl.set("#cp52", { autoAlpha: 0 }, 0);
+    tl.to("#cp52", { duration: 0.1, autoAlpha: 1 }, 58.76);
+    tl.to("#cp52", { duration: 0.1, autoAlpha: 0 }, 59.78);
+    tl.to("#w201", { duration: 0.12, color: "#F83820", ease: "power2.out" }, 58.84);
+    tl.to("#w202", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 58.96);
+    tl.to("#w203", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 59.42);
+    tl.to("#w204", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 59.74);
+    tl.set("#cp53", { autoAlpha: 0 }, 0);
+    tl.to("#cp53", { duration: 0.1, autoAlpha: 1 }, 59.76);
+    tl.to("#cp53", { duration: 0.1, autoAlpha: 0 }, 60.92);
+    tl.to("#w205", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 59.84);
+    tl.to("#w206", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 60.02);
+    tl.to("#w207", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 60.14);
+    tl.to("#w208", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 60.26);
+    tl.fromTo("#cu0", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 1.56);
+    tl.to("#cu0", { duration: 0.18, autoAlpha: 0 }, 2.74);
+    tl.fromTo("#cu1", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 7.80);
+    tl.to("#cu1", { duration: 0.18, autoAlpha: 0 }, 8.96);
+    tl.fromTo("#cu2", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 11.52);
+    tl.to("#cu2", { duration: 0.18, autoAlpha: 0 }, 13.08);
+    tl.fromTo("#cu3", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 14.42);
+    tl.to("#cu3", { duration: 0.18, autoAlpha: 0 }, 15.58);
+    tl.fromTo("#cu4", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 17.70);
+    tl.to("#cu4", { duration: 0.18, autoAlpha: 0 }, 18.84);
+    tl.fromTo("#cu5", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 19.08);
+    tl.to("#cu5", { duration: 0.18, autoAlpha: 0 }, 20.18);
+    tl.fromTo("#cu6", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 21.46);
+    tl.to("#cu6", { duration: 0.18, autoAlpha: 0 }, 23.02);
+    tl.fromTo("#cu7", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 23.52);
+    tl.to("#cu7", { duration: 0.18, autoAlpha: 0 }, 25.04);
+    tl.fromTo("#cu8", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 25.64);
+    tl.to("#cu8", { duration: 0.18, autoAlpha: 0 }, 26.85);
+    tl.fromTo("#cu9", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 27.00);
+    tl.to("#cu9", { duration: 0.18, autoAlpha: 0 }, 28.24);
+    tl.fromTo("#cu10", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 28.50);
+    tl.to("#cu10", { duration: 0.18, autoAlpha: 0 }, 29.93);
+    tl.fromTo("#cu11", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 30.08);
+    tl.to("#cu11", { duration: 0.18, autoAlpha: 0 }, 31.72);
+    tl.fromTo("#cu12", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 35.58);
+    tl.to("#cu12", { duration: 0.18, autoAlpha: 0 }, 36.54);
+    tl.fromTo("#cu13", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 38.36);
+    tl.to("#cu13", { duration: 0.18, autoAlpha: 0 }, 39.42);
+    tl.fromTo("#cu14", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 41.52);
+    tl.to("#cu14", { duration: 0.18, autoAlpha: 0 }, 42.98);
+    tl.fromTo("#cu15", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 43.26);
+    tl.to("#cu15", { duration: 0.18, autoAlpha: 0 }, 44.40);
+    tl.fromTo("#cu16", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 44.88);
+    tl.to("#cu16", { duration: 0.18, autoAlpha: 0 }, 46.12);
+    tl.fromTo("#cu17", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 47.04);
+    tl.to("#cu17", { duration: 0.18, autoAlpha: 0 }, 48.30);
+    tl.fromTo("#cu18", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 50.64);
+    tl.to("#cu18", { duration: 0.18, autoAlpha: 0 }, 51.72);
+    tl.fromTo("#cu19", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 54.86);
+    tl.to("#cu19", { duration: 0.18, autoAlpha: 0 }, 56.29);
+    tl.fromTo("#cu20", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 56.44);
+    tl.to("#cu20", { duration: 0.18, autoAlpha: 0 }, 57.76);
+    tl.fromTo("#cu21", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 58.84);
+    tl.to("#cu21", { duration: 0.18, autoAlpha: 0 }, 59.96);
 
   window.__timelines["reel-main"] = tl;
 </script>

@@ -1,39 +1,272 @@
 {
   "_comment": "Spoken word (or phrase) -> icon cue. The pipeline scans the transcript and emits a cue at that word's timestamp. Longer phrases are matched before single words, so 'go dead' wins over 'dead'. tone: good | danger | neutral.",
   "phrases": {
-    "go dead": { "icon": "unlink", "label": "dead link", "tone": "danger" },
-    "sign-up": { "icon": "user-x", "label": "no sign-up", "tone": "good" },
-    "sign up": { "icon": "user-x", "label": "no sign-up", "tone": "good" },
-    "no signup": { "icon": "user-x", "label": "no sign-up", "tone": "good" }
+    "go dead": {
+      "icon": "unlink",
+      "label": "dead link",
+      "tone": "danger"
+    },
+    "sign-up": {
+      "icon": "user-x",
+      "label": "no sign-up",
+      "tone": "good"
+    },
+    "sign up": {
+      "icon": "user-x",
+      "label": "no sign-up",
+      "tone": "good"
+    },
+    "no signup": {
+      "icon": "user-x",
+      "label": "no sign-up",
+      "tone": "good"
+    }
   },
   "words": {
-    "links": { "icon": "link", "label": "link", "tone": "neutral" },
-    "link": { "icon": "link", "label": "link", "tone": "neutral" },
-    "dead": { "icon": "unlink", "label": "dead", "tone": "danger" },
-    "broken": { "icon": "link-2-off", "label": "broken", "tone": "danger" },
-    "pages": { "icon": "file", "label": "page", "tone": "neutral" },
-    "page": { "icon": "file", "label": "page", "tone": "neutral" },
-    "disappear": { "icon": "ghost", "label": "gone", "tone": "danger" },
-    "vanish": { "icon": "eye-off", "label": "vanish", "tone": "danger" },
-    "gone": { "icon": "ghost", "label": "gone", "tone": "danger" },
-    "saves": { "icon": "save", "label": "saved", "tone": "good" },
-    "save": { "icon": "save", "label": "saved", "tone": "good" },
-    "saved": { "icon": "save", "label": "saved", "tone": "good" },
-    "url": { "icon": "globe", "label": "any URL", "tone": "neutral" },
-    "clean": { "icon": "sparkles", "label": "clean", "tone": "good" },
-    "pdf": { "icon": "file-text", "label": "PDF", "tone": "good" },
-    "instantly": { "icon": "zap", "label": "instant", "tone": "good" },
-    "instant": { "icon": "zap", "label": "instant", "tone": "good" },
-    "free": { "icon": "gift", "label": "free", "tone": "good" },
-    "paste": { "icon": "clipboard-paste", "label": "paste", "tone": "neutral" },
-    "download": { "icon": "download", "label": "download", "tone": "good" },
-    "email": { "icon": "mail", "label": "email", "tone": "good" },
-    "share": { "icon": "share-2", "label": "share", "tone": "good" },
-    "secure": { "icon": "shield-check", "label": "secure", "tone": "good" },
-    "watermark": { "icon": "circle-slash", "label": "no watermark", "tone": "good" },
-    "offline": { "icon": "wifi-off", "label": "offline", "tone": "good" },
-    "archive": { "icon": "archive", "label": "archive", "tone": "neutral" },
-    "paywall": { "icon": "triangle-alert", "label": "paywall", "tone": "danger" },
-    "paywalls": { "icon": "triangle-alert", "label": "paywall", "tone": "danger" }
+    "links": {
+      "icon": "link",
+      "label": "link",
+      "tone": "neutral"
+    },
+    "link": {
+      "icon": "link",
+      "label": "link",
+      "tone": "neutral"
+    },
+    "dead": {
+      "icon": "unlink",
+      "label": "dead",
+      "tone": "danger"
+    },
+    "broken": {
+      "icon": "link-2-off",
+      "label": "broken",
+      "tone": "danger"
+    },
+    "pages": {
+      "icon": "file",
+      "label": "page",
+      "tone": "neutral"
+    },
+    "page": {
+      "icon": "file",
+      "label": "page",
+      "tone": "neutral"
+    },
+    "disappear": {
+      "icon": "ghost",
+      "label": "gone",
+      "tone": "danger"
+    },
+    "vanish": {
+      "icon": "eye-off",
+      "label": "vanish",
+      "tone": "danger"
+    },
+    "gone": {
+      "icon": "ghost",
+      "label": "gone",
+      "tone": "danger"
+    },
+    "saves": {
+      "icon": "save",
+      "label": "saved",
+      "tone": "good"
+    },
+    "save": {
+      "icon": "save",
+      "label": "saved",
+      "tone": "good"
+    },
+    "saved": {
+      "icon": "save",
+      "label": "saved",
+      "tone": "good"
+    },
+    "url": {
+      "icon": "globe",
+      "label": "any URL",
+      "tone": "neutral"
+    },
+    "clean": {
+      "icon": "sparkles",
+      "label": "clean",
+      "tone": "good"
+    },
+    "pdf": {
+      "icon": "file-text",
+      "label": "PDF",
+      "tone": "good"
+    },
+    "instantly": {
+      "icon": "zap",
+      "label": "instant",
+      "tone": "good"
+    },
+    "instant": {
+      "icon": "zap",
+      "label": "instant",
+      "tone": "good"
+    },
+    "free": {
+      "icon": "gift",
+      "label": "free",
+      "tone": "good"
+    },
+    "paste": {
+      "icon": "clipboard-paste",
+      "label": "paste",
+      "tone": "neutral"
+    },
+    "download": {
+      "icon": "download",
+      "label": "download",
+      "tone": "good"
+    },
+    "email": {
+      "icon": "mail",
+      "label": "email",
+      "tone": "good"
+    },
+    "share": {
+      "icon": "share-2",
+      "label": "share",
+      "tone": "good"
+    },
+    "secure": {
+      "icon": "shield-check",
+      "label": "secure",
+      "tone": "good"
+    },
+    "watermark": {
+      "icon": "circle-slash",
+      "label": "no watermark",
+      "tone": "good"
+    },
+    "offline": {
+      "icon": "wifi-off",
+      "label": "offline",
+      "tone": "good"
+    },
+    "archive": {
+      "icon": "archive",
+      "label": "archive",
+      "tone": "neutral"
+    },
+    "paywall": {
+      "icon": "triangle-alert",
+      "label": "paywall",
+      "tone": "danger"
+    },
+    "paywalls": {
+      "icon": "triangle-alert",
+      "label": "paywall",
+      "tone": "danger"
+    },
+    "reels": {
+      "icon": "clapperboard",
+      "label": "reels",
+      "tone": "neutral"
+    },
+    "reel": {
+      "icon": "clapperboard",
+      "label": "reel",
+      "tone": "neutral"
+    },
+    "desktop": {
+      "icon": "monitor",
+      "label": "desktop app",
+      "tone": "good"
+    },
+    "browser": {
+      "icon": "globe",
+      "label": "not the browser",
+      "tone": "danger"
+    },
+    "folder": {
+      "icon": "folder",
+      "label": "folder",
+      "tone": "neutral"
+    },
+    "chat": {
+      "icon": "message-square",
+      "label": "new chat",
+      "tone": "neutral"
+    },
+    "local": {
+      "icon": "hard-drive",
+      "label": "local",
+      "tone": "good"
+    },
+    "tools": {
+      "icon": "wrench",
+      "label": "tools",
+      "tone": "neutral"
+    },
+    "animates": {
+      "icon": "film",
+      "label": "animates",
+      "tone": "good"
+    },
+    "voiceover": {
+      "icon": "mic",
+      "label": "voiceover",
+      "tone": "good"
+    },
+    "render": {
+      "icon": "video",
+      "label": "render",
+      "tone": "good"
+    },
+    "script": {
+      "icon": "pen-line",
+      "label": "script",
+      "tone": "good"
+    },
+    "captions": {
+      "icon": "captions",
+      "label": "captions",
+      "tone": "good"
+    },
+    "motion": {
+      "icon": "activity",
+      "label": "motion",
+      "tone": "good"
+    },
+    "skill": {
+      "icon": "award",
+      "label": "SKILL",
+      "tone": "good"
+    },
+    "comment": {
+      "icon": "message-circle",
+      "label": "comment",
+      "tone": "good"
+    },
+    "files": {
+      "icon": "files",
+      "label": "files",
+      "tone": "neutral"
+    },
+    "setup": {
+      "icon": "settings",
+      "label": "setup",
+      "tone": "neutral"
+    },
+    "installs": {
+      "icon": "package",
+      "label": "installs",
+      "tone": "good"
+    },
+    "fixes": {
+      "icon": "wand-sparkles",
+      "label": "it fixes it",
+      "tone": "good"
+    },
+    "system": {
+      "icon": "boxes",
+      "label": "the system",
+      "tone": "good"
+    }
   }
 }

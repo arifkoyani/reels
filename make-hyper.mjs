@@ -1,12 +1,15 @@
-// Generate a HyperFrames composition from a JSON spec, then check and render it.
+// Generate a HyperFrames composition from a JSON spec, then check and render.
 //
-//   node make-hyper.mjs video-specs/khanpdf-ref.json
-//   node make-hyper.mjs video-specs/khanpdf-ref.json --force    (re-run TTS)
-//   node make-hyper.mjs video-specs/khanpdf-ref.json --no-render (write HTML only)
+//   node make-hyper.mjs video-specs/tutorial-61s.json
+//   node make-hyper.mjs <spec> --no-render        write HTML only
+//   node make-hyper.mjs <spec> --force            re-run TTS even if cached
 //
-// Reuses the same voice cache as make-video.mjs, so switching engines costs no
-// API credits. Chain: script -> TTS -> transcription -> brand fixes -> cues ->
-// HTML + GSAP timeline -> hyperframes check -> hyperframes render.
+// A spec either supplies its own audio + transcript:
+//     "audioFile": "mp3/audio.mp3", "transcriptFile": "transcriptionasJSON/audio.json"
+// or a script to synthesise, which is cached on a hash of script + voice.
+//
+// Visual system follows report.txt: warm paper, one accent, caption at the top
+// in two tones, a stamped display line, monospace micro-labels, grain over all.
 import { spawnSync } from "child_process";
 import crypto from "crypto";
 import fs from "fs";
@@ -26,7 +29,6 @@ const FPS = 30;
 const specPath = process.argv[2];
 const force = process.argv.includes("--force");
 const noRender = process.argv.includes("--no-render");
-
 if (!specPath) {
   console.error("Usage: node make-hyper.mjs <spec.json> [--force] [--no-render]");
   process.exit(1);
@@ -37,73 +39,63 @@ const fail = (msg) => {
   console.error(`\nFAILED: ${msg}`);
   process.exit(1);
 };
-
 const NPX = process.platform === "win32" ? "npx.cmd" : "npx";
-const run = (cmd, args, opts = {}) =>
-  spawnSync(cmd, args, { encoding: "utf8", ...opts });
+const run = (cmd, args, opts = {}) => spawnSync(cmd, args, { encoding: "utf8", ...opts });
 
 const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
 const duration = spec.durationSeconds;
 const speed = spec.speed ?? 1;
-
 for (const d of [ASSET_DIR, CACHE_DIR, OUT_DIR]) fs.mkdirSync(d, { recursive: true });
 
-// ---------------------------------------------------------------- 1. voice
-const hash = crypto
-  .createHash("sha1")
-  .update(JSON.stringify({ script: spec.script, voice: spec.voice }))
-  .digest("hex")
-  .slice(0, 12);
-const cachedAudio = path.join(CACHE_DIR, `${hash}.mp3`);
-const cachedWords = path.join(CACHE_DIR, `${hash}.json`);
+// ---------------------------------------------------------------- 1. audio
+step(1, "Audio");
+let sourceAudio;
+let sourceWords;
 
-step(1, "Voiceover");
-if (fs.existsSync(cachedAudio) && !force) {
-  console.log(`    cached (${hash}) — no credits spent`);
+if (spec.audioFile && spec.transcriptFile) {
+  sourceAudio = spec.audioFile;
+  sourceWords = spec.transcriptFile;
+  if (!fs.existsSync(sourceAudio)) fail(`Missing audio: ${sourceAudio}`);
+  if (!fs.existsSync(sourceWords)) fail(`Missing transcript: ${sourceWords}`);
+  console.log(`    supplied  ${sourceAudio}`);
+  console.log(`    supplied  ${sourceWords}`);
 } else {
-  const body = { text: spec.script, model_id: spec.voice?.modelId ?? "eleven_v4" };
-  if (spec.voice?.filterPreset) {
-    body.audio_effects = { filter_preset_id: spec.voice.filterPreset };
+  const hash = crypto
+    .createHash("sha1")
+    .update(JSON.stringify({ script: spec.script, voice: spec.voice }))
+    .digest("hex")
+    .slice(0, 12);
+  sourceAudio = path.join(CACHE_DIR, `${hash}.mp3`);
+  sourceWords = path.join(CACHE_DIR, `${hash}.json`);
+
+  if (fs.existsSync(sourceAudio) && !force) {
+    console.log(`    cached (${hash}) — no credits spent`);
+  } else {
+    const body = { text: spec.script, model_id: spec.voice?.modelId ?? "eleven_v4" };
+    if (spec.voice?.filterPreset) body.audio_effects = { filter_preset_id: spec.voice.filterPreset };
+    const res = run(
+      NPX,
+      ["-y", "@elevenlabs/cli@latest", "text-to-speech", "convert", "--voice-id",
+       spec.voice?.voiceId ?? "JBFqnCBsd6RMkjVDRZzb", "--json", "-", "-o", sourceAudio],
+      { input: JSON.stringify(body), shell: true },
+    );
+    if (res.status !== 0 || !fs.existsSync(sourceAudio)) {
+      fail(`TTS failed (status ${res.status})\n${res.stderr || res.stdout || "no output"}`);
+    }
+    console.log(`    generated -> ${sourceAudio}`);
   }
-  const res = run(
-    NPX,
-    [
-      "-y",
-      "@elevenlabs/cli@latest",
-      "text-to-speech",
-      "convert",
-      "--voice-id",
-      spec.voice?.voiceId ?? "JBFqnCBsd6RMkjVDRZzb",
-      "--json",
-      "-",
-      "-o",
-      cachedAudio,
-    ],
-    { input: JSON.stringify(body), shell: true },
-  );
-  if (res.status !== 0 || !fs.existsSync(cachedAudio)) {
-    fail(`ElevenLabs TTS failed (status ${res.status})\n${res.stderr || res.stdout || "no output"}`);
+  if (!fs.existsSync(sourceWords) || force) {
+    const res = run("node", ["groq-transcription.js", sourceAudio], { stdio: "pipe" });
+    if (res.status !== 0) fail(`Transcription failed\n${res.stderr || res.stdout}`);
+    const produced = path.join("transcriptionasJSON", `${path.parse(sourceAudio).name}.json`);
+    if (!fs.existsSync(produced)) fail(`Expected transcript at ${produced}`);
+    fs.copyFileSync(produced, sourceWords);
   }
-  console.log(`    generated -> ${cachedAudio}`);
 }
 
 // ---------------------------------------------------------------- 2. words
-step(2, "Transcription");
-if (fs.existsSync(cachedWords) && !force) {
-  console.log(`    cached (${hash})`);
-} else {
-  const res = run("node", ["groq-transcription.js", cachedAudio], { stdio: "pipe" });
-  if (res.status !== 0) fail(`Groq transcription failed\n${res.stderr || res.stdout}`);
-  const produced = path.join("transcriptionasJSON", `${hash}.json`);
-  if (!fs.existsSync(produced)) fail(`Expected transcript at ${produced}`);
-  fs.copyFileSync(produced, cachedWords);
-  console.log(`    transcribed -> ${cachedWords}`);
-}
-
-const transcript = JSON.parse(fs.readFileSync(cachedWords, "utf8"));
-
-// ---------------------------------------------------------------- 3. brand
-step(3, "Brand-name corrections");
+step(2, "Transcript");
+const transcript = JSON.parse(fs.readFileSync(sourceWords, "utf8"));
 const { rules } = JSON.parse(fs.readFileSync(BRAND_TERMS, "utf8"));
 let fixes = 0;
 const applyRules = (text) => {
@@ -117,23 +109,16 @@ const applyRules = (text) => {
   }
   return out;
 };
-transcript.words = transcript.words.map((w) => ({ ...w, word: applyRules(w.word) }));
-console.log(fixes ? `    applied ${fixes} fix(es)` : "    nothing to correct");
-
-// speed-scaled word times (the audio plays at `speed`, so timestamps compress)
 const words = transcript.words.map((w) => ({
-  ...w,
+  word: applyRules(w.word),
   start: w.start / speed,
   end: w.end / speed,
 }));
-const lastEnd = words.at(-1)?.end ?? 0;
-console.log(`    ${words.length} words, speech ends at ${lastEnd.toFixed(2)}s`);
-if (lastEnd > duration) {
-  console.log(`    WARNING: speech runs past the ${duration}s composition and will be cut`);
-}
+console.log(`    ${words.length} words, ends at ${words.at(-1).end.toFixed(2)}s${fixes ? ` (${fixes} brand fix)` : ""}`);
+if (words.at(-1).end > duration) console.log(`    WARNING: speech runs past ${duration}s`);
 
-// ---------------------------------------------------------------- 4. cues
-step(4, "Word cues");
+// ---------------------------------------------------------------- 3. cues
+step(3, "Word cues");
 const dict = JSON.parse(fs.readFileSync(WORD_ICONS, "utf8"));
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9-]/g, "");
 const cues = [];
@@ -144,92 +129,95 @@ for (let i = 0; i < words.length; i++) {
   const phraseHit = pair ? dict.phrases[pair] : null;
   const hit = phraseHit ?? dict.words[norm(w.word)];
   if (!hit) continue;
+  // keep them from crowding: at least 1.2s apart
+  if (cues.length && w.start - cues.at(-1).start < 1.2) continue;
   cues.push({ start: w.start, end: phraseHit ? next.end : w.end, ...hit });
   if (phraseHit) i++;
 }
 console.log(`    ${cues.length} cue(s)`);
 
-// ---------------------------------------------------------------- 5. assets
-step(5, "Assets");
-fs.copyFileSync(cachedAudio, path.join(ASSET_DIR, "vo.mp3"));
-console.log(`    ${path.join(ASSET_DIR, "vo.mp3")}`);
-
-// Ship GSAP locally. The CDN fails to resolve in the render sandbox, and a
-// missing gsap leaves every beat visible at once.
+// ---------------------------------------------------------------- 4. assets
+step(4, "Assets");
+fs.copyFileSync(sourceAudio, path.join(ASSET_DIR, "vo.mp3"));
 const gsapSrc = require.resolve("gsap/dist/gsap.min.js", { paths: [process.cwd()] });
 fs.copyFileSync(gsapSrc, path.join(ASSET_DIR, "gsap.min.js"));
-console.log(`    ${path.join(ASSET_DIR, "gsap.min.js")}`);
+console.log(`    vo.mp3, gsap.min.js`);
 
-// Lucide icon paths, inlined so the SVG needs no runtime library
 const iconNodes = require("lucide-static/icon-nodes.json");
-const iconSvg = (name, cls = "tile-icon") => {
+const icon = (name, cls) => {
   const nodes = iconNodes[name];
   if (!nodes) return "";
   const inner = nodes
-    .map(([tag, attrs]) =>
-      `<${tag} ${Object.entries(attrs)
-        .map(([k, v]) => `${k}="${v}"`)
-        .join(" ")}></${tag}>`,
-    )
+    .map(([t, a]) => `<${t} ${Object.entries(a).map(([k, v]) => `${k}="${v}"`).join(" ")}></${t}>`)
     .join("");
   return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 };
 
-// ---------------------------------------------------------------- 6. html
-step(6, "Composition");
+// ---------------------------------------------------------------- 5. html
+step(5, "Composition");
+const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const accent = (t = "") => esc(t).replace(/\{([^}]*)\}/g, '<span class="hot">$1</span>');
 
-const esc = (s = "") =>
-  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const beats = (spec.beats ?? []).map((b, i) => ({ ...b, i, from: b.fromSeconds, to: b.toSeconds }));
 
-// {braces} mark the accent-coloured run
-const accent = (text = "") =>
-  esc(text).replace(/\{([^}]*)\}/g, '<span class="accent">$1</span>');
-
-const beats = (spec.beats ?? []).map((b, i) => ({
-  ...b,
-  index: i,
-  from: b.fromSeconds,
-  to: b.toSeconds,
-}));
+const widgetHtml = (b, i) => {
+  switch (b.widget) {
+    case "statement":
+      return `${b.lead ? `<div class="lead">${esc(b.lead)}</div>` : ""}`;
+    case "list":
+      return `<div class="list">${(b.items ?? [])
+        .map((it) => `<div class="row">${icon(it.icon, "row-icon")}<span>${esc(it.label)}</span></div>`)
+        .join("")}</div>`;
+    case "cards":
+      return `<div class="cards">${(b.cards ?? [])
+        .map(
+          (c) =>
+            `<div class="card ${c.tone === "danger" ? "bad" : ""}">${icon(c.icon, "card-icon")}<div class="card-t">${esc(c.title)}</div><div class="mono">// ${esc(c.note ?? "")}</div></div>`,
+        )
+        .join("")}</div>`;
+    case "path":
+      return `<div class="path">${icon("folder", "path-icon")}<span class="mono-lg">${esc(b.path)}</span></div>`;
+    case "checklist":
+      return `<div class="checks">${(b.items ?? [])
+        .map(
+          (it) =>
+            `<div class="check"><div class="box">${icon("check", "check-icon")}</div><div><div class="check-t">${esc(it.label)}</div><div class="mono">// ${esc(it.note ?? "")}</div></div></div>`,
+        )
+        .join("")}</div>`;
+    case "prompt":
+      return `<div class="prompt"><span class="mono-lg" id="pr-${i}"></span><span class="caret">|</span></div>`;
+    case "cta":
+      return `<div class="stat">${esc(b.stat ?? "")}</div><div class="mono-lg">${esc(b.statLabel ?? "")}</div>`;
+    default:
+      return "";
+  }
+};
 
 const beatHtml = beats
-  .map((b, i) => {
-    const tiles = (b.tiles ?? b.cards ?? [])
-      .map(
-        (t) =>
-          `<div class="tile-box">${iconSvg(t.icon)}<div class="tile-label">${esc(t.label ?? t.title)}</div></div>`,
-      )
-      .join("");
-
-    const widget =
-      b.widget === "url"
-        ? `<div class="url-bar"><span class="url-text" id="url-${i}"></span><span class="caret">|</span></div>`
-        : b.widget === "progress"
-          ? `<div class="bar-track"><div class="bar-fill" id="bar-${i}"></div></div>`
-          : (b.widget === "tiles" || b.widget === "cards") && tiles
-            ? `<div class="tiles-row">${tiles}</div>`
-            : b.widget === "brand"
-              ? `<div class="brand">Khan<span class="accent">PDF</span></div><div class="brand-url">khanpdf.com</div>`
-              : "";
-
-    return `    <div class="beat" id="beat-${i}">
-      ${b.step ? `<div class="badge-step">STEP ${b.step}</div>` : ""}
-      <div class="card-title">${accent(b.stamp ?? b.title ?? "")}</div>
-      ${b.sub ? `<div class="card-sub">${esc(b.sub)}</div>` : ""}
-      ${widget}
-    </div>`;
-  })
+  .map(
+    (b, i) => `    <div class="beat" id="b${i}">
+      <div class="kicker mono">// ${String(i + 1).padStart(2, "0")} · ${esc(b.kicker ?? "")}</div>
+      <div class="stamp-row">
+        <div class="stamp">${accent(b.stamp ?? "")}</div>
+        ${b.step ? `<div class="step">${b.step}</div>` : ""}
+      </div>
+      ${widgetHtml(b, i)}
+      ${b.sub ? `<div class="sub">${esc(b.sub)}</div>` : ""}
+    </div>`,
+  )
   .join("\n");
 
-// Captions page in groups — rendering all words at once overflows the frame.
+// caption pages
+const isCue = (w) => cues.some((c) => Math.abs(c.start - w.start) < 0.06);
 const pages = [];
 {
   let cur = [];
   for (const w of words) {
     if (cur.length) {
       const prev = cur.at(-1);
-      const sentenceEnded = /[.!?]$/.test(prev.word);
-      if (sentenceEnded || cur.length >= 4 || w.start - prev.end > 0.45) {
+      // break on sentence end only — commas produced one-word pages that
+      // flashed by under the 0.40s readability floor
+      if (/[.!?]$/.test(prev.word) || cur.length >= 4 || w.start - prev.end > 0.5) {
         pages.push(cur);
         cur = [];
       }
@@ -237,265 +225,218 @@ const pages = [];
     cur.push(w);
   }
   if (cur.length) pages.push(cur);
-}
 
-let wordIndex = 0;
-const pageMeta = pages.map((p, pi) => {
-  const ids = p.map(() => `w${wordIndex++}`);
-  return { page: p, ids, index: pi, start: p[0].start, end: p.at(-1).end };
-});
+  // merge any page too brief to read into the one after it
+  const MIN = 0.55;
+  for (let i = 0; i < pages.length - 1; ) {
+    const span = pages[i].at(-1).end - pages[i][0].start;
+    if (span < MIN && pages[i].length + pages[i + 1].length <= 6) {
+      pages[i] = pages[i].concat(pages[i + 1]);
+      pages.splice(i + 1, 1);
+    } else i++;
+  }
+}
+let wi = 0;
+const pageMeta = pages.map((p, pi) => ({
+  page: p,
+  ids: p.map(() => `w${wi++}`),
+  index: pi,
+  start: p[0].start,
+  end: p.at(-1).end,
+}));
 
 const captionHtml = pageMeta
   .map(
     (pm) =>
-      `<div class="caption-page" id="page-${pm.index}">${pm.page
-        .map((w, i) => `<span class="caption-word" id="${pm.ids[i]}">${esc(w.word)}</span>`)
+      `<div class="cap-page" id="cp${pm.index}">${pm.page
+        .map((w, k) => `<span class="cap ${isCue(w) ? "key" : ""}" id="${pm.ids[k]}">${esc(w.word)}</span>`)
         .join("")}</div>`,
   )
   .join("\n      ");
 
 const cueHtml = cues
-  .map(
-    (c, i) =>
-      `<div class="cue cue-${c.tone}" id="cue-${i}">${iconSvg(c.icon, "cue-icon")}<span>${esc(c.label)}</span></div>`,
-  )
+  .map((c, i) => `<div class="cue ${c.tone}" id="cu${i}">${icon(c.icon, "cue-icon")}<span>${esc(c.label)}</span></div>`)
   .join("\n      ");
 
-// --- GSAP timeline -----------------------------------------------------------
+// --- timeline ---------------------------------------------------------------
 const tl = [];
 beats.forEach((b, i) => {
-  tl.push(`    tl.set("#beat-${i}", { autoAlpha: 0 }, 0);`);
-  tl.push(
-    `    tl.to("#beat-${i}", { duration: 0.35, autoAlpha: 1, y: 0, ease: "power3.out" }, ${b.from});`,
-  );
-  tl.push(
-    `    tl.to("#beat-${i}", { duration: 0.3, autoAlpha: 0, ease: "power2.in" }, ${Math.max(b.from, b.to - 0.3)});`,
-  );
-  // only when the beat actually has tiles, or GSAP warns on a dead selector
-  if ((b.tiles ?? b.cards ?? []).length > 0) {
-    tl.push(
-      `    tl.from("#beat-${i} .tile-box", { duration: 0.4, y: 40, autoAlpha: 0, scale: 0.9, stagger: 0.12, ease: "back.out(1.4)" }, ${b.from + 0.25});`,
-    );
+  tl.push(`    tl.set("#b${i}", { autoAlpha: 0 }, 0);`);
+  tl.push(`    tl.to("#b${i}", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, ${b.from});`);
+  tl.push(`    tl.to("#b${i}", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, ${Math.max(b.from, b.to - 0.25)});`);
+  tl.push(`    tl.from("#b${i} .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, ${b.from + 0.1});`);
+
+  const groups = [[".row", 0.1], [".card", 0.12], [".check", 0.1]];
+  for (const [sel, stag] of groups) {
+    const count =
+      sel === ".row" ? (b.items ?? []).length && b.widget === "list" ? b.items.length : 0
+      : sel === ".card" ? (b.cards ?? []).length
+      : b.widget === "checklist" ? (b.items ?? []).length : 0;
+    if (count > 0) {
+      tl.push(
+        `    tl.from("#b${i} ${sel}", { duration: 0.34, y: 30, autoAlpha: 0, scale: 0.94, stagger: ${stag}, ease: "back.out(1.5)" }, ${b.from + 0.3});`,
+      );
+    }
   }
-  if (b.widget === "progress") {
-    tl.push(`    tl.set("#bar-${i}", { width: "0%" }, 0);`);
-    tl.push(
-      `    tl.to("#bar-${i}", { duration: ${(b.to - b.from - 0.6).toFixed(2)}, width: "100%", ease: "power1.inOut" }, ${b.from + 0.3});`,
-    );
+  if (b.widget === "prompt" && b.prompt) {
+    tl.push(`    typeText(tl, "#pr-${i}", ${JSON.stringify(b.prompt)}, ${b.from + 0.35}, ${Math.min(2.2, b.to - b.from - 0.7).toFixed(2)});`);
   }
-  if (b.widget === "url" && b.url) {
-    // typewriter: step the text content, which GSAP drives via an object proxy
-    tl.push(`    typeUrl(tl, "#url-${i}", ${JSON.stringify(b.url)}, ${b.from + 0.3}, ${(Math.min(1.6, b.to - b.from - 0.5)).toFixed(2)});`);
+  if (b.widget === "cta") {
+    tl.push(`    tl.from("#b${i} .stat", { duration: 0.5, scale: 0.7, autoAlpha: 0, ease: "back.out(2)" }, ${b.from + 0.4});`);
   }
 });
 
-// caption pages: one visible at a time, words popping inside it
 pageMeta.forEach((pm, pi) => {
   const next = pageMeta[pi + 1];
-  const hideAt = next ? next.start - 0.08 : Math.min(duration, pm.end + 0.6);
-  tl.push(`    tl.set("#page-${pi}", { autoAlpha: 0 }, 0);`);
-  tl.push(
-    `    tl.to("#page-${pi}", { duration: 0.12, autoAlpha: 1, ease: "power2.out" }, ${Math.max(0, pm.start - 0.1).toFixed(2)});`,
-  );
-  tl.push(
-    `    tl.to("#page-${pi}", { duration: 0.12, autoAlpha: 0, ease: "power2.in" }, ${hideAt.toFixed(2)});`,
-  );
-
-  pm.page.forEach((w, wi) => {
-    const id = pm.ids[wi];
-    tl.push(
-      `    tl.to("#${id}", { duration: 0.14, opacity: 1, scale: 1.15, color: "#FF550D", ease: "power2.out" }, ${w.start.toFixed(2)});`,
-    );
-    tl.push(
-      `    tl.to("#${id}", { duration: 0.2, scale: 1, color: "#FFFFFF", ease: "power2.in" }, ${(w.end + 0.02).toFixed(2)});`,
-    );
+  const hide = next ? next.start - 0.06 : Math.min(duration, pm.end + 0.5);
+  tl.push(`    tl.set("#cp${pi}", { autoAlpha: 0 }, 0);`);
+  tl.push(`    tl.to("#cp${pi}", { duration: 0.1, autoAlpha: 1 }, ${Math.max(0, pm.start - 0.08).toFixed(2)});`);
+  tl.push(`    tl.to("#cp${pi}", { duration: 0.1, autoAlpha: 0 }, ${hide.toFixed(2)});`);
+  pm.page.forEach((w, k) => {
+    const lit = isCue(w) ? "#F83820" : "#0C0A08";
+    tl.push(`    tl.to("#${pm.ids[k]}", { duration: 0.12, color: "${lit}", ease: "power2.out" }, ${w.start.toFixed(2)});`);
   });
 });
 
-// cues: never let one still be fading while the next arrives, or they overlap
 cues.forEach((c, i) => {
   const next = cues[i + 1];
-  const hold = Math.min(c.end + 0.7, next ? next.start - 0.1 : duration);
-  tl.push(
-    `    tl.fromTo("#cue-${i}", { autoAlpha: 0, y: 24, scale: 0.85 }, { duration: 0.22, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, ${c.start.toFixed(2)});`,
-  );
-  tl.push(
-    `    tl.to("#cue-${i}", { duration: 0.2, autoAlpha: 0, ease: "power2.in" }, ${Math.max(c.start + 0.3, hold).toFixed(2)});`,
-  );
-});
-
-// nod: pitch the head while a sentence is being spoken
-const spans = [];
-for (const w of words) {
-  const last = spans.at(-1);
-  if (last && w.start - last.end <= 0.35) last.end = w.end;
-  else spans.push({ start: w.start, end: w.end });
-}
-spans.forEach((s) => {
-  const cycles = Math.max(1, Math.round((s.end - s.start) * 2));
-  for (let c = 0; c < cycles; c++) {
-    const t = s.start + c * 0.5;
-    if (t + 0.5 > duration) break;
-    tl.push(`    tl.to("#botHead", { duration: 0.25, rotateX: 5, ease: "sine.inOut" }, ${t.toFixed(2)});`);
-    tl.push(`    tl.to("#botHead", { duration: 0.25, rotateX: -5, ease: "sine.inOut" }, ${(t + 0.25).toFixed(2)});`);
-  }
-  tl.push(`    tl.to("#botHead", { duration: 0.2, rotateX: 0, ease: "sine.out" }, ${s.end.toFixed(2)});`);
+  const hold = Math.min(c.end + 0.9, next ? next.start - 0.15 : duration);
+  tl.push(`    tl.fromTo("#cu${i}", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, ${c.start.toFixed(2)});`);
+  tl.push(`    tl.to("#cu${i}", { duration: 0.18, autoAlpha: 0 }, ${Math.max(c.start + 0.4, hold).toFixed(2)});`);
 });
 
 const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>${esc(spec.id)} — HyperFrames</title>
+<title>${esc(spec.id)}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #0B0F19;
-    display: flex; justify-content: center; align-items: center;
-    min-height: 100vh; overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  body { background:#111; display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
+
+  /* report.txt palette */
+  :root {
+    --paper:#ECEAE5; --ink:#0C0A08; --hot:#F83820; --muted:#AEACA6;
+    --card:#FBFAF7; --line:#DCD9D2;
   }
   [data-composition-id="reel-main"] {
-    width: 1080px; height: 1920px; position: relative;
-    background: #131C2D; overflow: hidden;
+    width:1080px; height:1920px; position:relative;
+    background:var(--paper); overflow:hidden;
+    font-family:Inter, sans-serif; color:var(--ink);
   }
-  .glow-left, .glow-right {
-    position: absolute; width: 500px; height: 500px; pointer-events: none;
-    background: radial-gradient(circle, rgba(255,85,13,0.18) 0%, rgba(19,28,45,0) 70%);
-  }
-  .glow-left  { top: 35%; left: -100px; }
-  .glow-right { top: 40%; right: -100px; }
 
-  .card-panel {
-    position: absolute; top: 130px; left: 75px;
-    width: 930px; height: 910px;
-    border-radius: 44px; background: #FFFFFF;
-    box-shadow: 0 34px 80px rgba(0,0,0,0.5);
-    overflow: hidden; z-index: 10; color: #131C2D;
+  /* four type roles */
+  .mono { font-family:"JetBrains Mono",monospace; font-size:26px; letter-spacing:2px; color:var(--muted); }
+  .mono-lg { font-family:"JetBrains Mono",monospace; font-size:40px; color:var(--ink); }
+  .stamp {
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:92px; line-height:1;
+    letter-spacing:1px; text-transform:uppercase;
+    border:5px solid var(--hot); border-radius:8px; padding:14px 26px 8px;
+    transform:rotate(-1.4deg); display:inline-block;
   }
-  /* one beat fills the card; only one is visible at a time.
-     hidden by default so a JS failure can't stack all of them */
+  .hot { color:var(--hot); }
+
+  /* caption at the TOP, two tones */
+  .cap-box { position:absolute; top:230px; left:120px; right:120px; height:260px; z-index:30; }
+  .cap-page { position:absolute; inset:0; opacity:0; display:flex; flex-wrap:wrap; align-content:flex-start; gap:10px 26px; }
+  .cap { font-size:76px; font-weight:800; letter-spacing:-2px; color:#6E6A63; }
+  .cap.key { font-family:"Playfair Display",serif; font-style:italic; font-weight:700; font-size:84px; color:#D9A99F; letter-spacing:0; }
+
+  /* the stage */
   .beat {
-    position: absolute; inset: 0; opacity: 0;
-    padding: 60px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
+    position:absolute; top:560px; left:120px; right:120px; height:900px;
+    opacity:0; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:28px;
   }
-  .badge-step {
-    font-size: 28px; font-weight: 800; letter-spacing: 3px;
-    color: #FF550D; margin-bottom: 20px;
+  .kicker { margin-bottom:-10px; }
+  .stamp-row { display:flex; align-items:flex-end; gap:28px; }
+  .step {
+    width:86px; height:86px; border-radius:20px; background:var(--ink); color:#fff;
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:56px;
+    display:flex; align-items:center; justify-content:center; padding-top:6px;
   }
-  .card-title {
-    font-size: 76px; font-weight: 900; line-height: 1.15;
-    letter-spacing: -1.5px; margin-bottom: 18px;
-  }
-  .card-title .accent, .brand .accent { color: #FF550D; }
-  .card-sub { font-size: 36px; color: #5A6678; font-weight: 600; line-height: 1.3; }
+  .lead { font-size:62px; font-weight:800; line-height:1.14; letter-spacing:-1px; }
+  .sub { font-size:36px; color:#5A6678; font-weight:600; line-height:1.3; }
 
-  .tiles-row { display: flex; gap: 24px; width: 100%; margin-top: 40px; }
-  .tile-box {
-    flex: 1; padding: 30px 18px; border-radius: 24px;
-    background: #FBFCFE; border: 3px solid #E3E7EE;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  .list { display:flex; flex-direction:column; gap:16px; width:100%; }
+  .row {
+    display:flex; align-items:center; gap:22px; width:100%;
+    background:var(--card); border:3px solid var(--line); border-radius:22px; padding:20px 26px;
+    font-size:40px; font-weight:800;
   }
-  .tile-icon { width: 64px; height: 64px; color: #FF550D; }
-  .tile-label { font-size: 32px; font-weight: 800; color: #131C2D; }
+  .row-icon { width:52px; height:52px; color:var(--hot); flex:0 0 auto; }
 
-  .url-bar {
-    margin-top: 38px; width: 100%; padding: 26px 30px;
-    border-radius: 20px; background: #F7F9FC; border: 3px solid #E3E7EE;
-    font-family: "JetBrains Mono", Consolas, monospace; font-size: 32px;
-    color: #131C2D; text-align: left; white-space: nowrap; overflow: hidden;
+  .cards { display:flex; gap:24px; width:100%; }
+  .card {
+    flex:1; background:var(--card); border:3px solid var(--line); border-radius:28px;
+    padding:30px 26px; display:flex; flex-direction:column; gap:12px;
   }
-  .caret { color: #FF550D; }
+  .card.bad { border-color:#E5B4AC; }
+  .card-icon { width:64px; height:64px; color:var(--hot); }
+  .card.bad .card-icon { color:#C0392B; }
+  .card-t { font-size:44px; font-weight:800; }
 
-  .bar-track {
-    margin-top: 44px; width: 100%; height: 22px; border-radius: 999px;
-    background: #E3E7EE; overflow: hidden;
+  .path {
+    display:flex; align-items:center; gap:20px; width:100%;
+    background:var(--card); border:3px solid var(--line); border-radius:22px; padding:26px 30px;
   }
-  .bar-fill { width: 0%; height: 100%; background: #FF550D; }
+  .path-icon { width:56px; height:56px; color:var(--hot); }
 
-  .brand { margin-top: 30px; font-size: 92px; font-weight: 900; letter-spacing: -3px; }
-  .brand-url { margin-top: 8px; font-size: 44px; font-weight: 700; color: #FF550D; }
-
-  .bot-wrapper {
-    position: absolute; top: 1120px; left: 88px; width: 310px;
-    z-index: 20; perspective: 900px;
-    filter: drop-shadow(0 22px 40px rgba(0,0,0,0.6));
+  .checks { display:flex; flex-direction:column; gap:14px; width:100%; }
+  .check { display:flex; align-items:center; gap:20px; }
+  .box {
+    width:62px; height:62px; border-radius:14px; background:var(--ink);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
   }
-  .bot-head { transform-origin: 50% 55%; position: relative; }
-  .bot-head img { width: 100%; height: auto; display: block; }
+  .check-icon { width:38px; height:38px; color:#fff; }
+  .check-t { font-size:40px; font-weight:800; }
 
-  .cue-rail {
-    position: absolute; top: 1180px; left: 440px; right: 60px;
-    display: flex; flex-direction: column; align-items: flex-start;
-    gap: 14px; z-index: 25;
+  .prompt {
+    display:flex; align-items:center; width:100%;
+    background:var(--card); border:3px solid var(--line); border-radius:22px;
+    padding:28px 30px; white-space:nowrap; overflow:hidden;
   }
+  .caret { color:var(--hot); font-family:"JetBrains Mono",monospace; font-size:40px; }
+
+  .stat { font-family:"League Gothic","Archivo Black",sans-serif; font-size:220px; line-height:0.9; color:var(--hot); }
+
+  /* cue chips, bottom strip */
+  .cue-strip { position:absolute; top:1500px; left:120px; right:120px; height:200px; z-index:25;
+    display:flex; align-items:center; }
   .cue {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 24px; border-radius: 999px;
-    background: rgba(10,16,28,0.92); color: #fff;
-    font-size: 32px; font-weight: 800; white-space: nowrap;
-    opacity: 0; position: absolute;
+    position:absolute; opacity:0; display:flex; align-items:center; gap:16px;
+    background:var(--ink); color:#fff; border-radius:999px; padding:18px 32px;
+    font-size:40px; font-weight:800; white-space:nowrap;
   }
-  .cue-icon { width: 44px; height: 44px; }
-  .cue-good    { border: 3px solid #FF550D; }
-  .cue-good .cue-icon    { color: #FF550D; }
-  .cue-danger  { border: 3px solid #FF4D4D; }
-  .cue-danger .cue-icon  { color: #FF4D4D; }
-  .cue-danger span { text-decoration: line-through; }
-  .cue-neutral { border: 3px solid #FFFFFF; }
-  .cue-neutral .cue-icon { color: #FFFFFF; }
+  .cue-icon { width:52px; height:52px; }
+  .cue.good .cue-icon { color:var(--hot); }
+  .cue.danger .cue-icon { color:#FF6B5A; }
+  .cue.danger span { text-decoration:line-through; }
+  .cue.neutral .cue-icon { color:#fff; }
 
-  .caption-container {
-    position: absolute; top: 1540px; left: 60px; right: 60px;
-    height: 240px; z-index: 30;
-  }
-  /* pages stack in the same box; one is visible at a time */
-  .caption-page {
-    position: absolute; inset: 0; opacity: 0;
-    display: flex; flex-wrap: wrap;
-    justify-content: center; align-content: flex-start;
-    gap: 10px 20px;
-  }
-  .caption-word {
-    display: inline-block;
-    font-family: "Arial Black", -apple-system, sans-serif;
-    font-size: 82px; font-weight: 900; letter-spacing: -2px;
-    text-transform: uppercase; color: #FFFFFF; opacity: 0.25;
-    transform-origin: 50% 50%;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.7);
-  }
+  /* paper grain over everything */
+  .grain { position:absolute; inset:0; pointer-events:none; mix-blend-mode:multiply; opacity:0.30; }
 </style>
 </head>
 <body>
 
 <div data-composition-id="reel-main" data-width="1080" data-height="1920" data-fps="${FPS}" data-duration="${duration}">
-  <div class="glow-left"></div>
-  <div class="glow-right"></div>
 
-  <!-- id is required: the renderer discovers media by id, and without it the
-       render is silent (hyperframes lint: media_missing_id). -->
   <audio id="vo" src="assets/vo.mp3" data-start="0" data-has-audio="true" data-volume="1"></audio>
 
-  <div class="card-panel">
+  <div class="cap-box">
+      ${captionHtml}
+  </div>
+
 ${beatHtml}
-  </div>
 
-  <div class="bot-wrapper">
-    <div class="bot-head" id="botHead">
-      <img src="assets/bot_large.png" alt="">
-    </div>
-  </div>
-
-  <div class="cue-rail">
+  <div class="cue-strip">
       ${cueHtml}
   </div>
 
-  <div class="caption-container">
-      ${captionHtml}
-  </div>
+  <svg class="grain">
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="100%" height="100%" filter="url(#g)" opacity="0.5"/>
+  </svg>
 </div>
 
 <script src="assets/gsap.min.js"></script>
@@ -503,16 +444,11 @@ ${beatHtml}
   window.__timelines = window.__timelines || {};
   const tl = gsap.timeline({ paused: true });
 
-  // Typewriter: GSAP tweens a counter, we write the substring each update.
-  function typeUrl(tl, sel, text, at, dur) {
+  function typeText(tl, sel, text, at, dur) {
     const el = document.querySelector(sel);
-    const state = { n: 0 };
-    tl.to(state, {
-      duration: dur,
-      n: text.length,
-      ease: "none",
-      onUpdate: () => { el.textContent = text.slice(0, Math.round(state.n)); }
-    }, at);
+    const s = { n: 0 };
+    tl.to(s, { duration: dur, n: text.length, ease: "none",
+      onUpdate: () => { el.textContent = text.slice(0, Math.round(s.n)); } }, at);
   }
 
 ${tl.join("\n")}
@@ -523,19 +459,18 @@ ${tl.join("\n")}
 </html>
 `;
 
-const htmlPath = path.join(COMP_DIR, "index.html");
-fs.writeFileSync(htmlPath, html);
-console.log(`    ${htmlPath}`);
-console.log(`    ${beats.length} beats, ${words.length} caption words, ${cues.length} cues`);
+fs.writeFileSync(path.join(COMP_DIR, "index.html"), html);
+console.log(`    ${beats.length} beats, ${pageMeta.length} caption pages, ${cues.length} cues`);
 
-// ---------------------------------------------------------------- 7. check
-step(7, "Check");
+// ---------------------------------------------------------------- 6. check
+step(6, "Check");
 const check = run(NPX, ["hyperframes", "check", COMP_DIR], { shell: true });
-const checkOut = `${check.stdout || ""}${check.stderr || ""}`;
-for (const line of checkOut.split("\n")) {
-  if (/^(Lint|Runtime|Layout|Motion|Contrast|Craft|Audio)/.test(line.trim()) ||
-      /◇|✗|error|warning|audio_none/i.test(line)) {
-    if (line.trim() && !line.includes("[hyperframes] check:")) console.log(`    ${line.trim()}`);
+const out = `${check.stdout || ""}${check.stderr || ""}`;
+for (const line of out.split("\n")) {
+  const t = line.trim();
+  if (!t || t.includes("[hyperframes] check:")) continue;
+  if (/^(Lint|Runtime|Layout|Motion|Contrast|Craft|Audio|Snapshots)$/.test(t) || /◇|✗|⚠|error\(s\)/.test(t)) {
+    console.log(`    ${t}`);
   }
 }
 if (check.status !== 0) fail("hyperframes check failed");
@@ -545,13 +480,12 @@ if (noRender) {
   process.exit(0);
 }
 
-// ---------------------------------------------------------------- 8. render
-step(8, "Render");
+// ---------------------------------------------------------------- 7. render
+step(7, "Render");
 const outPath = path.join(OUT_DIR, `${spec.id}.mp4`);
 const render = run(NPX, ["hyperframes", "render", COMP_DIR, "-o", outPath], {
   stdio: "inherit",
   shell: true,
 });
 if (render.status !== 0 || !fs.existsSync(outPath)) fail("hyperframes render failed");
-
 console.log(`\nDONE  ${outPath}`);

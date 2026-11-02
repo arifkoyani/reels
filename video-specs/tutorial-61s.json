@@ -12,40 +12,60 @@
       "stamp": "NOBODY SHOWS {YOU HOW}",
       "widget": "board",
       "note": "AI?",
-      "annotate": "circle",
       "pins": [
         {
-          "label": "Reels",
+          "label": "reel 01",
           "rot": -3,
           "reel": {
-            "file": "reel.mp4",
-            "offset": 0
+            "file": "reel-1.mp4",
+            "offset": 2.2,
+            "still": "reel-still-1"
           }
         },
         {
-          "image": "claude-spark-logo",
-          "label": "Claude Code",
-          "rot": 2
+          "label": "reel 02",
+          "rot": 2,
+          "reel": {
+            "file": "reel-2.mp4",
+            "offset": 9.5,
+            "still": "reel-still-2"
+          }
         },
         {
-          "image": "25872a9f-bb3c-4aa0-8d12-62cba89ac9eb-cover",
-          "label": "Your desktop",
-          "rot": -2
+          "label": "reel 03",
+          "rot": -2,
+          "reel": {
+            "file": "reel-3.mp4",
+            "offset": 17,
+            "still": "reel-still-3"
+          }
         },
         {
-          "image": "local-chat-new-chat",
-          "label": "One chat",
-          "rot": 3
+          "label": "reel 04",
+          "rot": 3,
+          "reel": {
+            "file": "reel-4.mp4",
+            "offset": 24.5,
+            "still": "reel-still-4"
+          }
         },
         {
-          "image": "folder-ai-video-editor",
-          "label": "One folder",
-          "rot": -2
+          "label": "reel 05",
+          "rot": -2,
+          "reel": {
+            "file": "reel-1.mp4",
+            "offset": 33,
+            "still": "reel-still-5"
+          }
         },
         {
-          "image": "setup-check-my-setup",
-          "label": "The docs",
-          "rot": 2
+          "label": "reel 06",
+          "rot": 2,
+          "reel": {
+            "file": "reel-2.mp4",
+            "offset": 42,
+            "still": "reel-still-6"
+          }
         }
       ]
     },
@@ -116,8 +136,7 @@
       "widget": "path",
       "image": "folder-ai-video-editor",
       "path": "~/AI Video Editor",
-      "sub": "Skill files and every finished reel live here.",
-      "annotate": "circle"
+      "sub": "Skill files and every finished reel live here."
     },
     {
       "fromSeconds": 20.2,
@@ -157,8 +176,7 @@
         },
         {
           "label": "Render",
-          "note": "video output",
-          "image": "setup-check-my-setup"
+          "note": "video output"
         }
       ],
       "sub": "It installs what's missing and walks you through every click."
@@ -224,7 +242,7 @@
           "note": "like a real editor"
         },
         {
-          "image": "done",
+          "image": "claude-spark-logo",
           "title": "It fixes it",
           "note": "no re-prompting"
         }
@@ -270,8 +288,9 @@
       "statLabel": "files behind every reel",
       "sub": "and I'll send the whole system to you.",
       "reel": {
-        "file": "reel.mp4",
-        "offset": 8
+        "file": "reel-3.mp4",
+        "offset": 8,
+        "still": "reel-still-5"
       }
     }
   ]

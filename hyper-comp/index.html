@@ -50,9 +50,9 @@
   /* the number comes from public/images/numbering icons, not a filled square */
   .step {
     width:104px; height:104px; display:flex; align-items:center; justify-content:center;
-    font-family:"League Gothic","Archivo Black",sans-serif; font-size:72px; color:var(--hot);
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:76px; color:var(--hot);
+    border:5px solid var(--hot); border-radius:22px; padding-top:8px;
   }
-  .step-img { width:104px; height:104px; object-fit:contain; }
   .lead { font-size:62px; font-weight:800; line-height:1.14; letter-spacing:-1px; }
   .sub { font-size:36px; color:#5A6678; font-weight:600; line-height:1.3; }
 
@@ -62,7 +62,12 @@
     display:flex; align-items:center; justify-content:center;
   }
   .fig img { display:block; width:100%; height:100%; object-fit:contain; }
-  .mark { position:absolute; right:-18px; bottom:-18px; width:72px; height:72px; }
+  .mark { position:absolute; right:-18px; bottom:-18px; width:76px; height:76px; }
+  .mark.done {
+    background:#fff; border:5px solid var(--hot); border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mark-icon { width:50px; height:50px; color:var(--hot); stroke-width:3.4; }
   .mark-img { width:100%; height:100%; object-fit:contain; }
 
   .list { display:flex; flex-direction:column; gap:18px; width:100%; }
@@ -72,7 +77,7 @@
     font-size:44px; font-weight:800;
   }
   .row-icon { width:84px; height:84px; color:var(--hot); flex:0 0 auto; }
-  .row-fig { width:92px; height:92px; }
+  .row-fig { width:116px; height:116px; }
   .row-num { width:68px; height:68px; margin-left:auto; object-fit:contain; }
 
   .cards { display:flex; gap:26px; width:100%; }
@@ -84,10 +89,10 @@
   .card-icon { width:112px; height:112px; color:var(--hot); }
   .card.bad .card-icon { color:#C0392B; }
   .card-fig {
-    width:100%; height:230px; background:#fff; border:2px solid var(--line);
+    width:100%; height:270px; background:#fff; border:2px solid var(--line);
     border-radius:16px; overflow:hidden;
   }
-  .card-fig img { object-fit:cover; }
+  .card-fig img { object-fit:contain; }
   .card-t { font-size:46px; font-weight:800; line-height:1.1; }
 
   .path {
@@ -95,13 +100,15 @@
     background:var(--card); border:3px solid var(--line); border-radius:22px; padding:26px 32px;
   }
   .path-icon { width:88px; height:88px; color:var(--hot); }
-  .path-img { width:120px; height:120px; object-fit:contain; flex:0 0 auto; }
+  .path-img { width:148px; height:148px; object-fit:contain; flex:0 0 auto; }
 
   .checks { display:flex; flex-direction:column; gap:18px; width:100%; }
   .check { display:flex; align-items:center; gap:24px; }
-  .box { width:76px; height:76px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
-  .box-img { width:76px; height:76px; object-fit:contain; }
-  .check-icon { width:60px; height:60px; color:var(--hot); }
+  .box {
+    width:76px; height:76px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+    border:5px solid var(--hot); border-radius:18px;
+  }
+  .check-icon { width:52px; height:52px; color:var(--hot); stroke-width:3.4; }
   .check-thumb {
     width:120px; height:84px; border:2px solid var(--line); border-radius:12px;
     overflow:hidden; background:#fff; flex:0 0 auto;
@@ -147,7 +154,8 @@
     aspect-ratio:3/4; background:#F2F0EB; border-radius:2px; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
   }
-  .shot-slot img, .slot-vid { width:100%; height:100%; object-fit:cover; display:block; }
+  .shot-slot img { width:100%; height:100%; object-fit:contain; display:block; background:#fff; }
+  .slot-vid { width:100%; height:100%; object-fit:cover; display:block; }
   .slot-icon { width:104px; height:104px; color:var(--hot); }
   .polaroid-cap {
     position:absolute; bottom:12px; left:0; right:0; text-align:center;
@@ -206,6 +214,30 @@
   .cue.neutral { border-color:#2E3440; }
   .cue.neutral .cue-icon { color:#2E3440; }
 
+  /* ---- the 2-second change kit ---------------------------------------- */
+  /* the graphics ride on one transformable stage, so a punch-in, a cut or a
+     shake is one tween rather than a move per element */
+  .stage { position:absolute; inset:0; transform-origin:50% 58%; }
+  .fx-layer { position:absolute; inset:0; pointer-events:none; z-index:60; }
+
+  .flood { position:absolute; inset:0; opacity:0; }
+  .flood.hot { background:var(--hot); mix-blend-mode:multiply; }
+  .flood.ink { background:#10141C; mix-blend-mode:multiply; }
+  .flood.half { background:linear-gradient(to bottom, var(--hot) 50%, transparent 50%); mix-blend-mode:multiply; }
+  .flash { position:absolute; inset:0; opacity:0; background:#FFFFFF; }
+
+  /* props tied to a word: a verdict, a live counter, a pointing cursor */
+  .prop { position:absolute; opacity:0; z-index:62; }
+  .prop.left { left:96px; } .prop.right { right:96px; }
+  .prop.verdict, .prop.counter {
+    top:1360px; background:#FFFFFF; border:6px solid var(--hot); color:var(--hot);
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:76px; line-height:1;
+    padding:16px 30px 10px; border-radius:14px; transform:rotate(-7deg);
+    box-shadow:0 12px 28px rgba(16,20,28,0.16);
+  }
+  .prop.counter { font-size:92px; border-color:#10141C; color:#10141C; transform:rotate(3deg); }
+  .prop.hand { top:1330px; width:120px; height:120px; }
+  .prop-icon { width:120px; height:120px; color:var(--hot); }
   /* paper grain over everything */
   .grain { display:none; }
 </style>
@@ -218,73 +250,85 @@
   <audio id="fx0" src="assets/sfx/whoosh.mp3" data-start="0" data-has-audio="true" data-volume="0.3"></audio>
   <audio id="fx1" src="assets/sfx/stamp.mp3" data-start="0.1" data-has-audio="true" data-volume="0.4"></audio>
   <audio id="fx2" src="assets/sfx/paper-pin.mp3" data-start="0.05" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx3" src="assets/sfx/paper-pin.mp3" data-start="2.12" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx4" src="assets/sfx/paper-pin.mp3" data-start="2.3" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx3" src="assets/sfx/paper-pin.mp3" data-start="1.74" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx4" src="assets/sfx/paper-pin.mp3" data-start="2.12" data-has-audio="true" data-volume="0.32"></audio>
   <audio id="fx5" src="assets/sfx/paper-pin.mp3" data-start="2.76" data-has-audio="true" data-volume="0.32"></audio>
   <audio id="fx6" src="assets/sfx/paper-pin.mp3" data-start="3.22" data-has-audio="true" data-volume="0.32"></audio>
   <audio id="fx7" src="assets/sfx/paper-pin.mp3" data-start="3.4" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx8" src="assets/sfx/swipe.mp3" data-start="0.55" data-has-audio="true" data-volume="0.28"></audio>
-  <audio id="fx9" src="assets/sfx/swipe.mp3" data-start="0.3" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx10" src="assets/sfx/whoosh.mp3" data-start="4.9" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx11" src="assets/sfx/stamp.mp3" data-start="5" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx12" src="assets/sfx/pop.mp3" data-start="5.56" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx13" src="assets/sfx/pop.mp3" data-start="6.52" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx14" src="assets/sfx/pop.mp3" data-start="7.24" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx15" src="assets/sfx/pop.mp3" data-start="7.44" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx16" src="assets/sfx/pop.mp3" data-start="7.6" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx17" src="assets/sfx/whoosh.mp3" data-start="9.1" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx18" src="assets/sfx/stamp.mp3" data-start="9.2" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx19" src="assets/sfx/pop.mp3" data-start="11.52" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx20" src="assets/sfx/pop.mp3" data-start="12.18" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx21" src="assets/sfx/pop.mp3" data-start="9.36" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx22" src="assets/sfx/whoosh.mp3" data-start="13.7" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx23" src="assets/sfx/stamp.mp3" data-start="13.8" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx24" src="assets/sfx/pop.mp3" data-start="13.96" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx25" src="assets/sfx/swipe.mp3" data-start="14.25" data-has-audio="true" data-volume="0.28"></audio>
-  <audio id="fx26" src="assets/sfx/whoosh.mp3" data-start="20.2" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx27" src="assets/sfx/stamp.mp3" data-start="20.3" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx28" src="assets/sfx/pop.mp3" data-start="20.86" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx29" src="assets/sfx/pop.mp3" data-start="21.04" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx30" src="assets/sfx/pop.mp3" data-start="20.46" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx31" src="assets/sfx/whoosh.mp3" data-start="26.3" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx32" src="assets/sfx/stamp.mp3" data-start="26.4" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx33" src="assets/sfx/pop.mp3" data-start="26.7" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx34" src="assets/sfx/pop.mp3" data-start="28" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx35" src="assets/sfx/pop.mp3" data-start="28.5" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx36" src="assets/sfx/pop.mp3" data-start="26.56" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx37" src="assets/sfx/whoosh.mp3" data-start="33.9" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx38" src="assets/sfx/stamp.mp3" data-start="34" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx39" src="assets/sfx/pop.mp3" data-start="34.16" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx40" src="assets/sfx/whoosh.mp3" data-start="37.4" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx41" src="assets/sfx/stamp.mp3" data-start="37.5" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx42" src="assets/sfx/type.mp3" data-start="37.75" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx43" src="assets/sfx/type.mp3" data-start="38.15" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx44" src="assets/sfx/type.mp3" data-start="38.55" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx45" src="assets/sfx/type.mp3" data-start="38.95" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx46" src="assets/sfx/type.mp3" data-start="39.35" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx47" src="assets/sfx/type.mp3" data-start="39.75" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx48" src="assets/sfx/whoosh.mp3" data-start="41" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx49" src="assets/sfx/stamp.mp3" data-start="41.1" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx50" src="assets/sfx/pop.mp3" data-start="41.52" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx51" src="assets/sfx/pop.mp3" data-start="42.08" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx52" src="assets/sfx/pop.mp3" data-start="43.26" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx53" src="assets/sfx/pop.mp3" data-start="44.54" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx54" src="assets/sfx/pop.mp3" data-start="46.32" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx55" src="assets/sfx/whoosh.mp3" data-start="48.4" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx56" src="assets/sfx/stamp.mp3" data-start="48.5" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx57" src="assets/sfx/pop.mp3" data-start="49.04" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx58" src="assets/sfx/pop.mp3" data-start="50.8" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx59" src="assets/sfx/pop.mp3" data-start="48.66" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx60" src="assets/sfx/whoosh.mp3" data-start="52.3" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx61" src="assets/sfx/stamp.mp3" data-start="52.4" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx62" src="assets/sfx/pop.mp3" data-start="52.54" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx63" src="assets/sfx/pop.mp3" data-start="52.55" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx64" src="assets/sfx/pop.mp3" data-start="52.55" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx65" src="assets/sfx/pop.mp3" data-start="52.7" data-has-audio="true" data-volume="0.32"></audio>
-  <audio id="fx66" src="assets/sfx/whoosh.mp3" data-start="54.2" data-has-audio="true" data-volume="0.3"></audio>
-  <audio id="fx67" src="assets/sfx/stamp.mp3" data-start="54.3" data-has-audio="true" data-volume="0.4"></audio>
-  <audio id="fx68" src="assets/sfx/ding.mp3" data-start="54.65" data-has-audio="true" data-volume="0.5"></audio>
-  <audio id="fx69" src="assets/sfx/swipe.mp3" data-start="54.5" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx8" src="assets/sfx/swipe.mp3" data-start="0.3" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx9" src="assets/sfx/whoosh.mp3" data-start="4.9" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx10" src="assets/sfx/stamp.mp3" data-start="5" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx11" src="assets/sfx/pop.mp3" data-start="5.56" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx12" src="assets/sfx/pop.mp3" data-start="6.52" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx13" src="assets/sfx/pop.mp3" data-start="7.24" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx14" src="assets/sfx/pop.mp3" data-start="7.44" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx15" src="assets/sfx/pop.mp3" data-start="7.6" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx16" src="assets/sfx/whoosh.mp3" data-start="9.1" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx17" src="assets/sfx/stamp.mp3" data-start="9.2" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx18" src="assets/sfx/pop.mp3" data-start="11.52" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx19" src="assets/sfx/pop.mp3" data-start="12.18" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx20" src="assets/sfx/pop.mp3" data-start="9.36" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx21" src="assets/sfx/whoosh.mp3" data-start="13.7" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx22" src="assets/sfx/stamp.mp3" data-start="13.8" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx23" src="assets/sfx/pop.mp3" data-start="13.96" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx24" src="assets/sfx/whoosh.mp3" data-start="20.2" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx25" src="assets/sfx/stamp.mp3" data-start="20.3" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx26" src="assets/sfx/pop.mp3" data-start="20.86" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx27" src="assets/sfx/pop.mp3" data-start="21.04" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx28" src="assets/sfx/pop.mp3" data-start="20.46" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx29" src="assets/sfx/whoosh.mp3" data-start="26.3" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx30" src="assets/sfx/stamp.mp3" data-start="26.4" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx31" src="assets/sfx/pop.mp3" data-start="26.7" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx32" src="assets/sfx/pop.mp3" data-start="28" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx33" src="assets/sfx/pop.mp3" data-start="28.5" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx34" src="assets/sfx/pop.mp3" data-start="26.56" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx35" src="assets/sfx/whoosh.mp3" data-start="33.9" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx36" src="assets/sfx/stamp.mp3" data-start="34" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx37" src="assets/sfx/pop.mp3" data-start="34.16" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx38" src="assets/sfx/whoosh.mp3" data-start="37.4" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx39" src="assets/sfx/stamp.mp3" data-start="37.5" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx40" src="assets/sfx/type.mp3" data-start="37.75" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx41" src="assets/sfx/type.mp3" data-start="38.15" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx42" src="assets/sfx/type.mp3" data-start="38.55" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx43" src="assets/sfx/type.mp3" data-start="38.95" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx44" src="assets/sfx/type.mp3" data-start="39.35" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx45" src="assets/sfx/type.mp3" data-start="39.75" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx46" src="assets/sfx/whoosh.mp3" data-start="41" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx47" src="assets/sfx/stamp.mp3" data-start="41.1" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx48" src="assets/sfx/pop.mp3" data-start="41.52" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx49" src="assets/sfx/pop.mp3" data-start="42.08" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx50" src="assets/sfx/pop.mp3" data-start="43.26" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx51" src="assets/sfx/pop.mp3" data-start="44.54" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx52" src="assets/sfx/pop.mp3" data-start="46.32" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx53" src="assets/sfx/whoosh.mp3" data-start="48.4" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx54" src="assets/sfx/stamp.mp3" data-start="48.5" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx55" src="assets/sfx/pop.mp3" data-start="49.04" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx56" src="assets/sfx/pop.mp3" data-start="50.8" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx57" src="assets/sfx/pop.mp3" data-start="48.66" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx58" src="assets/sfx/whoosh.mp3" data-start="52.3" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx59" src="assets/sfx/stamp.mp3" data-start="52.4" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx60" src="assets/sfx/pop.mp3" data-start="52.54" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx61" src="assets/sfx/pop.mp3" data-start="52.55" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx62" src="assets/sfx/pop.mp3" data-start="52.55" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx63" src="assets/sfx/pop.mp3" data-start="52.7" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx64" src="assets/sfx/whoosh.mp3" data-start="54.2" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx65" src="assets/sfx/stamp.mp3" data-start="54.3" data-has-audio="true" data-volume="0.4"></audio>
+  <audio id="fx66" src="assets/sfx/ding.mp3" data-start="54.65" data-has-audio="true" data-volume="0.5"></audio>
+  <audio id="fx67" src="assets/sfx/swipe.mp3" data-start="54.5" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx68" src="assets/sfx/pop.mp3" data-start="10.9" data-has-audio="true" data-volume="0.26"></audio>
+  <audio id="fx69" src="assets/sfx/whoosh.mp3" data-start="15.62" data-has-audio="true" data-volume="0.22"></audio>
+  <audio id="fx70" src="assets/sfx/ui-click.mp3" data-start="17.26" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx71" src="assets/sfx/ding.mp3" data-start="18.76" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx72" src="assets/sfx/stamp.mp3" data-start="23" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx73" src="assets/sfx/pop.mp3" data-start="24.66" data-has-audio="true" data-volume="0.26"></audio>
+  <audio id="fx74" src="assets/sfx/whoosh.mp3" data-start="30.08" data-has-audio="true" data-volume="0.22"></audio>
+  <audio id="fx75" src="assets/sfx/type.mp3" data-start="30.9" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx76" src="assets/sfx/swipe.mp3" data-start="32.12" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx77" src="assets/sfx/pop.mp3" data-start="35.78" data-has-audio="true" data-volume="0.32"></audio>
+  <audio id="fx78" src="assets/sfx/ding.mp3" data-start="47.4" data-has-audio="true" data-volume="0.3"></audio>
+  <audio id="fx79" src="assets/sfx/stamp.mp3" data-start="56.44" data-has-audio="true" data-volume="0.26"></audio>
+  <audio id="fx80" src="assets/sfx/whoosh.mp3" data-start="58.16" data-has-audio="true" data-volume="0.22"></audio>
+  <audio id="fx81" src="assets/sfx/ui-click.mp3" data-start="59.74" data-has-audio="true" data-volume="0.3"></audio>
 
 
 
@@ -345,15 +389,16 @@
       <div class="cap-page" id="cp53"><span class="cap " id="w205">send</span><span class="cap " id="w206">it</span><span class="cap " id="w207">to</span><span class="cap " id="w208">you.</span></div>
   </div>
 
+  <div class="stage" id="stage">
     <div class="beat" id="b0">
       <div class="kicker mono">// 01 · the hook</div>
       <div class="stamp-row">
         <div class="stamp">NOBODY SHOWS <span class="hot">YOU HOW</span></div>
         
       </div>
-      <div class="board"><div class="polaroid" style="--rot:-3deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-0" class="slot-vid" src="assets/reels/reel.mp4" muted data-has-audio="false" data-start="0.00" preload="auto"></video></div><div class="polaroid-cap">Reels</div></div><div class="polaroid" style="--rot:2deg"><div class="tape"></div><div class="shot-slot"><img src="assets/img/claude-spark-logo.png" alt=""></div><div class="polaroid-cap">Claude Code</div></div><div class="polaroid" style="--rot:-2deg"><div class="tape"></div><div class="shot-slot"><img src="assets/img/25872a9f-bb3c-4aa0-8d12-62cba89ac9eb-cover.png" alt=""></div><div class="polaroid-cap">Your desktop</div></div><div class="polaroid" style="--rot:3deg"><div class="tape"></div><div class="shot-slot"><img src="assets/img/local-chat-new-chat.png" alt=""></div><div class="polaroid-cap">One chat</div></div><div class="polaroid" style="--rot:-2deg"><div class="tape"></div><div class="shot-slot"><img src="assets/img/folder-ai-video-editor.jpg" alt=""></div><div class="polaroid-cap">One folder</div></div><div class="polaroid" style="--rot:2deg"><div class="tape"></div><div class="shot-slot"><img src="assets/img/setup-check-my-setup.png" alt=""></div><div class="polaroid-cap">The docs</div></div><div class="sticky">AI?</div></div>
+      <div class="board"><div class="polaroid" style="--rot:-3deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-0" class="slot-vid" poster="assets/img/reel-still-1.png" src="assets/reels/reel-1.mp4" muted data-has-audio="false" data-start="0.00" data-playback-start="2.20" preload="auto"></video></div><div class="polaroid-cap">reel 01</div></div><div class="polaroid" style="--rot:2deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-1" class="slot-vid" poster="assets/img/reel-still-2.png" src="assets/reels/reel-2.mp4" muted data-has-audio="false" data-start="0.00" data-playback-start="9.50" preload="auto"></video></div><div class="polaroid-cap">reel 02</div></div><div class="polaroid" style="--rot:-2deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-2" class="slot-vid" poster="assets/img/reel-still-3.png" src="assets/reels/reel-3.mp4" muted data-has-audio="false" data-start="0.00" data-playback-start="17.00" preload="auto"></video></div><div class="polaroid-cap">reel 03</div></div><div class="polaroid" style="--rot:3deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-3" class="slot-vid" poster="assets/img/reel-still-4.png" src="assets/reels/reel-4.mp4" muted data-has-audio="false" data-start="0.00" data-playback-start="24.50" preload="auto"></video></div><div class="polaroid-cap">reel 04</div></div><div class="polaroid" style="--rot:-2deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-4" class="slot-vid" poster="assets/img/reel-still-5.png" src="assets/reels/reel-1.mp4" muted data-has-audio="false" data-start="0.00" data-playback-start="33.00" preload="auto"></video></div><div class="polaroid-cap">reel 05</div></div><div class="polaroid" style="--rot:2deg"><div class="tape"></div><div class="shot-slot"><video id="pv0-5" class="slot-vid" poster="assets/img/reel-still-6.png" src="assets/reels/reel-2.mp4" muted data-has-audio="false" data-start="0.00" data-playback-start="42.00" preload="auto"></video></div><div class="polaroid-cap">reel 06</div></div><div class="sticky">AI?</div></div>
       
-      <svg class="sketch" viewBox="0 0 840 1120" preserveAspectRatio="none"><path id="sk0" d="M219.90277263915738 484.78439190193285 C236.9698369443965 471.32257311923854 266.9195836447555 467.74709845471966 290.382894472397 460.74962945171535 C313.84620530003855 453.75216044871104 336.5345379981205 446.09327209463385 360.6826376050065 442.799577883907 C384.8307372118925 439.5058836731801 409.88514178520273 440.0976976950498 435.27149211371284 440.9874641873541 C460.65784244222294 441.87723067965834 488.40424885160627 443.22130158130506 513.0007395760671 448.13817683773243 C537.5972303005279 453.0550520941598 560.5213932115066 461.56979909130655 582.8504364604778 470.48871572591815 C605.179479709449 479.40763236052976 627.5098778373068 489.9496218623138 646.9749990698944 501.6516766454019 C666.4401203024819 513.3537314284899 683.82825867537 525.7465582330364 699.6411638560031 540.7010444244468 C715.4540690366363 555.6555306158572 730.3501769349186 574.425718460547 741.8524301536934 591.3785937938642 C753.3546833724681 608.3314691271813 762.3770019335699 624.2505044547764 768.6546831686517 642.4182964243498 C774.9323644037335 660.5860883939232 777.928498044128 681.2174331447401 779.5185175641843 700.3853456113047 C781.1085370842407 719.5532580778694 781.8076897394905 738.202969710876 778.1948002889897 757.4257712237378 C774.5819108384889 776.6485727365996 767.2372263994406 797.3180020290819 757.8411808611797 815.7221546884757 C748.4451353229189 834.1263073478696 735.2657941402682 851.6652537144302 721.8185270594245 867.8506871801007 C708.3712599785807 884.0361206457713 694.5444310169939 899.2948047216303 677.157578376117 912.8347554824992 C659.7707257352401 926.3747062433681 638.6739173150046 938.9529711681587 617.4974112141634 949.0903917453139 C596.3209051133223 959.2278123224692 573.2256768053023 967.2200862798111 550.0985417710701 973.6592789454303 C526.9714067368379 980.0984716110495 503.5397825355649 984.7332094326426 478.73460100877037 987.7255477390288 C453.92941948197586 990.717886045415 426.0046613708677 991.8904489797696 401.2674526103031 991.6133087837472 C376.5302438497385 991.3361685877248 354.3238913503722 990.834388117339 330.31134844538275 986.0627065628942 C306.2988055403933 981.2910250084493 279.9760500321685 972.0130163414284 257.1921951803664 962.9832194570781 C234.40834032856432 953.9534225727278 213.17387570361902 943.4175521612624 193.6082193345702 931.8839252567926 C174.0425629655214 920.3502983523229 155.22903336562644 908.6975526971162 139.7982569660735 893.7814580302592 C124.36748056652057 878.8653633634021 112.22853244373377 859.9546984634009 101.02356093725263 842.3873572556502 C89.81858943077148 824.8200160478995 79.32833394258958 806.9175736341706 72.56842792718663 788.377410783755 C65.80852191178369 769.8372479333393 62.168933499155294 750.1005926768939 60.46412484483494 731.1463801531565 C58.75931619051459 712.1921676294191 58.41674633779876 693.1509171201174 62.339576001264504 674.6521356413303 C66.26240566473025 656.1533541625433 75.03399246350266 637.6877311094277 84.0011028256294 620.1536912804343 C92.96821318775615 602.6196514514409 102.87853483224258 585.8385783637366 116.14223817402495 569.4478966673703 C129.4059415158073 553.057214971004 141.96548026330993 537.6121551417864 163.58332287632362 521.8096011022365 C185.2011654893373 506.0070470626865 227.23856874978534 483.33478202976636 245.8492938521072 474.63257243007075 C264.4600189544291 465.93036283037515 272.4390784253821 465.6034509916999 275.2476734902548 469.5963435040627 M176.5060450937898 513.0796984640031 C189.8032050704976 496.98650792686334 214.23555071491336 488.0647444477752 236.01358551734327 478.89832427657893 C257.7916203197732 469.7319041053827 283.5566018051639 464.14638950643825 307.1742539083692 458.0811774368254 C330.79190601157455 452.0159653672125 353.6418112800506 445.5857286909881 377.71949813657534 442.50705185890155 C401.7971849931001 439.428375026815 426.92720548560465 437.309356867632 451.64037504751775 439.6091164443059 C476.35354460943086 441.90887602097985 501.9234891816587 450.6565553352582 525.9985155080541 456.3056093189452 C550.0735418344495 461.9546633026322 574.1803559051957 464.2252503434685 596.0905330058902 473.50344034642774 C618.0007101065846 482.781630349387 638.3000226372122 499.1910787119183 657.4595781122208 511.97474933670094 C676.6191335872294 524.7584199614836 696.2437292771463 535.0489321581639 711.0478658559418 550.2054640951237 C725.8520024347374 565.3619960320835 736.2252509005918 584.9753695137733 746.284397584994 602.9139409584599 C756.3435442693963 620.8525124031464 765.1360383797074 638.9093739816185 771.4027459623553 657.8368927632432 C777.6694535450032 676.7644115448679 783.1974058744388 697.9981308209285 783.8846430808812 716.4790536482084 C784.5718802873237 734.9599764754882 780.636186864556 750.2538443819204 775.5261692010099 768.7224297269227 C770.4161515374639 787.1910150719249 763.7314399445895 809.2171309392699 753.2245370996047 827.2905657182216 C742.71763425462 845.3640004971734 727.2810508680279 861.272236379725 712.4847521311016 877.163038400633 C697.6884533941752 893.053840421541 682.6883930054985 909.5592480442804 664.4467446780465 922.6353778436701 C646.2050963505944 935.7115076430598 625.120516972639 946.478601395201 603.0348621663896 955.6198171969716 C580.9492073601402 964.761032998742 555.240584495274 971.3335189313093 531.9328158405502 977.4826726542931 C508.6250471858265 983.6318263772769 487.2683872299219 990.1065461936122 463.1882502380469 992.514739534874 C439.1081132461719 994.9229328761359 412.9237490502783 994.2170447368007 387.4519938893003 991.9318327018643 C361.9802387283223 989.6466206669279 334.65835838498685 984.4073342141351 310.3577192721792 978.8034673252557 C286.0570801593716 973.1996004363764 263.18208285429137 967.306108859412 241.64815921245446 958.3086313685883 C220.11423557061755 949.3111538777646 199.24005960317186 937.2687468676246 181.15417742115775 924.8186023803131 C163.06829523914365 912.3684578930016 147.94682082691673 899.1451410671148 133.13286612036984 883.6077644447196 C118.31891141382295 868.0703878223244 102.68340651340868 849.0266617034629 92.27044918187642 831.5943426459423 C81.85749185034415 814.1620235884218 76.26284882271555 798.0247741821959 70.6551221311762 779.0138500995963 C65.04739543963684 760.0029260169968 59.66860959586845 737.2346363837328 58.624089032640256 717.528798150345 C57.57956846941206 697.8229599169572 59.5695493228238 679.3376566287549 64.387998751807 660.7788206992695 C69.2064481807902 642.2199847697842 77.06384634752756 623.5474758447352 87.53478560653946 606.1757825734329 C98.00572486555136 588.8040893021306 112.70301982371755 572.0041248783241 127.21363430587843 556.5486610714557 C141.72424878803932 541.0931972645874 166.13140541343463 519.8096289428304 174.59847249950474 513.442999732223 C183.06553958557484 507.0763705216157 173.2946782725843 515.1849487996025 178.016036822299 518.3488858078117"/></svg>
+      
     </div>
     <div class="beat" id="b1">
       <div class="kicker mono">// 02 · the roadmap</div>
@@ -369,9 +414,9 @@
       <div class="kicker mono">// 03 · step one</div>
       <div class="stamp-row">
         <div class="stamp">GET <span class="hot">CLAUDE CODE</span></div>
-        <div class="step"><img class="step-img" src="assets/img/number-1.png" alt=""></div>
+        <div class="step">1</div>
       </div>
-      <div class="cards"><div class="card bad"><div class="fig card-fig"><img src="assets/img/google-chrome.png" alt=""><span class="mark"><img class="mark-img" src="assets/img/cross.png" alt=""></span></div><div class="card-t">Not the browser</div><div class="mono">// won't work</div></div><div class="card "><div class="fig card-fig"><img src="assets/img/25872a9f-bb3c-4aa0-8d12-62cba89ac9eb-cover.png" alt=""><span class="mark"><img class="mark-img" src="assets/img/done.png" alt=""></span></div><div class="card-t">Desktop app</div><div class="mono">// download it</div></div></div>
+      <div class="cards"><div class="card bad"><div class="fig card-fig"><img src="assets/img/google-chrome.png" alt=""><span class="mark cross"><img class="mark-img" src="assets/img/cross.png" alt=""></span></div><div class="card-t">Not the browser</div><div class="mono">// won't work</div></div><div class="card "><div class="fig card-fig"><img src="assets/img/25872a9f-bb3c-4aa0-8d12-62cba89ac9eb-cover.png" alt=""><span class="mark done"><svg class="mark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></div><div class="card-t">Desktop app</div><div class="mono">// download it</div></div></div>
       
       
     </div>
@@ -379,17 +424,17 @@
       <div class="kicker mono">// 04 · step two</div>
       <div class="stamp-row">
         <div class="stamp">MAKE A <span class="hot">FOLDER</span></div>
-        <div class="step"><img class="step-img" src="assets/img/number-2.png" alt=""></div>
+        <div class="step">2</div>
       </div>
       <div class="path"><img class="path-img" src="assets/img/folder-ai-video-editor.jpg" alt=""><span class="mono-lg">~/AI Video Editor</span></div>
       <div class="sub">Skill files and every finished reel live here.</div>
-      <svg class="sketch" viewBox="0 0 840 1120" preserveAspectRatio="none"><path id="sk3" d="M377.6054217414269 426.4628937954868 C400.74603194482495 419.44577921703217 430.54276682730415 424.8136112272961 455.77497573226066 426.6829423248234 C481.00718463721716 428.55227342235065 505.50388686743645 431.977514091078 528.998675171166 437.67888038065047 C552.4934634748956 443.38024667022296 574.8648799412612 450.93544430799244 596.7437055546383 460.8911400622582 C618.6225311680154 470.846835816524 641.4327789511209 483.8730711117181 660.2716288514284 497.41305490624524 C679.110478751736 510.95303870077237 694.9370786671409 525.9188859454 709.7768049564834 542.1310428294212 C724.6165312458259 558.3431997134423 739.0591275654109 576.099016196351 749.3099865874833 594.6859962103723 C759.5608456095557 613.2729762243936 765.9431287298428 633.6114082142819 771.2819590889176 653.652922913549 C776.6207894479924 673.694437612816 781.084171700642 694.8158643042061 781.3429687419317 714.9350844059744 C781.6017657832215 735.0543045077427 777.7897210101805 754.435725490392 772.834741336656 774.3682435241584 C767.8797616631314 794.3007615579248 761.3121472171925 815.8664828716575 751.6130907007845 834.5301926085731 C741.9140341843764 853.1939023454887 729.5511518319854 869.986297575619 714.6404022382076 886.3505019456519 C699.7296526444297 902.7147063156848 681.0262533067889 918.7633259045631 662.1485931381178 932.7154188287706 C643.2709329694467 946.667511752978 622.8208097404854 959.6548858940794 601.3744412261811 970.0630594908971 C579.9280727118769 980.4712330877148 556.8002979291201 988.893858074992 533.4703820522924 995.1644604096768 C510.14046617546467 1001.4350627443617 486.10869351481784 1005.4582711557081 461.3949459652147 1007.6866734990066 C436.6811984156115 1009.9150758423051 410.4477540728113 1010.8207582417656 385.18789675467343 1008.5348744694679 C359.9280394365356 1006.2489906971703 333.94475419993427 1000.2754489634749 309.8358020563876 993.9713708652209 C285.7268499128409 987.667292766967 261.8147263708796 980.1408490416462 240.5341838933935 970.710405879944 C219.2536414159074 961.2799627182418 200.52350145283583 950.63830828557 182.15254719147103 937.3887118950079 C163.78159293010623 924.1391155044457 145.35780782020893 907.6467449200696 130.3084583252047 891.2128275365711 C115.25910883020046 874.7789101530726 102.30837951644047 857.0353318508014 91.85645022144558 838.7852075940166 C81.4045209264507 820.5350833372318 72.87145535214965 801.6768136460228 67.59688255523542 781.7120819958624 C62.32230975832119 761.747350345702 60.57324705666267 739.6449695436893 60.20901343996019 718.996817693054 C59.8447798232577 698.3486658424188 60.720950742138236 677.8004306875016 65.4114808550205 657.8231708920508 C70.10201096790276 637.8459110966 78.1827158693737 617.3695687716101 88.35219411725376 599.133258920349 C98.52167236513382 580.8969490690879 111.59772032259308 564.7214760863674 126.42835034230086 548.4053117844841 C141.25898036200863 532.0891474826008 158.6161844190976 514.8481403724555 177.33597423550043 501.2362731090489 C196.05576405190325 487.6244058456423 217.66784820453623 476.8527782622536 238.74708924071774 466.7341082040444 C259.8263302768992 456.6154381458352 273.6532129795875 447.265120984674 303.81142045258946 440.52425275979374 C333.9696279255914 433.78338453491347 393.00578273597296 427.5125164984117 419.6963340787295 426.2888988547629 C446.386885421486 425.06528121111415 463.4725008189585 428.3921577730857 463.9547285091286 433.18254689790103 M265.73050934075786 454.84819628334066 C285.3910647104205 442.525153214487 316.3446966917438 439.91001609916736 341.2031771083547 435.4577365415299 C366.06165752496554 431.0054569838925 390.0564642142399 429.46726962751177 414.8813918404229 428.134518937516 C439.7063194666059 426.8017682475203 466.09109213113584 424.3216001331997 490.15274286545275 427.4612324015553 C514.2143935997697 430.60086466991095 536.603125152596 438.08692783715503 559.2512962463245 446.97231254764984 C581.899467340053 455.85769725814464 605.1339954176738 469.3380004060971 626.0417694278235 480.77354066452403 C646.9495434379733 492.209080922951 667.3933570613784 501.0461815179262 684.6979403072228 515.5855540982116 C702.0025235530671 530.124926678497 717.2305547937773 550.43831953875 729.8692689028894 568.0097761462364 C742.5079830120015 585.5812327537228 752.5905079988656 602.3265332003648 760.5302249618958 621.01429374313 C768.4699419249259 639.7020542858952 774.0989729775115 660.0558369937185 777.5075706810702 680.1363394028276 C780.9161683846289 700.2168418119368 782.5730472328366 720.8657493126896 780.9818111832478 741.4973081977852 C779.390575133659 762.1288670828808 775.4538617379478 784.8614152692295 767.960154383537 803.925692713401 C760.4664470291261 822.9899701575724 748.4596226445526 838.7893602641186 736.0195670567831 855.8829728628141 C723.5795114690136 872.9765854615096 709.8084597627175 891.2627880113533 693.3198208569197 906.4873683055736 C676.831181951122 921.7119485997938 657.6618587309972 934.4813566237303 637.0877336219963 947.2304546281357 C616.5136085129955 959.9795526325411 592.1907394300622 974.1906077024329 569.8750702029147 982.9819563320054 C547.5594009757672 991.773304961578 527.617438683361 995.576675586785 503.1937182591112 999.9785464055709 C478.76999783486144 1004.3804172243568 448.58790838663595 1008.9425472479834 423.33274765741606 1009.3931812447208 C398.0775869281962 1009.8438152414583 375.72930488880934 1007.162949636001 351.66275388379194 1002.682350385996 C327.59620287877453 998.2017511359909 302.0487839191698 990.3158753717104 278.9334416273117 982.5095857446906 C255.8180993354536 974.7032961176709 233.2796997156175 967.1897786926895 212.97070013264334 955.8446126238778 C192.66170054966918 944.499446555066 173.63152045759597 929.4665368878349 157.0794441294667 914.4385893318205 C140.52736780133745 899.4106417758061 126.24960968699104 882.5813316203356 113.65824216386784 865.6769272877916 C101.06687464074464 848.7725229552476 90.5405922092604 831.4116132501923 81.53123899072756 813.0121633365566 C72.52188577219472 794.6127134229208 62.6683418504895 775.398225440754 59.60212285267079 755.2802278059769 C56.53590385485208 735.1622301711998 60.22472717200943 713.1025470149389 63.13392500381531 692.3041775278937 C66.04312283562119 671.5058080408485 70.27816920266686 649.9041191400927 77.05730984350606 630.4900108837054 C83.83645048434526 611.0759026273181 91.9518497302068 593.0936417572316 103.80876884885055 575.8195279895699 C115.66568796749429 558.5454142219082 131.78211282151636 541.7164255566565 148.19882455536856 526.8453282777351 C164.61553628922076 511.9742309988137 182.3062826524939 499.5213658923672 202.30903925196375 486.59294431604144 C222.3117958514336 473.66452273971566 257.2113499583962 454.3336570418122 268.2153641521877 449.27479881978053 C279.2193783459792 444.21594059774884 265.53821430116955 451.23423429002173 268.33312441471264 456.2397949838513"/></svg>
+      
     </div>
     <div class="beat" id="b4">
       <div class="kicker mono">// 05 · step three</div>
       <div class="stamp-row">
         <div class="stamp">NEW CHAT, <span class="hot">LOCAL</span></div>
-        <div class="step"><img class="step-img" src="assets/img/number-3.png" alt=""></div>
+        <div class="step">3</div>
       </div>
       <div class="cards"><div class="card "><div class="fig card-fig"><img src="assets/img/local-chat-new-chat.png" alt=""></div><div class="card-t">New chat</div><div class="mono">// choose Local</div></div><div class="card "><div class="fig card-fig"><img src="assets/img/desktop-app-claude-code.jpg" alt=""></div><div class="card-t">Select folder</div><div class="mono">// Claude owns the files</div></div></div>
       
@@ -399,9 +444,9 @@
       <div class="kicker mono">// 06 · step four</div>
       <div class="stamp-row">
         <div class="stamp">CHECK YOUR <span class="hot">SETUP</span></div>
-        <div class="step"><img class="step-img" src="assets/img/number-4.png" alt=""></div>
+        <div class="step">4</div>
       </div>
-      <div class="checks"><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div><div class="check-t">Animate</div><div class="mono">// motion engine</div></div></div><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div><div class="check-t">Voice</div><div class="mono">// text to speech</div></div></div><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div class="check-thumb"><img src="assets/img/setup-check-my-setup.png" alt=""></div><div><div class="check-t">Render</div><div class="mono">// video output</div></div></div></div>
+      <div class="checks"><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Animate</div><div class="mono">// motion engine</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Voice</div><div class="mono">// text to speech</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div class="check-t">Render</div><div class="mono">// video output</div></div></div></div>
       <div class="sub">It installs what's missing and walks you through every click.</div>
       
     </div>
@@ -409,7 +454,7 @@
       <div class="kicker mono">// 07 · the fun part</div>
       <div class="stamp-row">
         <div class="stamp">ONE <span class="hot">LINE</span></div>
-        <div class="step"><img class="step-img" src="assets/img/number-5.png" alt=""></div>
+        <div class="step">5</div>
       </div>
       <div class="lead">Type what the reel is about.</div>
       <div class="sub">That is the whole brief.</div>
@@ -439,9 +484,9 @@
       <div class="kicker mono">// 10 · step six</div>
       <div class="stamp-row">
         <div class="stamp">JUST <span class="hot">TELL IT</span></div>
-        <div class="step"><img class="step-img" src="assets/img/number-6.png" alt=""></div>
+        <div class="step">6</div>
       </div>
-      <div class="cards"><div class="card "><div class="fig card-fig"><img src="assets/img/feedback.png" alt=""></div><div class="card-t">Say what's off</div><div class="mono">// like a real editor</div></div><div class="card "><div class="fig card-fig"><img src="assets/img/done.png" alt=""></div><div class="card-t">It fixes it</div><div class="mono">// no re-prompting</div></div></div>
+      <div class="cards"><div class="card "><div class="fig card-fig"><img src="assets/img/feedback.png" alt=""></div><div class="card-t">Say what's off</div><div class="mono">// like a real editor</div></div><div class="card "><div class="fig card-fig"><img src="assets/img/claude-spark-logo.png" alt=""></div><div class="card-t">It fixes it</div><div class="mono">// no re-prompting</div></div></div>
       
       
     </div>
@@ -451,7 +496,7 @@
         <div class="stamp">ENTIRE <span class="hot">WORKFLOW</span></div>
         
       </div>
-      <div class="checks"><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div class="check-thumb"><img src="assets/img/25872a9f-bb3c-4aa0-8d12-62cba89ac9eb-cover.png" alt=""></div><div><div class="check-t">Desktop app</div><div class="mono">// claude code</div></div></div><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div class="check-thumb"><img src="assets/img/folder-ai-video-editor.jpg" alt=""></div><div><div class="check-t">Folder</div><div class="mono">// ai video editor</div></div></div><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div class="check-thumb"><img src="assets/img/local-chat-new-chat.png" alt=""></div><div><div class="check-t">Local chat</div><div class="mono">// new chat</div></div></div><div class="check"><div class="box"><img class="box-img" src="assets/img/done.png" alt=""></div><div class="check-thumb"><img src="assets/img/setup-check-my-setup.png" alt=""></div><div><div class="check-t">Setup</div><div class="mono">// tools checked</div></div></div></div>
+      <div class="checks"><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div class="check-thumb"><img src="assets/img/25872a9f-bb3c-4aa0-8d12-62cba89ac9eb-cover.png" alt=""></div><div><div class="check-t">Desktop app</div><div class="mono">// claude code</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div class="check-thumb"><img src="assets/img/folder-ai-video-editor.jpg" alt=""></div><div><div class="check-t">Folder</div><div class="mono">// ai video editor</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div class="check-thumb"><img src="assets/img/local-chat-new-chat.png" alt=""></div><div><div class="check-t">Local chat</div><div class="mono">// new chat</div></div></div><div class="check"><div class="box"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div class="check-thumb"><img src="assets/img/setup-check-my-setup.png" alt=""></div><div><div class="check-t">Setup</div><div class="mono">// tools checked</div></div></div></div>
       
       
     </div>
@@ -461,10 +506,20 @@
         <div class="stamp">COMMENT <span class="hot">SKILL</span></div>
         
       </div>
-      <div class="cta-row"><div class="cta-text"><div class="stat">221</div><div class="mono-lg">files behind every reel</div></div><div class="phone big"><div class="phone-screen"><video id="rv11" class="reel-vid" src="assets/reels/reel.mp4" muted data-has-audio="false" data-start="46.20" preload="auto"></video></div></div></div>
+      <div class="cta-row"><div class="cta-text"><div class="stat">221</div><div class="mono-lg">files behind every reel</div></div><div class="phone big"><div class="phone-screen"><video id="rv11" class="reel-vid" poster="assets/img/reel-still-5.png" src="assets/reels/reel-3.mp4" muted data-has-audio="false" data-start="54.20" data-playback-start="8.00" preload="auto"></video></div></div></div>
       <div class="sub">and I'll send the whole system to you.</div>
       
     </div>
+  </div>
+
+  <div class="fx-layer">
+    <div class="flood hot" id="fx0"></div>
+    <div class="prop verdict left" id="fx4">SELECT</div>
+    <div class="flood half" id="fx5"></div>
+    <div class="prop counter left" id="fx10"><span id="fxc10">0</span></div>
+    <div class="flood ink" id="fx11"></div>
+    <div class="flash" id="fx13"></div>
+  </div>
 
   <div class="cue-strip">
       <div class="cue neutral" id="cu0"><svg class="cue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.296 3.464 3.02 3.956"></path><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"></path><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="m6.18 5.276 3.1 3.899"></path></svg><span>reels</span></div>
@@ -512,6 +567,14 @@
     tl.to(el, { duration: dur, strokeDashoffset: 0, ease: "power2.inOut" }, at);
   }
 
+  // a live counter: the number itself is the change
+  function countUp(tl, sel, to, at, dur) {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const s = { n: 0 };
+    tl.to(s, { duration: dur, n: to, ease: "power2.out",
+      onUpdate: () => { el.textContent = Math.round(s.n); } }, at);
+  }
   function typeText(tl, sel, text, at, dur) {
     const el = document.querySelector(sel);
     const s = { n: 0 };
@@ -522,13 +585,13 @@
     tl.set("#b0", { autoAlpha: 1 }, 0);
     tl.to("#b0", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 4.65);
     tl.set("#b0 .polaroid:nth-of-type(2)", { autoAlpha: 0, y: 70, x: 40, scale: 0.78, rotate: 4 }, 0);
-    tl.to("#b0 .polaroid:nth-of-type(2)", { duration: 0.46, autoAlpha: 1, y: 0, x: 0, scale: 1, rotate: 0, ease: "back.out(2.6)" }, 2.12);
+    tl.to("#b0 .polaroid:nth-of-type(2)", { duration: 0.46, autoAlpha: 1, y: 0, x: 0, scale: 1, rotate: 0, ease: "back.out(2.6)" }, 1.74);
     tl.set("#b0 .polaroid:nth-of-type(2) .fig, #b0 .polaroid:nth-of-type(2) .row-icon, #b0 .polaroid:nth-of-type(2) .card-icon, #b0 .polaroid:nth-of-type(2) .box, #b0 .polaroid:nth-of-type(2) .check-thumb, #b0 .polaroid:nth-of-type(2) .row-num, #b0 .polaroid:nth-of-type(2) .shot-slot", { scale: 0, rotate: -35, transformOrigin: "50% 50%" }, 0);
-    tl.to("#b0 .polaroid:nth-of-type(2) .fig, #b0 .polaroid:nth-of-type(2) .row-icon, #b0 .polaroid:nth-of-type(2) .card-icon, #b0 .polaroid:nth-of-type(2) .box, #b0 .polaroid:nth-of-type(2) .check-thumb, #b0 .polaroid:nth-of-type(2) .row-num, #b0 .polaroid:nth-of-type(2) .shot-slot", { duration: 0.5, scale: 1, rotate: 0, ease: "elastic.out(1, 0.62)" }, 2.20);
+    tl.to("#b0 .polaroid:nth-of-type(2) .fig, #b0 .polaroid:nth-of-type(2) .row-icon, #b0 .polaroid:nth-of-type(2) .card-icon, #b0 .polaroid:nth-of-type(2) .box, #b0 .polaroid:nth-of-type(2) .check-thumb, #b0 .polaroid:nth-of-type(2) .row-num, #b0 .polaroid:nth-of-type(2) .shot-slot", { duration: 0.5, scale: 1, rotate: 0, ease: "elastic.out(1, 0.62)" }, 1.82);
     tl.set("#b0 .polaroid:nth-of-type(3)", { autoAlpha: 0, y: 70, x: -40, scale: 0.78, rotate: -4 }, 0);
-    tl.to("#b0 .polaroid:nth-of-type(3)", { duration: 0.46, autoAlpha: 1, y: 0, x: 0, scale: 1, rotate: 0, ease: "back.out(2.6)" }, 2.30);
+    tl.to("#b0 .polaroid:nth-of-type(3)", { duration: 0.46, autoAlpha: 1, y: 0, x: 0, scale: 1, rotate: 0, ease: "back.out(2.6)" }, 2.12);
     tl.set("#b0 .polaroid:nth-of-type(3) .fig, #b0 .polaroid:nth-of-type(3) .row-icon, #b0 .polaroid:nth-of-type(3) .card-icon, #b0 .polaroid:nth-of-type(3) .box, #b0 .polaroid:nth-of-type(3) .check-thumb, #b0 .polaroid:nth-of-type(3) .row-num, #b0 .polaroid:nth-of-type(3) .shot-slot", { scale: 0, rotate: -35, transformOrigin: "50% 50%" }, 0);
-    tl.to("#b0 .polaroid:nth-of-type(3) .fig, #b0 .polaroid:nth-of-type(3) .row-icon, #b0 .polaroid:nth-of-type(3) .card-icon, #b0 .polaroid:nth-of-type(3) .box, #b0 .polaroid:nth-of-type(3) .check-thumb, #b0 .polaroid:nth-of-type(3) .row-num, #b0 .polaroid:nth-of-type(3) .shot-slot", { duration: 0.5, scale: 1, rotate: 0, ease: "elastic.out(1, 0.62)" }, 2.38);
+    tl.to("#b0 .polaroid:nth-of-type(3) .fig, #b0 .polaroid:nth-of-type(3) .row-icon, #b0 .polaroid:nth-of-type(3) .card-icon, #b0 .polaroid:nth-of-type(3) .box, #b0 .polaroid:nth-of-type(3) .check-thumb, #b0 .polaroid:nth-of-type(3) .row-num, #b0 .polaroid:nth-of-type(3) .shot-slot", { duration: 0.5, scale: 1, rotate: 0, ease: "elastic.out(1, 0.62)" }, 2.20);
     tl.set("#b0 .polaroid:nth-of-type(4)", { autoAlpha: 0, y: 70, x: 40, scale: 0.78, rotate: 4 }, 0);
     tl.to("#b0 .polaroid:nth-of-type(4)", { duration: 0.46, autoAlpha: 1, y: 0, x: 0, scale: 1, rotate: 0, ease: "back.out(2.6)" }, 2.76);
     tl.set("#b0 .polaroid:nth-of-type(4) .fig, #b0 .polaroid:nth-of-type(4) .row-icon, #b0 .polaroid:nth-of-type(4) .card-icon, #b0 .polaroid:nth-of-type(4) .box, #b0 .polaroid:nth-of-type(4) .check-thumb, #b0 .polaroid:nth-of-type(4) .row-num, #b0 .polaroid:nth-of-type(4) .shot-slot", { scale: 0, rotate: -35, transformOrigin: "50% 50%" }, 0);
@@ -541,7 +604,6 @@
     tl.to("#b0 .polaroid:nth-of-type(6)", { duration: 0.46, autoAlpha: 1, y: 0, x: 0, scale: 1, rotate: 0, ease: "back.out(2.6)" }, 3.40);
     tl.set("#b0 .polaroid:nth-of-type(6) .fig, #b0 .polaroid:nth-of-type(6) .row-icon, #b0 .polaroid:nth-of-type(6) .card-icon, #b0 .polaroid:nth-of-type(6) .box, #b0 .polaroid:nth-of-type(6) .check-thumb, #b0 .polaroid:nth-of-type(6) .row-num, #b0 .polaroid:nth-of-type(6) .shot-slot", { scale: 0, rotate: -35, transformOrigin: "50% 50%" }, 0);
     tl.to("#b0 .polaroid:nth-of-type(6) .fig, #b0 .polaroid:nth-of-type(6) .row-icon, #b0 .polaroid:nth-of-type(6) .card-icon, #b0 .polaroid:nth-of-type(6) .box, #b0 .polaroid:nth-of-type(6) .check-thumb, #b0 .polaroid:nth-of-type(6) .row-num, #b0 .polaroid:nth-of-type(6) .shot-slot", { duration: 0.5, scale: 1, rotate: 0, ease: "elastic.out(1, 0.62)" }, 3.48);
-    drawOn(tl, "#sk0", 0.55, 0.5);
     tl.from("#b0 .slot-vid", { duration: 0.55, y: 70, autoAlpha: 0, scale: 0.9, ease: "back.out(1.7)" }, 0.30);
     tl.set("#b1", { autoAlpha: 0 }, 0);
     tl.to("#b1", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 4.9);
@@ -587,7 +649,6 @@
     tl.from("#b3 .stamp", { duration: 0.3, scale: 0.86, autoAlpha: 0, ease: "back.out(2)" }, 13.799999999999999);
     tl.set("#b3 .step", { scale: 0, rotate: -28, transformOrigin: "50% 50%" }, 0);
     tl.to("#b3 .step", { duration: 0.55, scale: 1, rotate: 0, ease: "elastic.out(1, 0.6)" }, 13.96);
-    drawOn(tl, "#sk3", 14.25, 0.5);
     tl.set("#b4", { autoAlpha: 0 }, 0);
     tl.to("#b4", { duration: 0.3, autoAlpha: 1, ease: "power2.out" }, 20.2);
     tl.to("#b4", { duration: 0.25, autoAlpha: 0, ease: "power2.in" }, 26.05);
@@ -698,68 +759,68 @@
     tl.from("#b11 .stat", { duration: 0.5, scale: 0.7, autoAlpha: 0, ease: "back.out(2)" }, 54.6);
     tl.from("#b11 .phone", { duration: 0.55, y: 70, autoAlpha: 0, scale: 0.9, ease: "back.out(1.7)" }, 54.50);
     tl.set("#cp0", { autoAlpha: 0 }, 0);
-    tl.to("#cp0", { duration: 0.1, autoAlpha: 1 }, 0.00);
-    tl.to("#cp0", { duration: 0.1, autoAlpha: 0 }, 1.50);
+    tl.to("#cp0", { duration: 0.06, autoAlpha: 1 }, 0.00);
+    tl.to("#cp0", { duration: 0.06, autoAlpha: 0 }, 1.44);
     tl.to("#w0", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 0.00);
     tl.to("#w1", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 0.44);
     tl.to("#w2", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 0.72);
     tl.to("#w3", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 1.12);
     tl.set("#cp1", { autoAlpha: 0 }, 0);
-    tl.to("#cp1", { duration: 0.1, autoAlpha: 1 }, 1.48);
-    tl.to("#cp1", { duration: 0.1, autoAlpha: 0 }, 2.70);
+    tl.to("#cp1", { duration: 0.06, autoAlpha: 1 }, 1.51);
+    tl.to("#cp1", { duration: 0.06, autoAlpha: 0 }, 2.64);
     tl.to("#w4", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 1.56);
     tl.to("#w5", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 1.84);
     tl.to("#w6", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 2.12);
     tl.to("#w7", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 2.48);
     tl.set("#cp2", { autoAlpha: 0 }, 0);
-    tl.to("#cp2", { duration: 0.1, autoAlpha: 1 }, 2.68);
-    tl.to("#cp2", { duration: 0.1, autoAlpha: 0 }, 4.10);
+    tl.to("#cp2", { duration: 0.06, autoAlpha: 1 }, 2.71);
+    tl.to("#cp2", { duration: 0.06, autoAlpha: 0 }, 4.04);
     tl.to("#w8", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 2.76);
     tl.to("#w9", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 3.36);
     tl.to("#w10", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 3.42);
     tl.to("#w11", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 3.98);
     tl.set("#cp3", { autoAlpha: 0 }, 0);
-    tl.to("#cp3", { duration: 0.1, autoAlpha: 1 }, 4.08);
-    tl.to("#cp3", { duration: 0.1, autoAlpha: 0 }, 4.82);
+    tl.to("#cp3", { duration: 0.06, autoAlpha: 1 }, 4.11);
+    tl.to("#cp3", { duration: 0.06, autoAlpha: 0 }, 4.76);
     tl.to("#w12", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 4.16);
     tl.to("#w13", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 4.30);
     tl.set("#cp4", { autoAlpha: 0 }, 0);
-    tl.to("#cp4", { duration: 0.1, autoAlpha: 1 }, 4.80);
-    tl.to("#cp4", { duration: 0.1, autoAlpha: 0 }, 5.66);
+    tl.to("#cp4", { duration: 0.06, autoAlpha: 1 }, 4.83);
+    tl.to("#cp4", { duration: 0.06, autoAlpha: 0 }, 5.60);
     tl.to("#w14", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 4.88);
     tl.to("#w15", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.08);
     tl.to("#w16", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.42);
     tl.to("#w17", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.56);
     tl.set("#cp5", { autoAlpha: 0 }, 0);
-    tl.to("#cp5", { duration: 0.1, autoAlpha: 1 }, 5.64);
-    tl.to("#cp5", { duration: 0.1, autoAlpha: 0 }, 7.18);
+    tl.to("#cp5", { duration: 0.06, autoAlpha: 1 }, 5.67);
+    tl.to("#cp5", { duration: 0.06, autoAlpha: 0 }, 7.12);
     tl.to("#w18", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 5.72);
     tl.to("#w19", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 6.52);
     tl.to("#w20", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 6.84);
     tl.to("#w21", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.10);
     tl.set("#cp6", { autoAlpha: 0 }, 0);
-    tl.to("#cp6", { duration: 0.1, autoAlpha: 1 }, 7.16);
-    tl.to("#cp6", { duration: 0.1, autoAlpha: 0 }, 8.00);
+    tl.to("#cp6", { duration: 0.06, autoAlpha: 1 }, 7.19);
+    tl.to("#cp6", { duration: 0.06, autoAlpha: 0 }, 7.94);
     tl.to("#w22", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.24);
     tl.to("#w23", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.44);
     tl.to("#w24", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 7.64);
     tl.to("#w25", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 7.80);
     tl.set("#cp7", { autoAlpha: 0 }, 0);
-    tl.to("#cp7", { duration: 0.1, autoAlpha: 1 }, 7.98);
-    tl.to("#cp7", { duration: 0.1, autoAlpha: 0 }, 9.14);
+    tl.to("#cp7", { duration: 0.06, autoAlpha: 1 }, 8.01);
+    tl.to("#cp7", { duration: 0.06, autoAlpha: 0 }, 9.08);
     tl.to("#w26", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 8.06);
     tl.to("#w27", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 8.32);
     tl.to("#w28", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 8.60);
     tl.set("#cp8", { autoAlpha: 0 }, 0);
-    tl.to("#cp8", { duration: 0.1, autoAlpha: 1 }, 9.12);
-    tl.to("#cp8", { duration: 0.1, autoAlpha: 0 }, 10.84);
+    tl.to("#cp8", { duration: 0.06, autoAlpha: 1 }, 9.15);
+    tl.to("#cp8", { duration: 0.06, autoAlpha: 0 }, 10.78);
     tl.to("#w29", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.20);
     tl.to("#w30", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.52);
     tl.to("#w31", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.76);
     tl.to("#w32", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 9.94);
     tl.set("#cp9", { autoAlpha: 0 }, 0);
-    tl.to("#cp9", { duration: 0.1, autoAlpha: 1 }, 10.82);
-    tl.to("#cp9", { duration: 0.1, autoAlpha: 0 }, 12.12);
+    tl.to("#cp9", { duration: 0.06, autoAlpha: 1 }, 10.85);
+    tl.to("#cp9", { duration: 0.06, autoAlpha: 0 }, 12.06);
     tl.to("#w33", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 10.90);
     tl.to("#w34", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.08);
     tl.to("#w35", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.24);
@@ -767,303 +828,303 @@
     tl.to("#w37", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 11.42);
     tl.to("#w38", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 11.52);
     tl.set("#cp10", { autoAlpha: 0 }, 0);
-    tl.to("#cp10", { duration: 0.1, autoAlpha: 1 }, 12.10);
-    tl.to("#cp10", { duration: 0.1, autoAlpha: 0 }, 13.58);
+    tl.to("#cp10", { duration: 0.06, autoAlpha: 1 }, 12.13);
+    tl.to("#cp10", { duration: 0.06, autoAlpha: 0 }, 13.52);
     tl.to("#w39", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.18);
     tl.to("#w40", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.34);
     tl.to("#w41", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.58);
     tl.to("#w42", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 12.96);
     tl.set("#cp11", { autoAlpha: 0 }, 0);
-    tl.to("#cp11", { duration: 0.1, autoAlpha: 1 }, 13.56);
-    tl.to("#cp11", { duration: 0.1, autoAlpha: 0 }, 14.62);
+    tl.to("#cp11", { duration: 0.06, autoAlpha: 1 }, 13.59);
+    tl.to("#cp11", { duration: 0.06, autoAlpha: 0 }, 14.56);
     tl.to("#w43", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 13.64);
     tl.to("#w44", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.18);
     tl.to("#w45", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.30);
     tl.to("#w46", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 14.42);
     tl.set("#cp12", { autoAlpha: 0 }, 0);
-    tl.to("#cp12", { duration: 0.1, autoAlpha: 1 }, 14.60);
-    tl.to("#cp12", { duration: 0.1, autoAlpha: 0 }, 15.56);
+    tl.to("#cp12", { duration: 0.06, autoAlpha: 1 }, 14.63);
+    tl.to("#cp12", { duration: 0.06, autoAlpha: 0 }, 15.50);
     tl.to("#w47", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.68);
     tl.to("#w48", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.80);
     tl.to("#w49", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 14.92);
     tl.to("#w50", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.38);
     tl.set("#cp13", { autoAlpha: 0 }, 0);
-    tl.to("#cp13", { duration: 0.1, autoAlpha: 1 }, 15.54);
-    tl.to("#cp13", { duration: 0.1, autoAlpha: 0 }, 16.66);
+    tl.to("#cp13", { duration: 0.06, autoAlpha: 1 }, 15.57);
+    tl.to("#cp13", { duration: 0.06, autoAlpha: 0 }, 16.60);
     tl.to("#w51", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.62);
     tl.to("#w52", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.82);
     tl.to("#w53", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 15.94);
     tl.to("#w54", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 16.38);
     tl.set("#cp14", { autoAlpha: 0 }, 0);
-    tl.to("#cp14", { duration: 0.1, autoAlpha: 1 }, 16.64);
-    tl.to("#cp14", { duration: 0.1, autoAlpha: 0 }, 17.88);
+    tl.to("#cp14", { duration: 0.06, autoAlpha: 1 }, 16.67);
+    tl.to("#cp14", { duration: 0.06, autoAlpha: 0 }, 17.82);
     tl.to("#w55", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 16.72);
     tl.to("#w56", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.26);
     tl.to("#w57", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.44);
     tl.to("#w58", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.54);
     tl.to("#w59", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 17.70);
     tl.set("#cp15", { autoAlpha: 0 }, 0);
-    tl.to("#cp15", { duration: 0.1, autoAlpha: 1 }, 17.86);
-    tl.to("#cp15", { duration: 0.1, autoAlpha: 0 }, 19.02);
+    tl.to("#cp15", { duration: 0.06, autoAlpha: 1 }, 17.89);
+    tl.to("#cp15", { duration: 0.06, autoAlpha: 0 }, 18.96);
     tl.to("#w60", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 17.94);
     tl.to("#w61", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 18.28);
     tl.to("#w62", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 18.42);
     tl.to("#w63", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 18.76);
     tl.set("#cp16", { autoAlpha: 0 }, 0);
-    tl.to("#cp16", { duration: 0.1, autoAlpha: 1 }, 19.00);
-    tl.to("#cp16", { duration: 0.1, autoAlpha: 0 }, 20.04);
+    tl.to("#cp16", { duration: 0.06, autoAlpha: 1 }, 19.03);
+    tl.to("#cp16", { duration: 0.06, autoAlpha: 0 }, 19.98);
     tl.to("#w64", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 19.08);
     tl.to("#w65", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 19.28);
     tl.to("#w66", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 19.48);
     tl.set("#cp17", { autoAlpha: 0 }, 0);
-    tl.to("#cp17", { duration: 0.1, autoAlpha: 1 }, 20.02);
-    tl.to("#cp17", { duration: 0.1, autoAlpha: 0 }, 20.96);
+    tl.to("#cp17", { duration: 0.06, autoAlpha: 1 }, 20.05);
+    tl.to("#cp17", { duration: 0.06, autoAlpha: 0 }, 20.90);
     tl.to("#w67", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.10);
     tl.to("#w68", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.32);
     tl.to("#w69", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.68);
     tl.to("#w70", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 20.86);
     tl.set("#cp18", { autoAlpha: 0 }, 0);
-    tl.to("#cp18", { duration: 0.1, autoAlpha: 1 }, 20.94);
-    tl.to("#cp18", { duration: 0.1, autoAlpha: 0 }, 22.64);
+    tl.to("#cp18", { duration: 0.06, autoAlpha: 1 }, 20.97);
+    tl.to("#cp18", { duration: 0.06, autoAlpha: 0 }, 22.58);
     tl.to("#w71", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 21.02);
     tl.to("#w72", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 21.46);
     tl.to("#w73", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 22.12);
     tl.to("#w74", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 22.34);
     tl.set("#cp19", { autoAlpha: 0 }, 0);
-    tl.to("#cp19", { duration: 0.1, autoAlpha: 1 }, 22.62);
-    tl.to("#cp19", { duration: 0.1, autoAlpha: 0 }, 24.06);
+    tl.to("#cp19", { duration: 0.06, autoAlpha: 1 }, 22.65);
+    tl.to("#cp19", { duration: 0.06, autoAlpha: 0 }, 24.00);
     tl.to("#w75", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 22.70);
     tl.to("#w76", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 23.00);
     tl.to("#w77", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 23.32);
     tl.to("#w78", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 23.52);
     tl.set("#cp20", { autoAlpha: 0 }, 0);
-    tl.to("#cp20", { duration: 0.1, autoAlpha: 1 }, 24.04);
-    tl.to("#cp20", { duration: 0.1, autoAlpha: 0 }, 25.00);
+    tl.to("#cp20", { duration: 0.06, autoAlpha: 1 }, 24.07);
+    tl.to("#cp20", { duration: 0.06, autoAlpha: 0 }, 24.94);
     tl.to("#w79", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.12);
     tl.to("#w80", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.36);
     tl.to("#w81", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.66);
     tl.to("#w82", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 24.82);
     tl.set("#cp21", { autoAlpha: 0 }, 0);
-    tl.to("#cp21", { duration: 0.1, autoAlpha: 1 }, 24.98);
-    tl.to("#cp21", { duration: 0.1, autoAlpha: 0 }, 26.26);
+    tl.to("#cp21", { duration: 0.06, autoAlpha: 1 }, 25.01);
+    tl.to("#cp21", { duration: 0.06, autoAlpha: 0 }, 26.20);
     tl.to("#w83", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 25.06);
     tl.to("#w84", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 25.28);
     tl.to("#w85", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 25.52);
     tl.to("#w86", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 25.64);
     tl.set("#cp22", { autoAlpha: 0 }, 0);
-    tl.to("#cp22", { duration: 0.1, autoAlpha: 1 }, 26.24);
-    tl.to("#cp22", { duration: 0.1, autoAlpha: 0 }, 26.94);
+    tl.to("#cp22", { duration: 0.06, autoAlpha: 1 }, 26.27);
+    tl.to("#cp22", { duration: 0.06, autoAlpha: 0 }, 26.88);
     tl.to("#w87", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.32);
     tl.to("#w88", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.52);
     tl.to("#w89", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.70);
     tl.to("#w90", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 26.84);
     tl.set("#cp23", { autoAlpha: 0 }, 0);
-    tl.to("#cp23", { duration: 0.1, autoAlpha: 1 }, 26.92);
-    tl.to("#cp23", { duration: 0.1, autoAlpha: 0 }, 28.28);
+    tl.to("#cp23", { duration: 0.06, autoAlpha: 1 }, 26.95);
+    tl.to("#cp23", { duration: 0.06, autoAlpha: 0 }, 28.22);
     tl.to("#w91", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 27.00);
     tl.to("#w92", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 27.34);
     tl.to("#w93", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 27.50);
     tl.to("#w94", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 28.00);
     tl.set("#cp24", { autoAlpha: 0 }, 0);
-    tl.to("#cp24", { duration: 0.1, autoAlpha: 1 }, 28.26);
-    tl.to("#cp24", { duration: 0.1, autoAlpha: 0 }, 29.42);
+    tl.to("#cp24", { duration: 0.06, autoAlpha: 1 }, 28.29);
+    tl.to("#cp24", { duration: 0.06, autoAlpha: 0 }, 29.36);
     tl.to("#w95", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 28.34);
     tl.to("#w96", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 28.50);
     tl.to("#w97", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.12);
     tl.to("#w98", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.22);
     tl.set("#cp25", { autoAlpha: 0 }, 0);
-    tl.to("#cp25", { duration: 0.1, autoAlpha: 1 }, 29.40);
-    tl.to("#cp25", { duration: 0.1, autoAlpha: 0 }, 30.02);
+    tl.to("#cp25", { duration: 0.06, autoAlpha: 1 }, 29.43);
+    tl.to("#cp25", { duration: 0.06, autoAlpha: 0 }, 29.96);
     tl.to("#w99", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.48);
     tl.to("#w100", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.56);
     tl.to("#w101", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.70);
     tl.to("#w102", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 29.92);
     tl.set("#cp26", { autoAlpha: 0 }, 0);
-    tl.to("#cp26", { duration: 0.1, autoAlpha: 1 }, 30.00);
-    tl.to("#cp26", { duration: 0.1, autoAlpha: 0 }, 30.74);
+    tl.to("#cp26", { duration: 0.06, autoAlpha: 1 }, 30.03);
+    tl.to("#cp26", { duration: 0.06, autoAlpha: 0 }, 30.68);
     tl.to("#w103", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 30.08);
     tl.set("#cp27", { autoAlpha: 0 }, 0);
-    tl.to("#cp27", { duration: 0.1, autoAlpha: 1 }, 30.72);
-    tl.to("#cp27", { duration: 0.1, autoAlpha: 0 }, 31.72);
+    tl.to("#cp27", { duration: 0.06, autoAlpha: 1 }, 30.75);
+    tl.to("#cp27", { duration: 0.06, autoAlpha: 0 }, 31.66);
     tl.to("#w104", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 30.80);
     tl.to("#w105", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 30.90);
     tl.to("#w106", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 31.36);
     tl.to("#w107", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 31.52);
     tl.set("#cp28", { autoAlpha: 0 }, 0);
-    tl.to("#cp28", { duration: 0.1, autoAlpha: 1 }, 31.70);
-    tl.to("#cp28", { duration: 0.1, autoAlpha: 0 }, 32.60);
+    tl.to("#cp28", { duration: 0.06, autoAlpha: 1 }, 31.73);
+    tl.to("#cp28", { duration: 0.06, autoAlpha: 0 }, 32.54);
     tl.to("#w108", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 31.78);
     tl.to("#w109", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.12);
     tl.to("#w110", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.34);
     tl.to("#w111", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.50);
     tl.set("#cp29", { autoAlpha: 0 }, 0);
-    tl.to("#cp29", { duration: 0.1, autoAlpha: 1 }, 32.58);
-    tl.to("#cp29", { duration: 0.1, autoAlpha: 0 }, 33.82);
+    tl.to("#cp29", { duration: 0.06, autoAlpha: 1 }, 32.61);
+    tl.to("#cp29", { duration: 0.06, autoAlpha: 0 }, 33.76);
     tl.to("#w112", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 32.66);
     tl.to("#w113", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 33.06);
     tl.set("#cp30", { autoAlpha: 0 }, 0);
-    tl.to("#cp30", { duration: 0.1, autoAlpha: 1 }, 33.80);
-    tl.to("#cp30", { duration: 0.1, autoAlpha: 0 }, 35.00);
+    tl.to("#cp30", { duration: 0.06, autoAlpha: 1 }, 33.83);
+    tl.to("#cp30", { duration: 0.06, autoAlpha: 0 }, 34.94);
     tl.to("#w114", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 33.88);
     tl.to("#w115", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 34.00);
     tl.to("#w116", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 34.12);
     tl.to("#w117", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 34.38);
     tl.set("#cp31", { autoAlpha: 0 }, 0);
-    tl.to("#cp31", { duration: 0.1, autoAlpha: 1 }, 34.98);
-    tl.to("#cp31", { duration: 0.1, autoAlpha: 0 }, 35.58);
+    tl.to("#cp31", { duration: 0.06, autoAlpha: 1 }, 35.01);
+    tl.to("#cp31", { duration: 0.06, autoAlpha: 0 }, 35.52);
     tl.to("#w118", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.06);
     tl.to("#w119", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.20);
     tl.to("#w120", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.38);
     tl.to("#w121", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 35.58);
     tl.set("#cp32", { autoAlpha: 0 }, 0);
-    tl.to("#cp32", { duration: 0.1, autoAlpha: 1 }, 35.56);
-    tl.to("#cp32", { duration: 0.1, autoAlpha: 0 }, 36.56);
+    tl.to("#cp32", { duration: 0.06, autoAlpha: 1 }, 35.59);
+    tl.to("#cp32", { duration: 0.06, autoAlpha: 0 }, 36.50);
     tl.to("#w122", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.64);
     tl.to("#w123", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 35.78);
     tl.to("#w124", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 36.12);
     tl.to("#w125", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 36.40);
     tl.set("#cp33", { autoAlpha: 0 }, 0);
-    tl.to("#cp33", { duration: 0.1, autoAlpha: 1 }, 36.54);
-    tl.to("#cp33", { duration: 0.1, autoAlpha: 0 }, 37.30);
+    tl.to("#cp33", { duration: 0.06, autoAlpha: 1 }, 36.57);
+    tl.to("#cp33", { duration: 0.06, autoAlpha: 0 }, 37.24);
     tl.to("#w126", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 36.62);
     tl.set("#cp34", { autoAlpha: 0 }, 0);
-    tl.to("#cp34", { duration: 0.1, autoAlpha: 1 }, 37.28);
-    tl.to("#cp34", { duration: 0.1, autoAlpha: 0 }, 38.30);
+    tl.to("#cp34", { duration: 0.06, autoAlpha: 1 }, 37.31);
+    tl.to("#cp34", { duration: 0.06, autoAlpha: 0 }, 38.24);
     tl.to("#w127", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 37.36);
     tl.to("#w128", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 37.50);
     tl.to("#w129", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.08);
     tl.to("#w130", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.22);
     tl.set("#cp35", { autoAlpha: 0 }, 0);
-    tl.to("#cp35", { duration: 0.1, autoAlpha: 1 }, 38.28);
-    tl.to("#cp35", { duration: 0.1, autoAlpha: 0 }, 39.28);
+    tl.to("#cp35", { duration: 0.06, autoAlpha: 1 }, 38.31);
+    tl.to("#cp35", { duration: 0.06, autoAlpha: 0 }, 39.22);
     tl.to("#w131", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 38.36);
     tl.to("#w132", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.52);
     tl.to("#w133", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.76);
     tl.to("#w134", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 38.96);
     tl.set("#cp36", { autoAlpha: 0 }, 0);
-    tl.to("#cp36", { duration: 0.1, autoAlpha: 1 }, 39.26);
-    tl.to("#cp36", { duration: 0.1, autoAlpha: 0 }, 40.98);
+    tl.to("#cp36", { duration: 0.06, autoAlpha: 1 }, 39.29);
+    tl.to("#cp36", { duration: 0.06, autoAlpha: 0 }, 40.92);
     tl.to("#w135", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 39.34);
     tl.to("#w136", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 39.68);
     tl.to("#w137", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 40.00);
     tl.to("#w138", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 40.22);
     tl.set("#cp37", { autoAlpha: 0 }, 0);
-    tl.to("#cp37", { duration: 0.1, autoAlpha: 1 }, 40.96);
-    tl.to("#cp37", { duration: 0.1, autoAlpha: 0 }, 42.02);
+    tl.to("#cp37", { duration: 0.06, autoAlpha: 1 }, 40.99);
+    tl.to("#cp37", { duration: 0.06, autoAlpha: 0 }, 41.96);
     tl.to("#w139", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 41.04);
     tl.to("#w140", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 41.12);
     tl.to("#w141", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 41.32);
     tl.to("#w142", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 41.52);
     tl.set("#cp38", { autoAlpha: 0 }, 0);
-    tl.to("#cp38", { duration: 0.1, autoAlpha: 1 }, 42.00);
-    tl.to("#cp38", { duration: 0.1, autoAlpha: 0 }, 43.44);
+    tl.to("#cp38", { duration: 0.06, autoAlpha: 1 }, 42.03);
+    tl.to("#cp38", { duration: 0.06, autoAlpha: 0 }, 43.38);
     tl.to("#w143", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 42.08);
     tl.to("#w144", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 42.32);
     tl.to("#w145", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 42.50);
     tl.to("#w146", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 43.26);
     tl.set("#cp39", { autoAlpha: 0 }, 0);
-    tl.to("#cp39", { duration: 0.1, autoAlpha: 1 }, 43.42);
-    tl.to("#cp39", { duration: 0.1, autoAlpha: 0 }, 44.82);
+    tl.to("#cp39", { duration: 0.06, autoAlpha: 1 }, 43.45);
+    tl.to("#cp39", { duration: 0.06, autoAlpha: 0 }, 44.76);
     tl.to("#w147", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 43.50);
     tl.to("#w148", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 43.88);
     tl.to("#w149", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 44.54);
     tl.to("#w150", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 44.74);
     tl.set("#cp40", { autoAlpha: 0 }, 0);
-    tl.to("#cp40", { duration: 0.1, autoAlpha: 1 }, 44.80);
-    tl.to("#cp40", { duration: 0.1, autoAlpha: 0 }, 45.96);
+    tl.to("#cp40", { duration: 0.06, autoAlpha: 1 }, 44.83);
+    tl.to("#cp40", { duration: 0.06, autoAlpha: 0 }, 45.90);
     tl.to("#w151", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 44.88);
     tl.to("#w152", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 45.22);
     tl.to("#w153", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 45.38);
     tl.to("#w154", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 45.70);
     tl.set("#cp41", { autoAlpha: 0 }, 0);
-    tl.to("#cp41", { duration: 0.1, autoAlpha: 1 }, 45.94);
-    tl.to("#cp41", { duration: 0.1, autoAlpha: 0 }, 46.98);
+    tl.to("#cp41", { duration: 0.06, autoAlpha: 1 }, 45.97);
+    tl.to("#cp41", { duration: 0.06, autoAlpha: 0 }, 46.92);
     tl.to("#w155", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.02);
     tl.to("#w156", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.32);
     tl.to("#w157", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.62);
     tl.to("#w158", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 46.74);
     tl.set("#cp42", { autoAlpha: 0 }, 0);
-    tl.to("#cp42", { duration: 0.1, autoAlpha: 1 }, 46.96);
-    tl.to("#cp42", { duration: 0.1, autoAlpha: 0 }, 48.06);
+    tl.to("#cp42", { duration: 0.06, autoAlpha: 1 }, 46.99);
+    tl.to("#cp42", { duration: 0.06, autoAlpha: 0 }, 48.00);
     tl.to("#w159", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 47.04);
     tl.to("#w160", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 47.40);
     tl.to("#w161", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 47.74);
     tl.to("#w162", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 47.96);
     tl.set("#cp43", { autoAlpha: 0 }, 0);
-    tl.to("#cp43", { duration: 0.1, autoAlpha: 1 }, 48.04);
-    tl.to("#cp43", { duration: 0.1, autoAlpha: 0 }, 49.44);
+    tl.to("#cp43", { duration: 0.06, autoAlpha: 1 }, 48.07);
+    tl.to("#cp43", { duration: 0.06, autoAlpha: 0 }, 49.38);
     tl.to("#w163", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.12);
     tl.to("#w164", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.44);
     tl.to("#w165", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.54);
     tl.to("#w166", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 48.78);
     tl.to("#w167", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.04);
     tl.set("#cp44", { autoAlpha: 0 }, 0);
-    tl.to("#cp44", { duration: 0.1, autoAlpha: 1 }, 49.42);
-    tl.to("#cp44", { duration: 0.1, autoAlpha: 0 }, 50.26);
+    tl.to("#cp44", { duration: 0.06, autoAlpha: 1 }, 49.45);
+    tl.to("#cp44", { duration: 0.06, autoAlpha: 0 }, 50.20);
     tl.to("#w168", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.50);
     tl.to("#w169", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.64);
     tl.to("#w170", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 49.82);
     tl.to("#w171", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.02);
     tl.set("#cp45", { autoAlpha: 0 }, 0);
-    tl.to("#cp45", { duration: 0.1, autoAlpha: 1 }, 50.24);
-    tl.to("#cp45", { duration: 0.1, autoAlpha: 0 }, 50.76);
+    tl.to("#cp45", { duration: 0.06, autoAlpha: 1 }, 50.27);
+    tl.to("#cp45", { duration: 0.06, autoAlpha: 0 }, 50.70);
     tl.to("#w172", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.32);
     tl.to("#w173", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.44);
     tl.to("#w174", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.54);
     tl.to("#w175", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 50.64);
     tl.set("#cp46", { autoAlpha: 0 }, 0);
-    tl.to("#cp46", { duration: 0.1, autoAlpha: 1 }, 50.74);
-    tl.to("#cp46", { duration: 0.1, autoAlpha: 0 }, 51.86);
+    tl.to("#cp46", { duration: 0.06, autoAlpha: 1 }, 50.77);
+    tl.to("#cp46", { duration: 0.06, autoAlpha: 0 }, 51.80);
     tl.to("#w176", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 50.82);
     tl.to("#w177", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.42);
     tl.to("#w178", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.50);
     tl.to("#w179", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.60);
     tl.set("#cp47", { autoAlpha: 0 }, 0);
-    tl.to("#cp47", { duration: 0.1, autoAlpha: 1 }, 51.84);
-    tl.to("#cp47", { duration: 0.1, autoAlpha: 0 }, 53.48);
+    tl.to("#cp47", { duration: 0.06, autoAlpha: 1 }, 51.87);
+    tl.to("#cp47", { duration: 0.06, autoAlpha: 0 }, 53.42);
     tl.to("#w180", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 51.92);
     tl.to("#w181", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 52.30);
     tl.to("#w182", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 52.54);
     tl.to("#w183", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 52.64);
     tl.to("#w184", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 53.14);
     tl.set("#cp48", { autoAlpha: 0 }, 0);
-    tl.to("#cp48", { duration: 0.1, autoAlpha: 1 }, 53.46);
-    tl.to("#cp48", { duration: 0.1, autoAlpha: 0 }, 54.28);
+    tl.to("#cp48", { duration: 0.06, autoAlpha: 1 }, 53.49);
+    tl.to("#cp48", { duration: 0.06, autoAlpha: 0 }, 54.22);
     tl.to("#w185", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 53.54);
     tl.to("#w186", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.04);
     tl.to("#w187", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.14);
     tl.to("#w188", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.24);
     tl.set("#cp49", { autoAlpha: 0 }, 0);
-    tl.to("#cp49", { duration: 0.1, autoAlpha: 1 }, 54.26);
-    tl.to("#cp49", { duration: 0.1, autoAlpha: 0 }, 55.50);
+    tl.to("#cp49", { duration: 0.06, autoAlpha: 1 }, 54.29);
+    tl.to("#cp49", { duration: 0.06, autoAlpha: 0 }, 55.44);
     tl.to("#w189", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.34);
     tl.to("#w190", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 54.46);
     tl.to("#w191", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 54.86);
     tl.to("#w192", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 55.46);
     tl.set("#cp50", { autoAlpha: 0 }, 0);
-    tl.to("#cp50", { duration: 0.1, autoAlpha: 1 }, 55.48);
-    tl.to("#cp50", { duration: 0.1, autoAlpha: 0 }, 57.54);
+    tl.to("#cp50", { duration: 0.06, autoAlpha: 1 }, 55.51);
+    tl.to("#cp50", { duration: 0.06, autoAlpha: 0 }, 57.48);
     tl.to("#w193", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 55.56);
     tl.to("#w194", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 56.44);
     tl.to("#w195", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 56.86);
     tl.to("#w196", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.14);
     tl.set("#cp51", { autoAlpha: 0 }, 0);
-    tl.to("#cp51", { duration: 0.1, autoAlpha: 1 }, 57.52);
-    tl.to("#cp51", { duration: 0.1, autoAlpha: 0 }, 58.78);
+    tl.to("#cp51", { duration: 0.06, autoAlpha: 1 }, 57.55);
+    tl.to("#cp51", { duration: 0.06, autoAlpha: 0 }, 58.72);
     tl.to("#w197", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.60);
     tl.to("#w198", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.84);
     tl.to("#w199", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 57.98);
     tl.to("#w200", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 58.16);
     tl.set("#cp52", { autoAlpha: 0 }, 0);
-    tl.to("#cp52", { duration: 0.1, autoAlpha: 1 }, 58.76);
-    tl.to("#cp52", { duration: 0.1, autoAlpha: 0 }, 59.78);
+    tl.to("#cp52", { duration: 0.06, autoAlpha: 1 }, 58.79);
+    tl.to("#cp52", { duration: 0.06, autoAlpha: 0 }, 59.72);
     tl.to("#w201", { duration: 0.12, color: "#F15430", ease: "power2.out" }, 58.84);
     tl.to("#w202", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 58.96);
     tl.to("#w203", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 59.42);
     tl.to("#w204", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 59.74);
     tl.set("#cp53", { autoAlpha: 0 }, 0);
-    tl.to("#cp53", { duration: 0.1, autoAlpha: 1 }, 59.76);
-    tl.to("#cp53", { duration: 0.1, autoAlpha: 0 }, 60.92);
+    tl.to("#cp53", { duration: 0.06, autoAlpha: 1 }, 59.79);
+    tl.to("#cp53", { duration: 0.06, autoAlpha: 0 }, 60.92);
     tl.to("#w205", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 59.84);
     tl.to("#w206", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 60.02);
     tl.to("#w207", { duration: 0.12, color: "#0C0A08", ease: "power2.out" }, 60.14);
@@ -1112,6 +1173,43 @@
     tl.to("#cu20", { duration: 0.18, autoAlpha: 0 }, 57.76);
     tl.fromTo("#cu21", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, 58.84);
     tl.to("#cu21", { duration: 0.18, autoAlpha: 0 }, 59.96);
+    tl.set("#stage", { scale: 1, x: 0, y: 0 }, 0);
+    tl.set("#fx0", { autoAlpha: 0 }, 0);
+    tl.to("#fx0", { duration: 0.08, autoAlpha: 1, ease: "none" }, 10.9);
+    tl.to("#fx0", { duration: 0.22, autoAlpha: 0, ease: "power2.in" }, 11.00);
+    tl.to("#stage", { duration: 0.26, scale: 1.07, ease: "power3.out" }, 15.62);
+    tl.to("#stage", { duration: 0.5, scale: 1, ease: "power2.inOut" }, 15.92);
+    tl.set("#stage", { scale: 0.94, y: 22 }, 17.26);
+    tl.to("#stage", { duration: 0.34, scale: 1, y: 0, ease: "power3.out" }, 17.38);
+    tl.to("#stage", { duration: 0.1, x: -12, ease: "power2.out" }, 18.76);
+    tl.to("#stage", { duration: 0.34, x: 0, ease: "elastic.out(1, 0.5)" }, 18.86);
+    tl.set("#fx4", { autoAlpha: 0, scale: 1.6, rotate: -14 }, 0);
+    tl.to("#fx4", { duration: 0.24, autoAlpha: 1, scale: 1, ease: "back.out(3)" }, 23);
+    tl.to("#fx4", { duration: 0.2, autoAlpha: 0 }, 24.40);
+    tl.set("#fx5", { autoAlpha: 0 }, 0);
+    tl.to("#fx5", { duration: 0.08, autoAlpha: 1, ease: "none" }, 24.66);
+    tl.to("#fx5", { duration: 0.22, autoAlpha: 0, ease: "power2.in" }, 24.76);
+    tl.set("#stage", { scale: 1 }, 30.08);
+    tl.to("#stage", { duration: 1.4, scale: 1.05, ease: "none" }, 30.08);
+    tl.to("#stage", { duration: 0.3, scale: 1, ease: "power2.out" }, 31.53);
+    tl.to("#stage", { duration: 0.1, x: 14, ease: "power2.out" }, 30.9);
+    tl.to("#stage", { duration: 0.34, x: 0, ease: "elastic.out(1, 0.5)" }, 31.00);
+    tl.set("#stage", { scale: 1.06, y: -18 }, 32.12);
+    tl.to("#stage", { duration: 0.34, scale: 1, y: 0, ease: "power3.out" }, 32.24);
+    tl.to("#stage", { duration: 0.1, x: -12, ease: "power2.out" }, 35.78);
+    tl.to("#stage", { duration: 0.34, x: 0, ease: "elastic.out(1, 0.5)" }, 35.88);
+    tl.set("#fx10", { autoAlpha: 0 }, 0);
+    tl.to("#fx10", { duration: 0.22, autoAlpha: 1, ease: "back.out(2)" }, 47.4);
+    countUp(tl, "#fxc10", 210, 47.4, 1.1);
+    tl.to("#fx10", { duration: 0.2, autoAlpha: 0 }, 49.00);
+    tl.set("#fx11", { autoAlpha: 0 }, 0);
+    tl.to("#fx11", { duration: 0.08, autoAlpha: 1, ease: "none" }, 56.44);
+    tl.to("#fx11", { duration: 0.22, autoAlpha: 0, ease: "power2.in" }, 56.54);
+    tl.set("#stage", { scale: 1.09 }, 58.16);
+    tl.to("#stage", { duration: 0.55, scale: 1, ease: "power3.out" }, 58.16);
+    tl.set("#fx13", { autoAlpha: 0 }, 0);
+    tl.set("#fx13", { autoAlpha: 1 }, 59.74);
+    tl.set("#fx13", { autoAlpha: 0 }, 59.81);
 
   window.__timelines["reel-main"] = tl;
 </script>

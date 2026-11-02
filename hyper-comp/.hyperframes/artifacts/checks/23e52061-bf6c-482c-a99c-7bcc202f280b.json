@@ -1,65 +1,17 @@
 {
-  "ok": false,
+  "ok": true,
   "strict": false,
-  "browserSkipped": true,
+  "browserSkipped": false,
   "lint": {
-    "ok": false,
-    "errorCount": 1,
-    "warningCount": 7,
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 4,
     "infoCount": 0,
     "findings": [
       {
-        "code": "studio_missing_editable_id",
-        "severity": "warning",
-        "message": "<video class=\"slot-vid\" data-start=\"0.00\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
-        "selector": "[data-composition-id]",
-        "dataAttributes": {},
-        "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
-        "bbox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0
-        },
-        "time": 0,
-        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit."
-      },
-      {
-        "code": "studio_missing_editable_id",
-        "severity": "warning",
-        "message": "<video class=\"reel-vid\" data-start=\"46.20\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
-        "selector": "[data-composition-id]",
-        "dataAttributes": {},
-        "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
-        "bbox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0
-        },
-        "time": 0,
-        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit."
-      },
-      {
         "code": "duplicate_media_discovery_risk",
         "severity": "warning",
-        "message": "Detected 4 matching img entries with the same source/start/duration.",
-        "selector": "[data-composition-id]",
-        "dataAttributes": {},
-        "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
-        "bbox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0
-        },
-        "time": 0,
-        "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation."
-      },
-      {
-        "code": "duplicate_media_discovery_risk",
-        "severity": "warning",
-        "message": "Detected 2 matching img entries with the same source/start/duration.",
+        "message": "Detected 2 matching audio entries with the same source/start/duration.",
         "selector": "[data-composition-id]",
         "dataAttributes": {},
         "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
@@ -91,7 +43,7 @@
       {
         "code": "duplicate_media_discovery_risk",
         "severity": "warning",
-        "message": "Detected 10 matching img entries with the same source/start/duration.",
+        "message": "Detected 2 matching img entries with the same source/start/duration.",
         "selector": "[data-composition-id]",
         "dataAttributes": {},
         "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
@@ -105,25 +57,9 @@
         "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation."
       },
       {
-        "code": "media_missing_id",
-        "severity": "error",
-        "message": "<video> has data-start but no id attribute. The renderer requires id to discover media elements, so this video will be FROZEN in renders.",
-        "selector": "[data-composition-id]",
-        "dataAttributes": {},
-        "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
-        "bbox": {
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0
-        },
-        "time": 0,
-        "fixHint": "Add a unique id attribute: <video id=\"my-video\" ...>"
-      },
-      {
         "code": "composition_file_too_large",
         "severity": "warning",
-        "message": "This HTML composition file has 930 lines. Smaller sub-compositions are easier to read, iterate on, and diff.",
+        "message": "This HTML composition file has 980 lines. Smaller sub-compositions are easier to read, iterate on, and diff.",
         "selector": "[data-composition-id]",
         "dataAttributes": {},
         "sourceFile": "C:\\Users\\GLT COMPUTER\\OneDrive\\Desktop\\Reels\\hyper-comp\\index.html",
@@ -152,8 +88,18 @@
     "warningCount": 0,
     "infoCount": 0,
     "findings": [],
-    "duration": 0,
-    "samples": [],
+    "duration": 61.4,
+    "samples": [
+      3.411,
+      10.233,
+      17.056,
+      23.878,
+      30.7,
+      37.522,
+      44.344,
+      51.167,
+      57.989
+    ],
     "transitionSamples": [],
     "transitionSamplesDropped": 0,
     "tolerance": 2,
@@ -176,9 +122,15 @@
     "infoCount": 0,
     "findings": [],
     "enabled": true,
-    "samples": [],
-    "checked": 0,
-    "passed": 0
+    "samples": [
+      3.411,
+      17.056,
+      30.7,
+      44.344,
+      57.989
+    ],
+    "checked": 58,
+    "passed": 58
   },
   "craft": {
     "ok": true,
@@ -186,9 +138,9 @@
     "warningCount": 0,
     "infoCount": 0,
     "findings": [],
-    "enabled": false,
-    "step": 0,
-    "samples": 0
+    "enabled": true,
+    "step": 0.125,
+    "samples": 492
   },
   "audio": {
     "ok": true,

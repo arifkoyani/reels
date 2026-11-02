@@ -223,10 +223,14 @@ const sketchLine = (x1, y1, x2, y2, seed = 11) =>
   setsToPath(roughGen.line(x1, y1, x2, y2, { roughness: 2.4, strokeWidth: 9, seed }).sets);
 
 // every sound effect placed on the timeline, emitted as <audio data-start>
+// Every sound in this composition sits on a visual event, so the sfx times
+// double as the record of "something changed here" that the 2-second audit uses.
 const sfxHits = [];
+const marks = [];
 const sfx = (name, at, volume = 0.45) => {
   if (at < 0 || at > duration) return;
   sfxHits.push({ name, at: Number(at.toFixed(2)), volume });
+  marks.push(Number(at.toFixed(2)));
 };
 
 const iconNodes = require("lucide-static/icon-nodes.json");
@@ -252,7 +256,7 @@ const figure = (it, kind) => {
   const src = imgSrc(it.image);
   return src
     ? `<div class="fig ${kind}-fig"><img src="${src}" alt="">${
-        it.mark ? `<span class="mark">${img(it.mark, "mark-img")}</span>` : ""
+        it.mark ? `<span class="mark ${it.mark}">${it.mark === "done" ? icon("check", "mark-icon") : img(it.mark, "mark-img")}</span>` : ""
       }</div>`
     : icon(it.icon, `${kind}-icon`);
 };
@@ -262,9 +266,7 @@ const figure = (it, kind) => {
 const reelVideo = (b, cls, id) => {
   const r = b.reel;
   if (!r) return "";
-  return `<video id="${id}" class="${cls}" src="assets/reels/${esc(r.file ?? "reel.mp4")}" muted data-has-audio="false" data-start="${(
-    b.from - (r.offset ?? 0)
-  ).toFixed(2)}" preload="auto"></video>`;
+  return `<video id="${id}" class="${cls}" poster="${imgSrc(b.reel.still) ?? ""}" src="assets/reels/${esc(r.file ?? "reel-1.mp4")}" muted data-has-audio="false" data-start="${b.from.toFixed(2)}" data-playback-start="${(r.offset ?? 0).toFixed(2)}" preload="auto"></video>`;
 };
 
 const widgetHtml = (b, i) => {
@@ -295,9 +297,7 @@ const widgetHtml = (b, i) => {
       return `<div class="checks">${(b.items ?? [])
         .map(
           (it) =>
-            `<div class="check"><div class="box">${
-              img("done", "box-img") || icon("check", "check-icon")
-            }</div>${
+            `<div class="check"><div class="box">${icon("check", "check-icon")}</div>${
               imgSrc(it.image) ? `<div class="check-thumb"><img src="${imgSrc(it.image)}" alt=""></div>` : ""
             }<div><div class="check-t">${esc(it.label)}</div><div class="mono">// ${esc(it.note ?? "")}</div></div></div>`,
         )
@@ -317,9 +317,7 @@ const widgetHtml = (b, i) => {
           (p, k) =>
             `<div class="polaroid" style="--rot:${p.rot ?? 0}deg"><div class="tape"></div><div class="shot-slot">${
               p.reel
-                ? `<video id="pv${i}-${k}" class="slot-vid" src="assets/reels/${esc(p.reel.file ?? "reel.mp4")}" muted data-has-audio="false" data-start="${(
-                    b.from - (p.reel.offset ?? 0)
-                  ).toFixed(2)}" preload="auto"></video>`
+                ? `<video id="pv${i}-${k}" class="slot-vid" poster="${imgSrc(p.reel.still) ?? ""}" src="assets/reels/${esc(p.reel.file ?? "reel-1.mp4")}" muted data-has-audio="false" data-start="${b.from.toFixed(2)}" data-playback-start="${(p.reel.offset ?? 0).toFixed(2)}" preload="auto"></video>`
                 : imgSrc(p.image)
                   ? `<img src="${imgSrc(p.image)}" alt="">`
                   : icon(p.icon ?? "image", "slot-icon")
@@ -364,7 +362,7 @@ const beatHtml = beats
       <div class="kicker mono">// ${String(i + 1).padStart(2, "0")} · ${esc(b.kicker ?? "")}</div>
       <div class="stamp-row">
         <div class="stamp">${accent(b.stamp ?? "")}</div>
-        ${b.step ? `<div class="step">${img(`number-${b.step}`, "step-img") || b.step}</div>` : ""}
+        ${b.step ? `<div class="step">${b.step}</div>` : ""}
       </div>
       ${widgetHtml(b, i)}
       ${b.sub ? `<div class="sub">${esc(b.sub)}</div>` : ""}
@@ -586,10 +584,10 @@ beats.forEach((b, i) => {
 
 pageMeta.forEach((pm, pi) => {
   const next = pageMeta[pi + 1];
-  const hide = next ? next.start - 0.06 : Math.min(duration, pm.end + 0.5);
+  const hide = next ? next.start - 0.12 : Math.min(duration, pm.end + 0.5);
   tl.push(`    tl.set("#cp${pi}", { autoAlpha: 0 }, 0);`);
-  tl.push(`    tl.to("#cp${pi}", { duration: 0.1, autoAlpha: 1 }, ${Math.max(0, pm.start - 0.08).toFixed(2)});`);
-  tl.push(`    tl.to("#cp${pi}", { duration: 0.1, autoAlpha: 0 }, ${hide.toFixed(2)});`);
+  tl.push(`    tl.to("#cp${pi}", { duration: 0.06, autoAlpha: 1 }, ${Math.max(0, pm.start - 0.05).toFixed(2)});`);
+  tl.push(`    tl.to("#cp${pi}", { duration: 0.06, autoAlpha: 0 }, ${hide.toFixed(2)});`);
   pm.page.forEach((w, k) => {
     const lit = isCue(w) ? "#F15430" : onDark(w) ? "#FFFFFF" : "#0C0A08";
     tl.push(`    tl.to("#${pm.ids[k]}", { duration: 0.12, color: "${lit}", ease: "power2.out" }, ${w.start.toFixed(2)});`);
@@ -602,6 +600,166 @@ cues.forEach((c, i) => {
   tl.push(`    tl.fromTo("#cu${i}", { autoAlpha: 0, y: 18, scale: 0.9 }, { duration: 0.2, autoAlpha: 1, y: 0, scale: 1, ease: "back.out(2)" }, ${c.start.toFixed(2)});`);
   tl.push(`    tl.to("#cu${i}", { duration: 0.18, autoAlpha: 0 }, ${Math.max(c.start + 0.4, hold).toFixed(2)});`);
 });
+
+// --- the 2-second rule ------------------------------------------------------
+// Retention drops when the screen sits still, so no gap longer than MAX_STILL
+// may survive. Every inserted change lands on a stressed word, never on a round
+// number, and the five types rotate so the same move is never used twice running.
+const MAX_STILL = 2.0;
+const CHANGE_TYPES = ["colour", "zoom", "cut", "sound", "element"];
+
+// a stressed word carries meaning: content words, not glue
+const stressed = words.filter((w) => {
+  const n = norm(w.word);
+  return n.length > 2 && !STOP.has(n);
+});
+const nearestStressed = (t, lo, hi) => {
+  let best = null;
+  let bestD = Infinity;
+  for (const w of stressed) {
+    if (w.start < lo || w.start > hi) continue;
+    const d = Math.abs(w.start - t);
+    if (d < bestD) { bestD = d; best = w; }
+  }
+  return best;
+};
+
+const changes = [];
+{
+  // Snapping to a stressed word can overshoot and leave a sub-gap behind, so
+  // the fill runs until the audit is clean rather than in a single pass.
+  let n = 0;
+  for (let pass = 0; pass < 6; pass++) {
+    const all = [...new Set([...marks, ...changes.map((c) => c.at)])].sort((a, z) => a - z);
+    const gaps = [];
+    let prev = 0;
+    for (const m of [...all, duration]) {
+      if (m - prev > MAX_STILL) gaps.push([prev, m]);
+      prev = Math.max(prev, m);
+    }
+    if (gaps.length === 0) break;
+    let added = 0;
+    for (const [a, z] of gaps) {
+      const span = z - a;
+      const count = Math.max(1, Math.round(span / 1.6) - 1 || 1);
+      for (let k = 1; k <= count; k++) {
+        const target = a + (span * k) / (count + 1);
+        const w = nearestStressed(target, a + 0.2, z - 0.2);
+        const at = Number((w ? w.start : target).toFixed(2));
+        if (at <= a + 0.1 || at >= z - 0.1) continue;
+        if (changes.some((c) => Math.abs(c.at - at) < 0.3)) continue;
+        if (marks.some((m) => Math.abs(m - at) < 0.3)) continue;
+        changes.push({ at, type: CHANGE_TYPES[n % CHANGE_TYPES.length], word: w?.word ?? "" });
+        n++;
+        added++;
+      }
+    }
+    if (added === 0) break;
+  }
+  changes.sort((a, z) => a.at - z.at);
+}
+
+// Each type carries several variants so the same move never repeats back to back.
+const fxNodes = [];
+const variantSeen = {};
+tl.push(`    tl.set("#stage", { scale: 1, x: 0, y: 0 }, 0);`);
+changes.forEach((c, k) => {
+  const at = Number(c.at.toFixed(2));
+  const v = (variantSeen[c.type] = (variantSeen[c.type] ?? -1) + 1) % 3;
+
+  if (c.type === "colour") {
+    // full flood, half flood, or an ink sweep — short, and on the word
+    const cls = v === 0 ? "flood hot" : v === 1 ? "flood half" : "flood ink";
+    fxNodes.push(`    <div class="${cls}" id="fx${k}"></div>`);
+    tl.push(`    tl.set("#fx${k}", { autoAlpha: 0 }, 0);`);
+    tl.push(`    tl.to("#fx${k}", { duration: 0.08, autoAlpha: 1, ease: "none" }, ${at});`);
+    tl.push(`    tl.to("#fx${k}", { duration: 0.22, autoAlpha: 0, ease: "power2.in" }, ${(at + 0.1).toFixed(2)});`);
+    sfxHits.push({ name: v === 2 ? "stamp" : "pop", at, volume: 0.26 });
+  }
+
+  if (c.type === "zoom") {
+    // punch-in, a slow creep across the line, or a zoom-out reveal
+    if (v === 0) {
+      tl.push(`    tl.to("#stage", { duration: 0.26, scale: 1.07, ease: "power3.out" }, ${at});`);
+      tl.push(`    tl.to("#stage", { duration: 0.5, scale: 1, ease: "power2.inOut" }, ${(at + 0.3).toFixed(2)});`);
+    } else if (v === 1) {
+      tl.push(`    tl.set("#stage", { scale: 1 }, ${at});`);
+      tl.push(`    tl.to("#stage", { duration: 1.4, scale: 1.05, ease: "none" }, ${at});`);
+      tl.push(`    tl.to("#stage", { duration: 0.3, scale: 1, ease: "power2.out" }, ${(at + 1.45).toFixed(2)});`);
+    } else {
+      tl.push(`    tl.set("#stage", { scale: 1.09 }, ${at});`);
+      tl.push(`    tl.to("#stage", { duration: 0.55, scale: 1, ease: "power3.out" }, ${at});`);
+    }
+    sfxHits.push({ name: "whoosh", at, volume: 0.22 });
+  }
+
+  if (c.type === "cut") {
+    // an instant framing change: far, close, or a two-frame flash
+    if (v === 2) {
+      fxNodes.push(`    <div class="flash" id="fx${k}"></div>`);
+      tl.push(`    tl.set("#fx${k}", { autoAlpha: 0 }, 0);`);
+      tl.push(`    tl.set("#fx${k}", { autoAlpha: 1 }, ${at});`);
+      tl.push(`    tl.set("#fx${k}", { autoAlpha: 0 }, ${(at + 0.07).toFixed(2)});`);
+    } else {
+      const to = v === 0 ? 0.94 : 1.06;
+      tl.push(`    tl.set("#stage", { scale: ${to}, y: ${v === 0 ? 22 : -18} }, ${at});`);
+      tl.push(`    tl.to("#stage", { duration: 0.34, scale: 1, y: 0, ease: "power3.out" }, ${(at + 0.12).toFixed(2)});`);
+    }
+    sfxHits.push({ name: v === 1 ? "swipe" : "ui-click", at, volume: 0.3 });
+  }
+
+  if (c.type === "sound") {
+    // audio-led, but it still moves, so the mute test passes too
+    const name = v === 0 ? "ding" : v === 1 ? "type" : "pop";
+    sfxHits.push({ name, at, volume: 0.32 });
+    tl.push(`    tl.to("#stage", { duration: 0.1, x: ${v === 1 ? 14 : -12}, ease: "power2.out" }, ${at});`);
+    tl.push(`    tl.to("#stage", { duration: 0.34, x: 0, ease: "elastic.out(1, 0.5)" }, ${(at + 0.1).toFixed(2)});`);
+  }
+
+  if (c.type === "element") {
+    // a prop tied to the word: a verdict stamp, a live counter, or a pointer
+    const label = (c.word || "").replace(/[^A-Za-z0-9' ]/g, "").toUpperCase().slice(0, 14) || "YES";
+    const side = k % 2 ? "right" : "left";
+    if (v === 1) {
+      fxNodes.push(`    <div class="prop counter ${side}" id="fx${k}"><span id="fxc${k}">0</span></div>`);
+      tl.push(`    tl.set("#fx${k}", { autoAlpha: 0 }, 0);`);
+      tl.push(`    tl.to("#fx${k}", { duration: 0.22, autoAlpha: 1, ease: "back.out(2)" }, ${at});`);
+      tl.push(`    countUp(tl, "#fxc${k}", ${40 + k * 17}, ${at}, 1.1);`);
+      tl.push(`    tl.to("#fx${k}", { duration: 0.2, autoAlpha: 0 }, ${(at + 1.6).toFixed(2)});`);
+    } else {
+      fxNodes.push(
+        `    <div class="prop ${v === 0 ? "verdict" : "hand"} ${side}" id="fx${k}">${
+          v === 0 ? esc(label) : icon("mouse-pointer-2", "prop-icon")
+        }</div>`,
+      );
+      tl.push(`    tl.set("#fx${k}", { autoAlpha: 0, scale: 1.6, rotate: ${side === "left" ? -14 : 11} }, 0);`);
+      tl.push(`    tl.to("#fx${k}", { duration: 0.24, autoAlpha: 1, scale: 1, ease: "back.out(3)" }, ${at});`);
+      tl.push(`    tl.to("#fx${k}", { duration: 0.2, autoAlpha: 0 }, ${(at + 1.4).toFixed(2)});`);
+    }
+    sfxHits.push({ name: v === 0 ? "stamp" : "ding", at, volume: 0.3 });
+  }
+});
+
+const fxHtml = fxNodes.length ? `  <div class="fx-layer">\n${fxNodes.join("\n")}\n  </div>` : "";
+
+// the audit the playbook asks for: zero blocks of 2s or more with nothing moving
+const auditMarks = [...new Set([...marks, ...changes.map((c) => Number(c.at.toFixed(2)))])].sort((a, z) => a - z);
+let worstGap = 0;
+let prevMark = 0;
+const stillBlocks = [];
+for (const m of [...auditMarks, duration]) {
+  const g = m - prevMark;
+  if (g >= MAX_STILL) stillBlocks.push(`${prevMark.toFixed(1)}-${m.toFixed(1)}s`);
+  if (g > worstGap) worstGap = g;
+  prevMark = Math.max(prevMark, m);
+}
+const typeCount = CHANGE_TYPES.map((t) => `${t} ${changes.filter((c) => c.type === t).length}`).join(", ");
+console.log(`    change map: ${changes.length} inserted (${typeCount})`);
+console.log(
+  `    2s audit: longest still block ${worstGap.toFixed(2)}s, ${stillBlocks.length} block(s) >= ${MAX_STILL}s${
+    stillBlocks.length ? ` — ${stillBlocks.join(", ")}` : " (target met)"
+  }`,
+);
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -655,9 +813,9 @@ const html = `<!DOCTYPE html>
   /* the number comes from public/images/numbering icons, not a filled square */
   .step {
     width:104px; height:104px; display:flex; align-items:center; justify-content:center;
-    font-family:"League Gothic","Archivo Black",sans-serif; font-size:72px; color:var(--hot);
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:76px; color:var(--hot);
+    border:5px solid var(--hot); border-radius:22px; padding-top:8px;
   }
-  .step-img { width:104px; height:104px; object-fit:contain; }
   .lead { font-size:62px; font-weight:800; line-height:1.14; letter-spacing:-1px; }
   .sub { font-size:36px; color:#5A6678; font-weight:600; line-height:1.3; }
 
@@ -667,7 +825,12 @@ const html = `<!DOCTYPE html>
     display:flex; align-items:center; justify-content:center;
   }
   .fig img { display:block; width:100%; height:100%; object-fit:contain; }
-  .mark { position:absolute; right:-18px; bottom:-18px; width:72px; height:72px; }
+  .mark { position:absolute; right:-18px; bottom:-18px; width:76px; height:76px; }
+  .mark.done {
+    background:#fff; border:5px solid var(--hot); border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mark-icon { width:50px; height:50px; color:var(--hot); stroke-width:3.4; }
   .mark-img { width:100%; height:100%; object-fit:contain; }
 
   .list { display:flex; flex-direction:column; gap:18px; width:100%; }
@@ -677,7 +840,7 @@ const html = `<!DOCTYPE html>
     font-size:44px; font-weight:800;
   }
   .row-icon { width:84px; height:84px; color:var(--hot); flex:0 0 auto; }
-  .row-fig { width:92px; height:92px; }
+  .row-fig { width:116px; height:116px; }
   .row-num { width:68px; height:68px; margin-left:auto; object-fit:contain; }
 
   .cards { display:flex; gap:26px; width:100%; }
@@ -689,10 +852,10 @@ const html = `<!DOCTYPE html>
   .card-icon { width:112px; height:112px; color:var(--hot); }
   .card.bad .card-icon { color:#C0392B; }
   .card-fig {
-    width:100%; height:230px; background:#fff; border:2px solid var(--line);
+    width:100%; height:270px; background:#fff; border:2px solid var(--line);
     border-radius:16px; overflow:hidden;
   }
-  .card-fig img { object-fit:cover; }
+  .card-fig img { object-fit:contain; }
   .card-t { font-size:46px; font-weight:800; line-height:1.1; }
 
   .path {
@@ -700,13 +863,15 @@ const html = `<!DOCTYPE html>
     background:var(--card); border:3px solid var(--line); border-radius:22px; padding:26px 32px;
   }
   .path-icon { width:88px; height:88px; color:var(--hot); }
-  .path-img { width:120px; height:120px; object-fit:contain; flex:0 0 auto; }
+  .path-img { width:148px; height:148px; object-fit:contain; flex:0 0 auto; }
 
   .checks { display:flex; flex-direction:column; gap:18px; width:100%; }
   .check { display:flex; align-items:center; gap:24px; }
-  .box { width:76px; height:76px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
-  .box-img { width:76px; height:76px; object-fit:contain; }
-  .check-icon { width:60px; height:60px; color:var(--hot); }
+  .box {
+    width:76px; height:76px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+    border:5px solid var(--hot); border-radius:18px;
+  }
+  .check-icon { width:52px; height:52px; color:var(--hot); stroke-width:3.4; }
   .check-thumb {
     width:120px; height:84px; border:2px solid var(--line); border-radius:12px;
     overflow:hidden; background:#fff; flex:0 0 auto;
@@ -752,7 +917,8 @@ const html = `<!DOCTYPE html>
     aspect-ratio:3/4; background:#F2F0EB; border-radius:2px; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
   }
-  .shot-slot img, .slot-vid { width:100%; height:100%; object-fit:cover; display:block; }
+  .shot-slot img { width:100%; height:100%; object-fit:contain; display:block; background:#fff; }
+  .slot-vid { width:100%; height:100%; object-fit:cover; display:block; }
   .slot-icon { width:104px; height:104px; color:var(--hot); }
   .polaroid-cap {
     position:absolute; bottom:12px; left:0; right:0; text-align:center;
@@ -811,6 +977,30 @@ const html = `<!DOCTYPE html>
   .cue.neutral { border-color:#2E3440; }
   .cue.neutral .cue-icon { color:#2E3440; }
 
+  /* ---- the 2-second change kit ---------------------------------------- */
+  /* the graphics ride on one transformable stage, so a punch-in, a cut or a
+     shake is one tween rather than a move per element */
+  .stage { position:absolute; inset:0; transform-origin:50% 58%; }
+  .fx-layer { position:absolute; inset:0; pointer-events:none; z-index:60; }
+
+  .flood { position:absolute; inset:0; opacity:0; }
+  .flood.hot { background:var(--hot); mix-blend-mode:multiply; }
+  .flood.ink { background:#10141C; mix-blend-mode:multiply; }
+  .flood.half { background:linear-gradient(to bottom, var(--hot) 50%, transparent 50%); mix-blend-mode:multiply; }
+  .flash { position:absolute; inset:0; opacity:0; background:#FFFFFF; }
+
+  /* props tied to a word: a verdict, a live counter, a pointing cursor */
+  .prop { position:absolute; opacity:0; z-index:62; }
+  .prop.left { left:96px; } .prop.right { right:96px; }
+  .prop.verdict, .prop.counter {
+    top:1360px; background:#FFFFFF; border:6px solid var(--hot); color:var(--hot);
+    font-family:"League Gothic","Archivo Black",sans-serif; font-size:76px; line-height:1;
+    padding:16px 30px 10px; border-radius:14px; transform:rotate(-7deg);
+    box-shadow:0 12px 28px rgba(16,20,28,0.16);
+  }
+  .prop.counter { font-size:92px; border-color:#10141C; color:#10141C; transform:rotate(3deg); }
+  .prop.hand { top:1330px; width:120px; height:120px; }
+  .prop-icon { width:120px; height:120px; color:var(--hot); }
   /* paper grain over everything */
   .grain { display:none; }
 </style>
@@ -833,7 +1023,11 @@ ${surfaceHtml}
       ${captionHtml}
   </div>
 
+  <div class="stage" id="stage">
 ${beatHtml}
+  </div>
+
+${fxHtml}
 
   <div class="cue-strip">
       ${cueHtml}
@@ -860,6 +1054,14 @@ ${beatHtml}
     tl.to(el, { duration: dur, strokeDashoffset: 0, ease: "power2.inOut" }, at);
   }
 
+  // a live counter: the number itself is the change
+  function countUp(tl, sel, to, at, dur) {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const s = { n: 0 };
+    tl.to(s, { duration: dur, n: to, ease: "power2.out",
+      onUpdate: () => { el.textContent = Math.round(s.n); } }, at);
+  }
   function typeText(tl, sel, text, at, dur) {
     const el = document.querySelector(sel);
     const s = { n: 0 };
